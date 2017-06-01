@@ -1,5 +1,0 @@
-setup.py
-django_multitenant.egg-info/PKG-INFO
-django_multitenant.egg-info/SOURCES.txt
-django_multitenant.egg-info/dependency_links.txt
-django_multitenant.egg-info/top_level.txt
