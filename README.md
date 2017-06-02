@@ -2,7 +2,7 @@
 Python/Django support for distributed multi-tenant databases like Postgres+Citus
 
 
-##Installation:
+## Installation:
 1. pip install django_multitenant
 
 ## Usage:
