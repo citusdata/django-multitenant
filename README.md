@@ -22,6 +22,21 @@ Tested with django 1.10 or higher.
    `Ex: class Product(TenantModel):`
 1. Define a static variable named tenant_id and specify the tenant column using this variable.
    `Ex: tenant_id='store_id'`
+1. A sample model implementing the above 2 steps:
+   ```python
+    class Product(TenantModel):
+    	store = models.ForeignKey(Store)
+    	tenant_id='store_id'
+
+    	def get_tenant():
+        	return self.store
+
+    	name = models.CharField(max_length=255)
+    	description = models.TextField()
+    	class Meta(object):
+        	unique_together = ["id", "store"]
+ 	```
+
 1. In an application function set the tenant using set_current_tenant(t) api. This would scope all the django API calls automatically(without specifying explicit filters) to a single tenant.
    ```python
     def application_function:
@@ -29,11 +44,11 @@ Tested with django 1.10 or higher.
     	#set the tenant
     	set_current_tenant(t);
     	#Django ORM API calls
-    	Command 1
-    	Command 2
-   		Command 3
-    	Command 4
-   		Command 5
+    	#Command 1;
+    	#Command 2;
+   		#Command 3;
+    	#Command 4;
+   		#Command 5;
    ```
 ##Supported APIs:
 1. Most of the APIs under Model.objects.* except `select_related()`.
