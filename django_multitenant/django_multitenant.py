@@ -5,7 +5,6 @@ try:
 except ImportError:
     from django.utils._threading_local import local
 
-from djmoney.models.fields import MoneyField
 from collections import OrderedDict
 import pdb
 
@@ -28,10 +27,6 @@ class TenantQuerySet(models.QuerySet):
                     current_model=get_model_by_db_table(alias_map[k].table_name)
                     l.append(k+'.'+current_model.tenant_id+'='+str(current_tenant.id))
             self.query.add_extra([],[],l,[],[],[])
-
-    # def add_tenant_filters(self):
-    #     self.add_tenant_filters_without_joins()
-    #     self.add_tenant_filters_with_joins()
     
     def add_tenant_filters_without_joins(self):
         current_tenant=get_current_tenant()
