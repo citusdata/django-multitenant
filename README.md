@@ -43,14 +43,14 @@ Tested with django 1.10 or higher.
    		t = current_tenant (Can come from login session etc)
     	#set the tenant
     	set_current_tenant(t);
-    	#Django ORM API calls
+    	#Django ORM API calls;
     	#Command 1;
     	#Command 2;
    		#Command 3;
     	#Command 4;
    		#Command 5;
    ```
-##Supported APIs:
+## Supported APIs:
 1. Most of the APIs under Model.objects.* except `select_related()`.
 1. Model.save() injects tenant_id for tenant inherited models.
 
