@@ -9,7 +9,7 @@ The following link talks more about the trade-offs on when and how to choose the
 
 https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-scalability/
 
-Other useful links on multi-tenancy:
+**Other useful links on multi-tenancy**:
 1. https://www.citusdata.com/blog/2017/03/09/multi-tenant-sharding-tutorial/
 1. https://www.citusdata.com/blog/2017/06/02/scaling-complex-sql-transactions/
 
