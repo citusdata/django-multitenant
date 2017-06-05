@@ -36,8 +36,8 @@ Tested with django 1.10 or higher.
 1. In an application function set the tenant using set_current_tenant(t) api. This would scope all the django API calls automatically(without specifying explicit filters) to a single tenant.
    ```python
     def application_function:
-        # current_tenant can be stored as a SESSION variable when a user logs in.
-        # This should be done by the app
+    	# current_tenant can be stored as a SESSION variable when a user logs in.
+    	# This should be done by the app
     	t = current_tenant
     	#set the tenant
     	set_current_tenant(t);
