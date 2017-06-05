@@ -27,14 +27,10 @@ Tested with django 1.10 or higher.
     class Product(TenantModel):
     	store = models.ForeignKey(Store)
     	tenant_id='store_id'
-
-    	def get_tenant():
-        	return self.store
-
     	name = models.CharField(max_length=255)
     	description = models.TextField()
     	class Meta(object):
-        	unique_together = ["id", "store"]
+    		unique_together = ["id", "store"]
  	```
 
 1. In an application function set the tenant using set_current_tenant(t) api. This would scope all the django API calls automatically(without specifying explicit filters) to a single tenant.
