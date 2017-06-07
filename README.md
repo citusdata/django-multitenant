@@ -17,7 +17,7 @@ https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-
 ## Installation:
 1. pip install django_multitenant
 
-## Supported Django versions
+## Supported Django versions/Pre-requisites.
 Tested with django 1.10 or higher.
 
 ## Usage:
@@ -37,7 +37,7 @@ Tested with django 1.10 or higher.
     		unique_together = ["id", "store"]
  	```
 
-1. In an application function set the tenant using set_current_tenant(t) api. This would scope all the django API calls automatically(without specifying explicit filters) to a single tenant.
+1. In an application function set the tenant using set_current_tenant(t) api. This would scope all the django API calls automatically(without specifying explicit filters) to a single tenant. If the current_tenant is not set, then the default/native API  without tenant scoping is used.
    ```python
     def application_function:
     	# current_tenant can be stored as a SESSION variable when a user logs in.
@@ -55,4 +55,13 @@ Tested with django 1.10 or higher.
 ## Supported APIs:
 1. Most of the APIs under Model.objects.* except `select_related()`.
 1. Model.save() injects tenant_id for tenant inherited models.
+
+## Credits
+
+This library uses similar logic of setting/getting tenant object as in [django-simple-multitenant](https://github.com/pombredanne/django-simple-multitenant). We thank the authors for their efforts.
+
+## License
+
+Licensed under the MIT license<br>
+Copyright (c) 2016, Citus Data Inc.
 
