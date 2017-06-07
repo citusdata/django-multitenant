@@ -87,8 +87,3 @@ Tested with django 1.10 or higher.
 
 This library uses similar logic of setting/getting tenant object as in [django-simple-multitenant](https://github.com/pombredanne/django-simple-multitenant). We thank the authors for their efforts.
 
-## License
-
-Licensed under the MIT license<br>
-Copyright (c) 2016, Citus Data Inc.
-
