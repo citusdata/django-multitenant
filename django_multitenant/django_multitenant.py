@@ -97,7 +97,7 @@ class TenantModel(models.Model):
     def _do_update(self, base_qs, using, pk_val, values, update_fields, forced_update):
         current_tenant=get_current_tenant()
         if current_tenant:
-            kwargs = { self.tenant_id: current_tenant.id}
+            kwargs = { self.__class__.tenant_id: current_tenant.id}
             base_qs = base_qs.filter(**kwargs)
         return super(TenantModel,self)._do_update(base_qs, using, pk_val, values, update_fields, forced_update)
 
