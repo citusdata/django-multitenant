@@ -21,7 +21,7 @@ https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-
 Tested with django 1.10 or higher.
 
 ## Usage:
-1. In whichever files you want to use the library import it by just saying `import django_multitenant`
+1. In whichever files you want to use the library import it by just saying `from django_multitenant import *`
 1. All models should inherit the TenantModel class.
    `Ex: class Product(TenantModel):`
 1. Define a static variable named tenant_id and specify the tenant column using this variable.
