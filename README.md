@@ -42,7 +42,7 @@ Tested with django 1.10 or higher.
    ```python
     class SetCurrentTenantFromUser(object):
     	def process_request(self, request):
-        	if not hasattr(self, 'authenticator'):
+     	        if not hasattr(self, 'authenticator'):
             		from rest_framework_jwt.authentication import JSONWebTokenAuthentication
             		self.authenticator = JSONWebTokenAuthentication()
         	try:
@@ -58,7 +58,7 @@ Tested with django 1.10 or higher.
             		return
         	set_current_tenant(current_tenant)
     	def process_response(self, request, response):
-        	set_current_tenant(None)
+                set_current_tenant(None)
         	return response
    ```
    ```python
