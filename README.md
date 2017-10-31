@@ -21,6 +21,7 @@ https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-
 Tested with django 1.10 or higher.
 
 ## Usage:
+### Changes in Models:
 1. In whichever files you want to use the library import it by just saying `from django_multitenant import *`
 1. All models should inherit the TenantModel class.
    `Ex: class Product(TenantModel):`
@@ -36,8 +37,37 @@ Tested with django 1.10 or higher.
     	class Meta(object):
     		unique_together = ["id", "store"]
  	```
+### Where to Set the Tenant?:
+1. Write authentication logic using a middleware which also sets/unsets a tenant for each session/request. This way developers need not worry about setting a tenant on a per view basis. Just set it while authentication and the library would ensure the rest (adding tenant_id filters to the queries). A sample implementation of the above is as follows:
+  ```python
+    class SetCurrentTenantFromUser(object):
+    def process_request(self, request):
+        if not hasattr(self, 'authenticator'):
+            from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+            self.authenticator = JSONWebTokenAuthentication()
+        try:
+            user, _ = self.authenticator.authenticate(request)
+        except:
+            # TODO: handle failure
+            return
+        try:
+            #Assuming your app has a function to get the tenant associated for a user
+            current_tenant = get_tenant_for_user(user)
+        except:
+            # TODO: handle failure
+            return
+        set_current_tenant(current_tenant)
+    def process_response(self, request, response):
+        set_current_tenant(None)
+        return response
+   ```
+   ```python
+      MIDDLEWARE_CLASSES = (
+    'our_app.utils.multitenancy.SetCurrentTenantFromUser',
+      )
+   ```
 
-1. In an application function set the tenant using set_current_tenant(t) api. This would scope all the django API calls automatically(without specifying explicit filters) to a single tenant. If the current_tenant is not set, then the default/native API  without tenant scoping is used.
+1.Set the tenant using set_current_tenant(t) api in all the views which you want to be scoped based on tenant. This would scope all the django API calls automatically(without specifying explicit filters) to a single tenant. If the current_tenant is not set, then the default/native API  without tenant scoping is used.
    ```python
     def application_function:
     	# current_tenant can be stored as a SESSION variable when a user logs in.
@@ -86,4 +116,3 @@ Tested with django 1.10 or higher.
 ## Credits
 
 This library uses similar logic of setting/getting tenant object as in [django-simple-multitenant](https://github.com/pombredanne/django-simple-multitenant). We thank the authors for their efforts.
-
