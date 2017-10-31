@@ -67,7 +67,7 @@ Tested with django 1.10 or higher.
       )
    ```
 
-1.Set the tenant using set_current_tenant(t) api in all the views which you want to be scoped based on tenant. This would scope all the django API calls automatically(without specifying explicit filters) to a single tenant. If the current_tenant is not set, then the default/native API  without tenant scoping is used.
+1. Set the tenant using set_current_tenant(t) api in all the views which you want to be scoped based on tenant. This would scope all the django API calls automatically(without specifying explicit filters) to a single tenant. If the current_tenant is not set, then the default/native API  without tenant scoping is used.
    ```python
     def application_function:
     	# current_tenant can be stored as a SESSION variable when a user logs in.
