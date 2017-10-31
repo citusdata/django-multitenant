@@ -45,21 +45,21 @@ Tested with django 1.10 or higher.
      	        if not hasattr(self, 'authenticator'):
             		from rest_framework_jwt.authentication import JSONWebTokenAuthentication
             		self.authenticator = JSONWebTokenAuthentication()
-        	try:
+                try:
             		user, _ = self.authenticator.authenticate(request)
-        	except:
+                except:
             		# TODO: handle failure
             		return
-        	try:
+                try:
             		#Assuming your app has a function to get the tenant associated for a user
             		current_tenant = get_tenant_for_user(user)
-        	except:
+                except:
             		# TODO: handle failure
             		return
-        	set_current_tenant(current_tenant)
-    	def process_response(self, request, response):
+                set_current_tenant(current_tenant)
+        def process_response(self, request, response):
                 set_current_tenant(None)
-        	return response
+                return response
    ```
    ```python
       MIDDLEWARE_CLASSES = (
@@ -77,9 +77,9 @@ Tested with django 1.10 or higher.
     	#Django ORM API calls;
     	#Command 1;
     	#Command 2;
-   		#Command 3;
+    	#Command 3;
     	#Command 4;
-   		#Command 5;
+    	#Command 5;
    ```
 ## Supported APIs:
 1. Most of the APIs under Model.objects.* except `select_related()`.
