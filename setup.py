@@ -18,7 +18,7 @@ except ImportError:
 from setuptools import setup, find_packages
 setup(
     name="django-multitenant",
-    version="0.1",
+    version="1.0.1",
     packages=find_packages(),
 
     #install_requires=['gevent>=1.1.1'],
@@ -43,11 +43,12 @@ setup(
     ],
     platforms=['any'],
     license="BSD",
-    keywords=("citus django multi tenant", "django postgres multi-tenant"),
-    url="https://github.com/citusdata/django-multitenant",
+    keywords=("citus django multi tenant"
+              "django postgres multi-tenant"),
+    url="https://github.com/citusdata/django-multitenant")
 
     # Include the VERSION file
-    package_data={'django-multitenant': ['0.1']})
+    #package_data={'django-multitenant': ['0.1']})
 
     # install
     #entry_points={'console_scripts': ['django-multitenant=django-multitenant.cmd:main']})
