@@ -85,31 +85,31 @@ Tested with django 1.10 or higher.
 1. Most of the APIs under Model.objects.* except `select_related()`.
 1. Model.save() injects tenant_id for tenant inherited models.
 	```python
-    s=Store.objects.all()[0]
+   s=Store.objects.all()[0]
 	set_current_tenant(s)
-	
+
 	#All the below API calls would add suitable tenant filters.
 	#Simple get_queryset()
 	Product.objects.get_queryset()
-	
+
 	#Simple join
-	Purchase.objects.filter(id=1).filter(store__name='sai').filter(product__description='')
-	
+	Purchase.objects.filter(id=1).filter(store__name='The Awesome Store').filter(product__description='All products are awesome')
+
 	#Update
 	Purchase.objects.filter(id=1).update(id=1)
-	
+
 	#Save
-	p=Product(8,1,'sai','hello')
+	p=Product(8,1,'Awesome Shoe','These shoes are awesome')
 	p.save()
 
 	#Simple aggregates
 	Product.objects.count()
-	Product.objects.filter(store__name='sai').count()
-	Product.objects.filter(name='sai').aggregate(Avg('store_id'))
-	
+	Product.objects.filter(store__name='The Awesome Store').count()
+
 	#Subqueries
-	Product.objects.filter(name='sai');
+	Product.objects.filter(name='Awesome Shoe');
 	Purchase.objects.filter(product__in=p);
+
    ```
 
 ## Credits
