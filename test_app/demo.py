@@ -2,10 +2,12 @@
 
 #Import the library
 from stores import middleware
+import django_multitenant
+from django_multitenant import *
 
 #Set the current tenant
 s=Store.objects.all()[0];
-middleware.set_current_tenant(s);
+set_current_tenant(s);
 
 
 #Commands

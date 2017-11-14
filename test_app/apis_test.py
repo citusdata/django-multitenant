@@ -13,6 +13,11 @@ from django.db.models import Avg, Case, Count, F, Max, Min, Prefetch, Q, Sum, Wh
 from django.utils import timezone
 from django.urls import reverse
 
+#django_multitenant import
+import django_multitenant
+from django_multitenant import *
+
+
 s=Store.objects.all()[0]
 set_current_tenant(s)
 
