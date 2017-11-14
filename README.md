@@ -25,7 +25,7 @@ Tested with django 1.10 or higher.
 1. In whichever files you want to use the library import it by just saying 
    ```python
    import django_multitenant
-   from django_multitenant import *`
+   from django_multitenant import *
    ```
 1. All models should inherit the TenantModel class.
    `Ex: class Product(TenantModel):`
