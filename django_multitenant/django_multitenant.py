@@ -107,6 +107,34 @@ class TenantModel(models.Model):
     class Meta:
         abstract = True
 
+
+class TenantForeignKey(models.ForeignKey):
+    '''
+    Adds additional clause to JOINs over this relation to include tenant_id in the JOIN
+    '''
+
+    def get_extra_restriction(self, where_class, alias, related_alias):
+        # Fetch tenant column names for both sides of the relation
+        lhs_model = self.model
+        rhs_model = self.related_model
+        lhs_tenant_id = lhs_model.tenant_id
+        rhs_tenant_id = rhs_model.tenant_id
+
+        # Fetch tenant fields for both sides of the relation
+        lhs_tenant_field = lhs_model._meta.get_field(lhs_tenant_id)
+        rhs_tenant_field = rhs_model._meta.get_field(rhs_tenant_id)
+
+        # Get references to both tenant columns
+        lookup_lhs = lhs_tenant_field.get_col(related_alias)
+        lookup_rhs = rhs_tenant_field.get_col(alias)
+
+        # Create "AND lhs.tenant_id = rhs.tenant_id" as a new condition
+        lookup = lhs_tenant_field.get_lookup('exact')(lookup_lhs, lookup_rhs)
+        condition = where_class()
+        condition.add(lookup, 'AND')
+        return condition
+
+
 def get_current_user():
     """
     Despite arguments to the contrary, it is sometimes necessary to find out who is the current
