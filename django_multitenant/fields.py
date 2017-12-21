@@ -78,3 +78,9 @@ class TenantForeignKey(models.ForeignKey):
         condition.add(lookup, 'AND')
         return condition
 
+
+class TenantOneToOneField(models.OneToOneField, TenantForeignKey):
+    # Override
+    def __init__(self, *args, **kwargs):
+        kwargs['unique'] = False
+        super(TenantForeignKey, self).__init__(*args, **kwargs)
