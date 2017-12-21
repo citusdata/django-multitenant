@@ -6,6 +6,7 @@ from django.db import models
 from collections import OrderedDict
 import pdb
 
+from .patch import patch_delete_queries_to_include_tenant_ids
 from .utils import (
     set_current_tenant,
     get_current_tenant,
@@ -108,6 +109,10 @@ class TenantManager(TenantQuerySet.as_manager().__class__):
 
 #Abstract model which all the models related to tenant inherit.
 class TenantModel(models.Model):
+    def __init__(self, *args, **kwargs):
+        patch_delete_queries_to_include_tenant_ids()
+        super(TenantModel, self).__init__(*args, **kwargs)
+
     #New manager from middleware
     objects = TenantManager()
     tenant_id=''
