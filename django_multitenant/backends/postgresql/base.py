@@ -67,7 +67,6 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
     def execute(self, sql, params=()):
         # Hack: Citus will throw the following error if these statements are
         # not executed separately: "ERROR: cannot execute multiple utility events"
-        super(DatabaseSchemaEditor, self).execute('SET citus.multi_task_query_log_level TO log')
         if not params:
             for statement in sql.split(';'):
                 if statement:
