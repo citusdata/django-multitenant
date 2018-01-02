@@ -1,3 +1,4 @@
+import logging
 from django.apps import apps
 from django.db import models
 try:
@@ -9,6 +10,7 @@ from collections import OrderedDict
 import pdb
 
 _thread_locals = local()
+logger = logging.getLogger(__name__)
 
 
 #Modified QuerySet to add suitable filters on joins.
