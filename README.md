@@ -31,6 +31,8 @@ Tested with django 1.10 or higher.
    `Ex: class Product(TenantModel):`
 1. Define a static variable named tenant_id and specify the tenant column using this variable.
    `Ex: tenant_id='store_id'`
+1. All foreign keys to TenantModel subclasses should use TenantForeignKey in place of
+   models.ForeignKey
 1. A sample model implementing the above 2 steps:
    ```python
     class Product(TenantModel):
@@ -40,6 +42,10 @@ Tested with django 1.10 or higher.
     	description = models.TextField()
     	class Meta(object):
     		unique_together = ["id", "store"]
+    class Purchase(TenantModel):
+      store = models.ForeignKey(Store)
+      tenant_id='store_id'
+      product_purchased = TenantForeignKey(Product)
  	```
 ### Where to Set the Tenant?
 1. Write authentication logic using a middleware which also sets/unsets a tenant for each session/request. This way developers need not worry about setting a tenant on a per view basis. Just set it while authentication and the library would ensure the rest (adding tenant_id filters to the queries). A sample implementation of the above is as follows:
