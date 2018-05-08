@@ -29,7 +29,7 @@ class TenantQuerySet(models.QuerySet):
                 if(v>0 and k!=current_table_name):
                     current_model=get_model_by_db_table(alias_map[k].table_name)
                     if issubclass(current_model, TenantModel):
-                        extra_sql.append(k+'."'+current_model.tenant_id+'" = %s')
+                        extra_sql.append(k+'.'+current_model.tenant_id+' = %s')
                         extra_params.append(current_tenant.id)
             self.query.add_extra([],[],extra_sql,extra_params,[],[])
     
