@@ -207,9 +207,10 @@ def get_current_tenant():
     example:
         tenant = get_current_tenant()
     """
-    tenant = getattr(_thread_locals, 'tenant', None)
+    
 
     # tenant may not be set yet, if request user is anonymous, or has no profile,
+    # tenant = getattr(_thread_locals, 'tenant', None)
     # if not tenant:
     #     set_tenant_to_default()
     
