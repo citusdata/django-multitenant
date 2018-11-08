@@ -107,7 +107,7 @@ Tested with django 1.9 or higher.
    ```
 
 ## Supported APIs:
-1. Most of the APIs under Model.objects.* except `select_related()`.
+1. Most of the APIs under Model.objects.*.
 1. Model.save() injects tenant_id for tenant inherited models.
   ```python
    s=Store.objects.all()[0]
