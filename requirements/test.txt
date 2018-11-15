@@ -1,0 +1,7 @@
+psycopg2
+Django==1.11
+tox
+pytest
+pytest-cov
+pytest-django
+exam

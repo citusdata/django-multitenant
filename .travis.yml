@@ -1,0 +1,19 @@
+sudo: required
+language: pythion
+python: 3.6
+
+env:
+  - PREPARED_STATEMENTS=0
+  - PREPARED_STATEMENTS=1
+
+
+services:
+  - docker
+
+before_install:
+  - docker-compose up -d
+
+install: pip install tox
+
+script:
+  - tox
