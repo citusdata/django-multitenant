@@ -1,3 +1,4 @@
 *.pyc
 *~
 .env/*
+django_multitenant.egg-info/

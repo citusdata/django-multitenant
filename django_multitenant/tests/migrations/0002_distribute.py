@@ -13,6 +13,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # necessary for tests
+        migrations.RunSQL("CREATE EXTENSION IF NOT EXISTS citus;"),
+        migrations.RunSQL("SELECT * from master_add_node('django-multitenant_worker1_1', 5432);"),
+        migrations.RunSQL("SELECT * from master_add_node('django-multitenant_worker2_1', 5432);"),
+
         # Drop constraints
         migrations.RunSQL("ALTER TABLE tests_aliasedtask DROP CONSTRAINT tests_aliasedtask_pkey CASCADE;"),
         migrations.RunSQL("ALTER TABLE tests_country DROP CONSTRAINT tests_country_pkey CASCADE;"),

@@ -7,7 +7,6 @@ except ImportError:
     from django.utils._threading_local import local
 
 from collections import OrderedDict
-import pdb
 
 _thread_locals = local()
 logger = logging.getLogger(__name__)
@@ -214,37 +213,3 @@ def get_current_tenant():
     #     set_tenant_to_default()
     
     return getattr(_thread_locals, 'tenant', None)
-
-
-# def set_tenant_to_default():
-#     """
-#     Sets the current tenant as per BASE_TENANT_ID.
-#     """
-#     # import is done from within the function, to avoid trouble 
-#     from models import Tenant, BASE_TENANT_ID
-#     set_current_tenant( Tenant.objects.get(id=BASE_TENANT_ID) )
-    
-
-def set_current_tenant(tenant):
-    setattr(_thread_locals, 'tenant', tenant)
-
-
-class ThreadLocals(object):
-    """Middleware that gets various objects from the
-    request object and saves them in thread local storage."""
-    def process_request(self, request):
-        _thread_locals.user = getattr(request, 'user', None)
-
-        # Attempt to set tenant
-        if _thread_locals.user and not _thread_locals.user.is_anonymous():
-            try:
-                profile = _thread_locals.user.get_profile()
-                if profile:
-                    _thread_locals.tenant = getattr(profile, 'tenant', None)
-            except:
-                raise ValueError(
-                    """A User was created with no profile.  For security reasons, 
-                    we cannot allow the request to be processed any further.
-                    Try deleting this User and creating it again to ensure a 
-                    UserProfile gets attached, or link a UserProfile 
-                    to this User.""")

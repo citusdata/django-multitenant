@@ -28,19 +28,18 @@ class Manager(TenantModel):
 
 class Project(TenantModel):
     name = models.CharField(max_length=255)
-    account = models.ForeignKey(Account, related_name='account')
+    account = models.ForeignKey(Account, related_name='projects', on_delete=models.CASCADE)
     managers = models.ManyToManyField(Manager, through='ProjectManager')
     tenant_id = 'account_id'
 
 
 class ProjectManager(TenantModel):
-    # For now adding a through with the tenant is the only solution for ManyToManyField
-    # In the future we could have a TenantManyToMany
     project = TenantForeignKey(Project, on_delete=models.CASCADE)
     manager = TenantForeignKey(Manager, on_delete=models.CASCADE)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
     tenant_id = 'account_id'
+
 
 
 class Task(TenantModel):

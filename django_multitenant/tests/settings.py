@@ -13,9 +13,32 @@ DATABASES = {
         "USER": "postgres",
         "PASSWORD": "",
         "HOST": "localhost",
-        "PORT": 5600
+        "PORT": 5600,
+        "TEST": {
+            "NAME": "postgres",
+            "SERIALIZE": False
+        }
     }
 }
+
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": "citus",
+#         "USER": "citus",
+#         "PASSWORD": "GB7TYh-6ITjhmpOu2uClOQ",
+#         "HOST": "c.fpt7dawylvzhhdmd2uitsoaoqpq.db.citusdata.com",
+#         "PORT": 5432,
+#         'OPTIONS': {
+#             'sslmode': 'require',
+#         },
+#         "TEST": {
+#             "NAME": "citus",
+#             "SERIALIZE": False
+#         }
+#     }
+# }
 
 SITE_ID = 1
 DEBUG = True

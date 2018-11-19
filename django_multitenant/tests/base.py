@@ -1,7 +1,9 @@
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 
 from exam.cases import Exam
 from exam.decorators import fixture, before, after
+
+from .models import *
 
 
 class Fixtures(Exam):
@@ -19,21 +21,24 @@ class Fixtures(Exam):
 
     @fixture
     def account_fr(self):
-        return Account.objects.create(name='Account FR',
+        return Account.objects.create(pk=1,
+                                      name='Account FR',
                                       country=self.france,
                                       subdomain='fr.',
                                       domain='citusdata.com')
 
     @fixture
     def account_in(self):
-        return Account.objects.create(name='Account IN',
+        return Account.objects.create(pk=2,
+                                      name='Account IN',
                                       country=self.india,
                                       subdomain='in.',
                                       domain='citusdata.com')
 
     @fixture
     def account_us(self):
-        return Account.objects.create(name='Account US',
+        return Account.objects.create(pk=3,
+                                      name='Account US',
                                       country=self.united_states,
                                       subdomain='us.',
                                       domain='citusdata.com')
@@ -51,7 +56,7 @@ class Fixtures(Exam):
         for account in self.accounts:
             for i in range(10):
                 projects.append(
-                    Project.objects.create(account=account,
+                    Project.objects.create(account_id=account.pk,
                                            name='project %d' % i)
                 )
 
@@ -105,5 +110,5 @@ class Fixtures(Exam):
         pass
 
 
-class BaseTestCase(Fixtures, TestCase):
+class BaseTestCase(Fixtures, TransactionTestCase):
     pass
