@@ -12,6 +12,9 @@ services:
 
 before_install:
   - docker-compose up -d
+  - docker-compose run worker2 bash -c "sleep 3"
+  - docker ps
+
 
 install: pip install tox
 
