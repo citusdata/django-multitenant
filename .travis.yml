@@ -11,7 +11,7 @@ services:
   - docker
 
 before_install:
-  - docker-compose up -d
+  - docker-compose --project-name django-multitenant up -d
   - ./scripts/wait_postgres.sh localhost 5600 localhost 5601 localhost 5602
 
 
