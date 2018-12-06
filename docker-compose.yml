@@ -13,10 +13,12 @@ services:
     depends_on: { master: { condition: service_healthy } }
   worker1:
     image: 'citusdata/citus:7.5.1'
+    ports: ['5601:5432']
     labels: ['com.citusdata.role=Worker']
     depends_on: { manager: { condition: service_healthy } }
   worker2:
     image: 'citusdata/citus:7.5.1'
+    ports: ['5602:5432']
     labels: ['com.citusdata.role=Worker']
     depends_on: { manager: { condition: service_healthy } }
   healthcheck:
