@@ -5,7 +5,6 @@ python: 2.7
 env:
   - PREPARED_STATEMENTS=0
   - PREPARED_STATEMENTS=1
-  - DOCKER_COMPOSE_VERSION=1.22.0
 
 
 services:
@@ -13,7 +12,7 @@ services:
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
   - docker-compose --version
