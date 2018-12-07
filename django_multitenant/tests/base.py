@@ -84,8 +84,8 @@ class Fixtures(Exam):
                 tasks.append(
                     Task.objects.create(
                         name='task project %s %i' %(project.name, i),
-                        project=project,
-                        account=project.account))
+                        project_id=project.pk,
+                        account_id=project.account_id))
 
         return tasks
 
@@ -98,7 +98,7 @@ class Fixtures(Exam):
         for project in projects:
             for manager in project.account.managers.all():
                 project_managers.append(
-                    ProjectManager.objects.create(account=project.account,
+                    ProjectManager.objects.create(account_id=project.account_id,
                                                   project=project,
                                                   manager=manager))
         return project_managers
