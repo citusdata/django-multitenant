@@ -22,7 +22,7 @@ Tested with django 1.9 or higher.
 
 ## Usage:
 ### Changes in Models:
-1. In whichever files you want to use the library import it by just saying 
+1. In whichever files you want to use the library import it by just saying
    ```python
    import django_multitenant
    from django_multitenant import *
@@ -140,3 +140,13 @@ Tested with django 1.9 or higher.
 ## Credits
 
 This library uses similar logic of setting/getting tenant object as in [django-simple-multitenant](https://github.com/pombredanne/django-simple-multitenant). We thank the authors for their efforts.
+
+## License
+
+Copyright (C) 2018, Citus Data
+Licensed under the MIT license, see LICENSE file for details.
+
+This library contains portions of code from django-simple-multitenant:
+
+Copyright (C) 2011, Daniel Romaniuk
+Licensed under the AGPL 3.0 license, see LICENSE file for details.
