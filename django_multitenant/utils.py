@@ -36,13 +36,6 @@ def get_current_tenant():
     return getattr(_thread_locals, 'tenant', None)
 
 
-def get_current_tenant_from_request(request):
-    '''
-    Can be used in a view, if using the TenantMiddleware
-    '''
-    return request.session.tenant or get_current_tenant()
-
-
 def get_tenant_column(model_class_or_instance):
     from .models import TenantModel
 

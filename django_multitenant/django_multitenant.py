@@ -7,6 +7,7 @@ except ImportError:
     from django.utils._threading_local import local
 
 from collections import OrderedDict
+import pdb
 
 _thread_locals = local()
 logger = logging.getLogger(__name__)
@@ -113,10 +114,8 @@ class TenantForeignKey(models.ForeignKey):
     '''
     Should be used in place of models.ForeignKey for all foreign key relationships to
     subclasses of TenantModel.
-
     Adds additional clause to JOINs over this relation to include tenant_id in the JOIN
     on the TenantModel.
-
     Adds clause to forward accesses through this field to include tenant_id in the
     TenantModel lookup.
     '''
@@ -127,11 +126,9 @@ class TenantForeignKey(models.ForeignKey):
         Return an extra filter condition for related object fetching when
         user does 'instance.fieldname', that is the extra filter is used in
         the descriptor of the field.
-
         The filter should be either a dict usable in .filter(**kwargs) call or
         a Q-object. The condition will be ANDed together with the relation's
         joining columns.
-
         A parallel method is get_extra_restriction() which is used in
         JOIN and subquery conditions.
         """
@@ -153,10 +150,8 @@ class TenantForeignKey(models.ForeignKey):
         Return a pair condition used for joining and subquery pushdown. The
         condition is something that responds to as_sql(compiler, connection)
         method.
-
         Note that currently referring both the 'alias' and 'related_alias'
         will not work in some conditions, like subquery pushdown.
-
         A parallel method is get_extra_descriptor_filter() which is used in
         instance.fieldname related object fetching.
         """
@@ -213,3 +208,37 @@ def get_current_tenant():
     #     set_tenant_to_default()
     
     return getattr(_thread_locals, 'tenant', None)
+
+
+# def set_tenant_to_default():
+#     """
+#     Sets the current tenant as per BASE_TENANT_ID.
+#     """
+#     # import is done from within the function, to avoid trouble 
+#     from models import Tenant, BASE_TENANT_ID
+#     set_current_tenant( Tenant.objects.get(id=BASE_TENANT_ID) )
+    
+
+def set_current_tenant(tenant):
+    setattr(_thread_locals, 'tenant', tenant)
+
+
+class ThreadLocals(object):
+    """Middleware that gets various objects from the
+    request object and saves them in thread local storage."""
+    def process_request(self, request):
+        _thread_locals.user = getattr(request, 'user', None)
+
+        # Attempt to set tenant
+        if _thread_locals.user and not _thread_locals.user.is_anonymous():
+            try:
+                profile = _thread_locals.user.get_profile()
+                if profile:
+                    _thread_locals.tenant = getattr(profile, 'tenant', None)
+            except:
+                raise ValueError(
+                    """A User was created with no profile.  For security reasons, 
+                    we cannot allow the request to be processed any further.
+                    Try deleting this User and creating it again to ensure a 
+                    UserProfile gets attached, or link a UserProfile 
+                    to this User.""")
