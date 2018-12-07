@@ -90,6 +90,20 @@ class Fixtures(Exam):
         return tasks
 
     @fixture
+    def project_managers(self):
+        projects = self.projects
+        managers = self.managers
+        project_managers = []
+
+        for project in projects:
+            for manager in project.account.managers.all():
+                project_managers.append(
+                    ProjectManager.objects.create(account=project.account,
+                                                  project=project,
+                                                  manager=manager))
+        return project_managers
+
+    @fixture
     def subtasks(self):
         pass
 

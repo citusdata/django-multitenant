@@ -21,14 +21,16 @@ class Account(TenantModel):
 
 class Manager(TenantModel):
     name = models.CharField(max_length=255)
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE,
+                                related_name='managers')
 
     tenant_id = 'account_id'
 
 
 class Project(TenantModel):
     name = models.CharField(max_length=255)
-    account = models.ForeignKey(Account, related_name='projects', on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, related_name='projects',
+                                on_delete=models.CASCADE)
     managers = models.ManyToManyField(Manager, through='ProjectManager')
     tenant_id = 'account_id'
 
