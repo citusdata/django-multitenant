@@ -1,6 +1,9 @@
 import uuid
 
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
 
 from django_multitenant.models import TenantModel
 from django_multitenant.fields import TenantForeignKey
@@ -85,3 +88,19 @@ class Record(TenantModel):
     organization = TenantForeignKey(Organization)
 
     tenant_id = 'organization_id'
+
+
+
+class TenantNotIdModel(TenantModel):
+    tenant_column = models.IntegerField(primary_key=True, editable=False)
+    name = models.CharField(max_length=255)
+
+    tenant_id = 'tenant_column'
+
+
+
+class SomeRelatedModel(TenantModel):
+    related_tenant = models.ForeignKey(TenantNotIdModel)
+    name = models.CharField(max_length=255)
+
+    tenant_id = 'related_tenant_id'

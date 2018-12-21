@@ -70,7 +70,8 @@ class Fixtures(Exam):
         for account in self.accounts:
             for i in range(5):
                 managers.append(
-                    Manager.objects.create(name='manager %d' % i)
+                    Manager.objects.create(name='manager %d' % i,
+                                           account=account)
                 )
 
         return managers
@@ -98,7 +99,7 @@ class Fixtures(Exam):
         for project in projects:
             for manager in project.account.managers.all():
                 project_managers.append(
-                    ProjectManager.objects.create(account_id=project.account_id,
+                    ProjectManager.objects.create(account=project.account,
                                                   project=project,
                                                   manager=manager))
         return project_managers
@@ -122,6 +123,21 @@ class Fixtures(Exam):
     @fixture
     def records(self):
         pass
+
+    @fixture
+    def tenant_not_id(self):
+        tenants = []
+        for i in range(3):
+            tenant = TenantNotIdModel(tenant_column=i+1,
+                                      name='test %d' % i)
+            tenant.save()
+
+            tenants.append(tenant)
+
+            for j in range(10):
+                SomeRelatedModel.objects.create(related_tenant=tenant,
+                                                name='related %d' % j)
+        return tenants
 
 
 class BaseTestCase(Fixtures, TransactionTestCase):

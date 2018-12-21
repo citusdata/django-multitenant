@@ -1,4 +1,4 @@
-from django_multitenant.utils import set_current_tenant
+from django_multitenant.utils import set_current_tenant, unset_current_tenant
 
 from .base import BaseTestCase
 # from .models import Project, Account
@@ -14,6 +14,17 @@ class TenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), len(projects))
         set_current_tenant(account)
         self.assertEqual(Project.objects.count(), account.projects.count())
+        unset_current_tenant()
+
+
+    def test_filter_without_joins_on_tenant_id_not_pk(self):
+        from .models import TenantNotIdModel, SomeRelatedModel
+        tenants = self.tenant_not_id
+
+        self.assertEqual(SomeRelatedModel.objects.count(), 30)
+        set_current_tenant(tenants[0])
+        self.assertEqual(SomeRelatedModel.objects.count(), 10)
+        unset_current_tenant()
 
     def test_select_tenant(self):
         from .models import Project
@@ -27,11 +38,25 @@ class TenantModelTest(BaseTestCase):
                             in captured_queries.captured_queries[0]['sql'])
 
 
+    def test_select_tenant_not_id(self):
+        # Test with tenant_id not id field
+        from .models import SomeRelatedModel
+
+        tenants = self.tenant_not_id
+        some_related = SomeRelatedModel.objects.first()
+
+        # Selecting the tenant, tenant_column being tenant_id in tests_tenantnodidmodel
+        with self.assertNumQueries(1) as captured_queries:
+            tenant = some_related.related_tenant
+            self.assertTrue('"tests_tenantnotidmodel"."tenant_column" = %d' % some_related.related_tenant_id \
+                            in captured_queries.captured_queries[0]['sql'])
+
     def test_select_tenant_foreign_key(self):
         from .models import Task
         self.tasks
 
         task = Task.objects.first()
+        set_current_tenant(task.account)
 
         # Selecting task.project, account is tenant
         # To push down, account_id should be in query
@@ -40,6 +65,8 @@ class TenantModelTest(BaseTestCase):
             self.assertTrue('AND "tests_project"."account_id" = %d' % task.account_id \
                             in captured_queries.captured_queries[0]['sql'])
 
+
+        unset_current_tenant()
 
     def test_filter_select_related(self):
         from .models import Task
@@ -54,11 +81,28 @@ class TenantModelTest(BaseTestCase):
                             in captured_queries.captured_queries[0]['sql'])
 
 
+    def test_filter_select_related_not_id_field(self):
+        from .models import SomeRelatedModel
+        tenants = self.tenant_not_id
+        some_related_id = SomeRelatedModel.objects.first().pk
+        some_related_tenant_id = SomeRelatedModel.objects.first().related_tenant_id
+
+        # Test that the join clause has account_id
+        with self.assertNumQueries(1) as captured_queries:
+            related = SomeRelatedModel.objects.filter(pk=some_related_id).select_related('related_tenant').first()
+
+            self.assertEqual(related.related_tenant_id, some_related_tenant_id)
+            self.assertTrue('ON ("tests_somerelatedmodel"."related_tenant_id" = "tests_tenantnotidmodel"."tenant_column")' \
+                            in captured_queries.captured_queries[0]['sql'])
+
+
     def test_prefetch_related(self):
         from .models import Project
 
         project_managers = self.project_managers
         project_id = project_managers[0].project_id
+        account = project_managers[0].account
+        set_current_tenant(account)
 
         with self.assertNumQueries(2) as captured_queries:
             project = Project.objects.filter(pk=project_id).prefetch_related('managers').first()
@@ -67,3 +111,7 @@ class TenantModelTest(BaseTestCase):
                             in captured_queries.captured_queries[1]['sql'])
             self.assertTrue('AND ("tests_projectmanager"."account_id" = ("tests_manager"."account_id"))' \
                             in captured_queries.captured_queries[1]['sql'])
+
+
+    def test_delete_tenant_set(self):
+        pass

@@ -131,6 +131,32 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255)),
             ],
         ),
+        migrations.CreateModel(
+            name='SomeRelatedModel',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=255)),
+            ],
+            options={
+                'abstract': False,
+            },
+        ),
+        migrations.CreateModel(
+            name='TenantNotIdModel',
+            fields=[
+                ('tenant_column', models.IntegerField(primary_key=True, serialize=False)),
+                ('name', models.CharField(max_length=255)),
+            ],
+            options={
+                'abstract': False,
+            },
+        ),
+        migrations.AddField(
+            model_name='somerelatedmodel',
+            name='related_tenant',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.TenantNotIdModel'),
+        ),
+
         migrations.AddField(
             model_name='subtask',
             name='task',
