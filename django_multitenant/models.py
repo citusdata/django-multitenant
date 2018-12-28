@@ -1,20 +1,17 @@
-# flake8: noqa
 import logging
 
 from django.db import models
-
-from collections import OrderedDict
-import pdb
 
 from .patch import patch_delete_queries_to_include_tenant_ids
 from .utils import (
     set_current_tenant,
     get_current_tenant,
     get_model_by_db_table,
-    get_tenant_column,
+    get_tenant_column
 )
 
 logger = logging.getLogger(__name__)
+
 
 
 #Modified QuerySet to add suitable filters on joins.
@@ -64,21 +61,22 @@ class TenantQuerySet(models.QuerySet):
         return super(TenantQuerySet,self)._as_sql(connection)
 
 
-
 #Below is the manager related to the above class. 
-class TenantManager(TenantQuerySet.as_manager().__class__):
+class TenantManager(models.Manager):
     #Injecting tenant_id filters in the get_queryset.
     #Injects tenant_id filter on the current model for all the non-join/join queries. 
     def get_queryset(self):
+        queryset = TenantQuerySet(self.model)
+
         current_tenant = get_current_tenant()
         if current_tenant:
             current_tenant_id = getattr(current_tenant, current_tenant.tenant_id, None)
 
-            # TO CHANGE
+            # TO CHANGE: tenant_id should be set in model Meta
             kwargs = { self.model.tenant_id: current_tenant_id}
 
-            return super(TenantManager, self).get_queryset().filter(**kwargs)
-        return super(TenantManager, self).get_queryset()
+            return queryset.filter(**kwargs)
+        return queryset
 
 
 #Abstract model which all the models related to tenant inherit.
@@ -111,24 +109,3 @@ class TenantModel(models.Model):
 
     class Meta:
         abstract = True
-
-
-class ThreadLocals(object):
-    """Middleware that gets various objects from the
-    request object and saves them in thread local storage."""
-    def process_request(self, request):
-        _thread_locals.user = getattr(request, 'user', None)
-
-        # Attempt to set tenant
-        if _thread_locals.user and not _thread_locals.user.is_anonymous():
-            try:
-                profile = _thread_locals.user.get_profile()
-                if profile:
-                    _thread_locals.tenant = getattr(profile, 'tenant', None)
-            except:
-                raise ValueError(
-                    """A User was created with no profile.  For security reasons, 
-                    we cannot allow the request to be processed any further.
-                    Try deleting this User and creating it again to ensure a 
-                    UserProfile gets attached, or link a UserProfile 
-                    to this User.""")
