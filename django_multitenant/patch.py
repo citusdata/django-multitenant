@@ -13,8 +13,9 @@ def wrap_get_compiler(original_get_compiler):
         if issubclass(obj.model, TenantModel):
             current_tenant = get_current_tenant()
             if current_tenant:
-                current_tenant_column = get_tenant_column(current_model)
-                current_tenant_id = getattr(current_tenant, current_tenant_column, None)
+                current_tenant_id = getattr(current_tenant,
+                                            current_tenant.tenant_id,
+                                            None)
 
                 tenant_column = get_tenant_column(obj.model)
                 db_table = obj.model._meta.db_table

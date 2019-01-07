@@ -114,4 +114,22 @@ class TenantModelTest(BaseTestCase):
 
 
     def test_delete_tenant_set(self):
-        pass
+        from .models import Project
+        projects = self.projects
+        account = self.account_fr
+
+        self.assertEqual(Project.objects.count(), 30)
+
+        set_current_tenant(account)
+        Project.objects.all().delete()
+        unset_current_tenant()
+
+        self.assertEqual(Project.objects.count(), 20)
+
+    def test_delete_tenant_not_set(self):
+        from .models import Project
+        projects = self.projects
+
+        self.assertEqual(Project.objects.count(), 30)
+        Project.objects.all().delete()
+        self.assertEqual(Project.objects.count(), 0)
