@@ -99,17 +99,18 @@ class TenantModelMixin(object):
     #Citus requires tenant_id filters for update, hence doing this below change.
     def _do_update(self, base_qs, using, pk_val, values, update_fields, forced_update):
         current_tenant = get_current_tenant()
+
         if current_tenant:
             current_tenant_id = getattr(current_tenant, current_tenant.tenant_id, None)
 
             kwargs = { self.__class__.tenant_id: current_tenant_id}
             base_qs = base_qs.filter(**kwargs)
         else:
-            logger.warn('Attempting to update %s instance "%s" without a current tenant '
-                        'set. This may cause issues in a partitioned environment. '
-                        'Recommend calling set_current_tenant() before performing this '
-                        'operation.',
-                        self._meta.model.__name__, self)
+            logger.warning('Attempting to update %s instance "%s" without a current tenant '
+                           'set. This may cause issues in a partitioned environment. '
+                           'Recommend calling set_current_tenant() before performing this '
+                           'operation.',
+                           self._meta.model.__name__, self)
 
         return super(TenantModelMixin,self)._do_update(base_qs, using,
                                                        pk_val, values,
