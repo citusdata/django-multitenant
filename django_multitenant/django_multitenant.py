@@ -114,10 +114,8 @@ class TenantForeignKey(models.ForeignKey):
     '''
     Should be used in place of models.ForeignKey for all foreign key relationships to
     subclasses of TenantModel.
-
     Adds additional clause to JOINs over this relation to include tenant_id in the JOIN
     on the TenantModel.
-
     Adds clause to forward accesses through this field to include tenant_id in the
     TenantModel lookup.
     '''
@@ -128,11 +126,9 @@ class TenantForeignKey(models.ForeignKey):
         Return an extra filter condition for related object fetching when
         user does 'instance.fieldname', that is the extra filter is used in
         the descriptor of the field.
-
         The filter should be either a dict usable in .filter(**kwargs) call or
         a Q-object. The condition will be ANDed together with the relation's
         joining columns.
-
         A parallel method is get_extra_restriction() which is used in
         JOIN and subquery conditions.
         """
@@ -154,10 +150,8 @@ class TenantForeignKey(models.ForeignKey):
         Return a pair condition used for joining and subquery pushdown. The
         condition is something that responds to as_sql(compiler, connection)
         method.
-
         Note that currently referring both the 'alias' and 'related_alias'
         will not work in some conditions, like subquery pushdown.
-
         A parallel method is get_extra_descriptor_filter() which is used in
         instance.fieldname related object fetching.
         """

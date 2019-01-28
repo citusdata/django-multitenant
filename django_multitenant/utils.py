@@ -5,6 +5,7 @@ try:
 except ImportError:
     from django.utils._threading_local import local
 
+
 _thread_locals = local()
 
 
@@ -31,10 +32,7 @@ def get_current_tenant():
     example:
         tenant = get_current_tenant()
     """
-    tenant = getattr(_thread_locals, 'tenant', None)
-
     # tenant may not be set yet, if request user is anonymous, or has no profile,
-
     return getattr(_thread_locals, 'tenant', None)
 
 
