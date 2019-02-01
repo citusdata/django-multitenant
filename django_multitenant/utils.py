@@ -61,3 +61,7 @@ def get_tenant_field(model_class_or_instance):
 
 def set_current_tenant(tenant):
     setattr(_thread_locals, 'tenant', tenant)
+
+
+def unset_current_tenant():
+    setattr(_thread_locals, 'tenant', None)
