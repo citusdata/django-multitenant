@@ -1,3 +1,4 @@
+from django.db.utils import NotSupportedError
 from django_multitenant.utils import set_current_tenant, unset_current_tenant
 
 from .base import BaseTestCase
@@ -133,3 +134,56 @@ class TenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), 30)
         Project.objects.all().delete()
         self.assertEqual(Project.objects.count(), 0)
+
+
+    def test_create_project(self):
+        # Using save()
+        from .models import Project
+        account = self.account_fr
+
+        project = Project()
+        project.account = account
+        project.name = 'test save()'
+
+        project.save()
+
+        self.assertEqual(Project.objects.count(), 1)
+
+    def test_update_tenant_project(self):
+        from .models import Project
+        account = self.account_fr
+
+        project = Project()
+        project.account = account
+        project.name = 'test save()'
+
+        project.save()
+
+        self.assertEqual(Project.objects.count(), 1)
+
+        project.account = self.account_in
+
+        with self.assertRaises(NotSupportedError):
+            project.save()
+
+        project = Project.objects.first()
+        self.assertEqual(project.account, account)
+
+    def test_save_project(self):
+        from .models import Project
+        account = self.account_fr
+
+        project = Project()
+        project.account = account
+        project.name = 'test save()'
+        project.save()
+
+        self.assertEqual(Project.objects.count(), 1)
+
+        project.account = account
+        project.name = 'test update'
+        project.save()
+
+        project = Project.objects.first()
+        self.assertEqual(project.account, account)
+        self.assertEqual(project.name, 'test update')
