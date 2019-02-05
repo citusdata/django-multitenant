@@ -27,14 +27,15 @@ https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-
 
 
 ## Usage:
+
+In order to use this library you can either use Mixins or have your models inherit from our custom model class.
+
+
 ### Changes in Models:
-1. In whichever files you want to use the library import it by just saying
+1. In whichever files you want to use the library import it:
    ```python
-   import django_multitenant
-   from django_multitenant import *
    from django_multitenant.fields import *
    from django_multitenant.models import *
-   from django_multitenant.patch import *
    ```
 1. All models should inherit the TenantModel class.
    `Ex: class Product(TenantModel):`
@@ -56,6 +57,48 @@ https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-
       tenant_id='store_id'
       product_purchased = TenantForeignKey(Product)
   ```
+
+
+### Changes in Models using mixins:
+1. In whichever files you want to use the library import it by just saying 
+   ```python
+   from django_multitenant.mixins import *
+   ```
+1. All models should use the `TenantModelMixin` and the django `models.Model` or your customer Model class
+   `Ex: class Product(TenantModelMixin, models.Model):`
+1. Define a static variable named tenant_id and specify the tenant column using this variable.
+   `Ex: tenant_id='store_id'`
+1. All foreign keys to TenantModel subclasses should use TenantForeignKey in place of
+   models.ForeignKey
+1. A sample model implementing the above 2 steps:
+  ```python
+
+    class ProductManager(TenantManagerMixin, models.Manager):
+      pass
+
+    class Product(TenantModelMixin, models.Model):
+      store = models.ForeignKey(Store)
+      tenant_id='store_id'
+      name = models.CharField(max_length=255)
+      description = models.TextField()
+
+      objects = ProductManager()
+
+      class Meta(object):
+        unique_together = ["id", "store"]
+
+    class PurchaseManager(TenantManagerMixin, models.Manager):
+      pass
+
+    class Purchase(TenantModelMixin, models.Model):
+      store = models.ForeignKey(Store)
+      tenant_id='store_id'
+      product_purchased = TenantForeignKey(Product)
+
+      objects = PurchaseManager()
+  ```
+
+
 
 ### Automating composite foreign keys at db layer:
 1. Creating foreign keys between tenant related models using TenantForeignKey would automate adding tenant_id to reference queries (ex. product.purchases) and join queries (ex. product__name). If you want to ensure to create composite foreign keys (with tenant_id) at the db layer, you should change the database ENGINE in the settings.py to `django_multitenant.backends.postgresql`.
