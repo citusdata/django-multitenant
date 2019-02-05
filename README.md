@@ -30,8 +30,9 @@ https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-
 
 In order to use this library you can either use Mixins or have your models inherit from our custom model class.
 
-### Changes in Models using TenantModel:
-1. In whichever files you want to use the library import it by just saying 
+
+### Changes in Models:
+1. In whichever files you want to use the library import it:
    ```python
    from django_multitenant.fields import *
    from django_multitenant.models import *
@@ -155,7 +156,7 @@ In order to use this library you can either use Mixins or have your models inher
    ```
 
 ## Supported APIs:
-1. Most of the APIs under Model.objects.* except `select_related()`.
+1. Most of the APIs under Model.objects.*.
 1. Model.save() injects tenant_id for tenant inherited models.
   ```python
    s=Store.objects.all()[0]
@@ -188,3 +189,13 @@ In order to use this library you can either use Mixins or have your models inher
 ## Credits
 
 This library uses similar logic of setting/getting tenant object as in [django-simple-multitenant](https://github.com/pombredanne/django-simple-multitenant). We thank the authors for their efforts.
+
+## License
+
+Copyright (C) 2018, Citus Data
+Licensed under the MIT license, see LICENSE file for details.
+
+This library contains portions of code from django-simple-multitenant:
+
+Copyright (C) 2011, Daniel Romaniuk
+Licensed under the AGPL 3.0 license, see LICENSE file for details.
