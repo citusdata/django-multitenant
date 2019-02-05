@@ -1,6 +1,6 @@
 sudo: required
 language: python
-python: 2.7
+python: 3.6
 
 env:
   - PREPARED_STATEMENTS=0

@@ -24,6 +24,7 @@ https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-
 | 2.7           | 1.9           |
 | 2.7           | 1.10          |
 | 2.7           | 1.11          |
+| 3.6           | 2.0           |
 
 
 ## Usage:

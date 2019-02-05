@@ -16,7 +16,7 @@ class Account(TenantModel):
     name = models.CharField(max_length=255)
     domain = models.CharField(max_length=255)
     subdomain = models.CharField(max_length=255)
-    country = models.ForeignKey(Country)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
 
     # TODO change to Meta
     tenant_id = 'id'
@@ -85,7 +85,7 @@ class Organization(TenantModel):
 class Record(TenantModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    organization = TenantForeignKey(Organization)
+    organization = TenantForeignKey(Organization, on_delete=models.CASCADE)
 
     tenant_id = 'organization_id'
 
@@ -100,7 +100,7 @@ class TenantNotIdModel(TenantModel):
 
 
 class SomeRelatedModel(TenantModel):
-    related_tenant = models.ForeignKey(TenantNotIdModel)
+    related_tenant = models.ForeignKey(TenantNotIdModel, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
 
     tenant_id = 'related_tenant_id'

@@ -83,4 +83,4 @@ class TenantOneToOneField(models.OneToOneField, TenantForeignKey):
     # Override
     def __init__(self, *args, **kwargs):
         kwargs['unique'] = False
-        super(TenantForeignKey, self).__init__(*args, **kwargs)
+        super(TenantOneToOneField, self).__init__(*args, **kwargs)
