@@ -1,7 +1,7 @@
 import logging
 from django.db import models
 
-from .utils import get_current_tenant
+from .utils import get_current_tenant, get_tenant_column
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ class TenantForeignKey(models.ForeignKey):
         """
         current_tenant = get_current_tenant()
         if current_tenant:
-            return {instance.__class__.tenant_id: current_tenant.id}
+            return {instance.tenant_field: current_tenant.tenant_id_value}
         else:
             logger.warn('TenantForeignKey field %s.%s on instance "%s" '
                         'accessed without a current tenant set. '
@@ -61,8 +61,8 @@ class TenantForeignKey(models.ForeignKey):
         # Fetch tenant column names for both sides of the relation
         lhs_model = self.model
         rhs_model = self.related_model
-        lhs_tenant_id = lhs_model.tenant_id
-        rhs_tenant_id = rhs_model.tenant_id
+        lhs_tenant_id = get_tenant_column(lhs_model)
+        rhs_tenant_id = get_tenant_column(rhs_model)
 
         # Fetch tenant fields for both sides of the relation
         lhs_tenant_field = lhs_model._meta.get_field(lhs_tenant_id)

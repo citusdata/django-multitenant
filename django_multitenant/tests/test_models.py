@@ -14,6 +14,7 @@ class TenantModelTest(BaseTestCase):
 
         self.assertEqual(Project.objects.count(), len(projects))
         set_current_tenant(account)
+        test = Project.objects.count()
         self.assertEqual(Project.objects.count(), account.projects.count())
         unset_current_tenant()
 

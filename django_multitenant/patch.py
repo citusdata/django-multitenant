@@ -9,18 +9,16 @@ logger = logging.getLogger(__name__)
 def wrap_get_compiler(original_get_compiler):
 
     def get_compiler(obj, *args, **kwargs):
-        from .models import TenantModel
-        if issubclass(obj.model, TenantModel):
+        if hasattr(obj.model, 'tenant_field'):
             current_tenant = get_current_tenant()
             if current_tenant:
                 current_tenant_id = getattr(current_tenant,
-                                            current_tenant.tenant_id,
+                                            current_tenant.tenant_field,
                                             None)
 
                 tenant_column = get_tenant_column(obj.model)
                 db_table = obj.model._meta.db_table
 
-                # Bad SQL injection
                 extra_sql = ['{table}."{column}" = %s'.format(
                     table=db_table, column=tenant_column)]
 

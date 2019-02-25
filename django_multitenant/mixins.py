@@ -23,7 +23,7 @@ class TenantQuerySetMixin(object):
         current_tenant = get_current_tenant()
 
         if current_tenant:
-            current_tenant_id = getattr(current_tenant, current_tenant.tenant_id, None)
+            current_tenant_id = current_tenant.tenant_id_value
 
             extra_sql = []
             extra_params = []
@@ -35,10 +35,9 @@ class TenantQuerySetMixin(object):
                 if(v>0 and k!=current_table_name):
                     current_model=get_model_by_db_table(alias_map[k].table_name)
 
-                    if issubclass(current_model, TenantModel):
+                    if hasattr(current_model, 'tenant_field'):
                         tenant_column = get_tenant_column(current_model)
 
-                        # Bad SQL injection
                         extra_sql.append(k + '."' + tenant_column + '" = %s')
 
                         extra_params.append(current_tenant_id)
@@ -51,7 +50,7 @@ class TenantQuerySetMixin(object):
         if current_tenant:
             tenant_column = get_tenant_column(self.model)
 
-            kwargs[tenant_column] = getattr(current_tenant, current_tenant.tenant_id, None)
+            kwargs[tenant_column] = getattr(current_tenant, current_tenant.tenant_field, None)
 
         return super(TenantQuerySetMixin, self).create(*args, **kwargs)
 
@@ -77,11 +76,9 @@ class TenantManagerMixin(object):
         queryset = TenantQuerySet(self.model)
 
         current_tenant = get_current_tenant()
+        tenant_column = get_tenant_column(self.model)
         if current_tenant:
-            current_tenant_id = getattr(current_tenant, current_tenant.tenant_id, None)
-
-            # TO CHANGE: tenant_id should be set in model Meta
-            kwargs = { self.model.tenant_id: current_tenant_id}
+            kwargs = {tenant_column: current_tenant.tenant_id_value}
 
             return queryset.filter(**kwargs)
         return queryset
@@ -89,7 +86,6 @@ class TenantManagerMixin(object):
 
 class TenantModelMixin(object):
     #Abstract model which all the models related to tenant inherit.
-    tenant_id = ''
 
     def __init__(self, *args, **kwargs):
         patch_delete_queries_to_include_tenant_ids()
@@ -99,11 +95,12 @@ class TenantModelMixin(object):
     #Citus requires tenant_id filters for update, hence doing this below change.
     def _do_update(self, base_qs, using, pk_val, values, update_fields, forced_update):
         current_tenant = get_current_tenant()
+        tenant_column = get_tenant_column(self)
 
         if current_tenant:
-            current_tenant_id = getattr(current_tenant, current_tenant.tenant_id, None)
+            current_tenant_id = getattr(current_tenant, current_tenant.tenant_field, None)
 
-            kwargs = { self.__class__.tenant_id: current_tenant_id}
+            kwargs = {tenant_column: current_tenant_id}
             base_qs = base_qs.filter(**kwargs)
         else:
             logger.warning('Attempting to update %s instance "%s" without a current tenant '
@@ -116,3 +113,15 @@ class TenantModelMixin(object):
                                                        pk_val, values,
                                                        update_fields,
                                                        forced_update)
+
+
+    @property
+    def tenant_field(self):
+        if hasattr(self._meta, 'multitenant') and self._meta.multitenant:
+            return self._meta.multitenant['tenant_id']
+
+        return self.tenant_id
+
+    @property
+    def tenant_id_value(self):
+         return getattr(self, self.tenant_field, None)

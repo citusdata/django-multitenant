@@ -2,9 +2,12 @@ import uuid
 
 from django.db import models
 from django.db.models.signals import pre_save
+from django.utils.six import with_metaclass
 from django.dispatch import receiver
 
 
+from django_multitenant.mixins import TenantManagerMixin, TenantModelMixin
+from django_multitenant.meta import TenantMeta
 from django_multitenant.models import TenantModel
 from django_multitenant.fields import TenantForeignKey
 
@@ -18,7 +21,6 @@ class Account(TenantModel):
     subdomain = models.CharField(max_length=255)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
 
-    # TODO change to Meta
     tenant_id = 'id'
 
 
@@ -30,21 +32,36 @@ class Manager(TenantModel):
     tenant_id = 'account_id'
 
 
-class Project(TenantModel):
+class ProjectManager(TenantManagerMixin, models.Manager):
+    pass
+
+
+class Project(with_metaclass(TenantMeta, models.Model)):
     name = models.CharField(max_length=255)
     account = models.ForeignKey(Account, related_name='projects',
                                 on_delete=models.CASCADE)
     managers = models.ManyToManyField(Manager, through='ProjectManager')
-    tenant_id = 'account_id'
+
+    objects = ProjectManager()
 
 
-class ProjectManager(TenantModel):
+    class Meta:
+        multitenant = {
+            'tenant_id': 'account_id'
+        }
+
+
+class ProjectManagerManager(TenantModelMixin, models.Manager):
+    pass
+
+
+class ProjectManager(TenantModelMixin, models.Model):
     project = TenantForeignKey(Project, on_delete=models.CASCADE)
     manager = TenantForeignKey(Manager, on_delete=models.CASCADE)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
-
     tenant_id = 'account_id'
 
+    objects = ProjectManagerManager()
 
 
 class Task(TenantModel):
@@ -53,7 +70,11 @@ class Task(TenantModel):
                                related_name='tasks')
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
-    tenant_id = 'account_id'
+
+    class Meta:
+        multitenant = {
+            'tenant_id': 'account_id'
+        }
 
 
 class SubTask(TenantModel):
