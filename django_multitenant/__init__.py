@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-version = (1, 0, 1)
+version = (2, 0, 0)
 
 __version__ = ".".join(map(str, version))
 
