@@ -68,7 +68,7 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
         # Hack: Citus will throw the following error if these statements are
         # not executed separately: "ERROR: cannot execute multiple utility events"
         if not params:
-            for statement in sql.split(';'):
+            for statement in str(sql).split(';'):
                 if statement:
                     super(DatabaseSchemaEditor, self).execute(statement)
         else:
@@ -85,6 +85,18 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
         else:
             # here you can do fallback logic if no model with db_table found
             raise ValueError('Model {}.{} not found!'.format(app_label, model_name))
+
+
+    def _create_index_name(self, model, column_names, suffix=""):
+        # compat with django 2.X and django 1.X
+        import django
+
+        if not isinstance(model, str) and django.VERSION[0] > 1:
+            model = model._meta.db_table
+
+        return super(DatabaseSchemaEditor, self)._create_index_name(model,
+                                                                    column_names,
+                                                                    suffix=suffix)
 
 
 class DatabaseWrapper(PostgresqlDatabaseWrapper):

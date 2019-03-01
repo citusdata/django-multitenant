@@ -61,6 +61,7 @@ class SubTask(TenantModel):
     type = models.CharField(max_length=255)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     task = TenantForeignKey(Task, on_delete=models.CASCADE)
+    project = TenantForeignKey(Project, on_delete=models.CASCADE, null=True)
 
     tenant_id = 'account_id'
 
