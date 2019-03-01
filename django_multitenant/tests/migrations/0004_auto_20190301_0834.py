@@ -21,9 +21,4 @@ class Migration(migrations.Migration):
             name='account',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='projects', to='tests.Account'),
         ),
-        migrations.AlterField(
-            model_name='tenantnotidmodel',
-            name='tenant_column',
-            field=models.IntegerField(editable=False, serialize=False),
-        ),
     ]
