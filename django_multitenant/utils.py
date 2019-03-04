@@ -1,3 +1,5 @@
+import inspect
+
 from django.apps import apps
 
 try:
@@ -36,17 +38,17 @@ def get_current_tenant():
     return getattr(_thread_locals, 'tenant', None)
 
 
+
 def get_tenant_column(model_class_or_instance):
-    from .models import TenantModel
+    if inspect.isclass(model_class_or_instance):
+        model_class_or_instance = model_class_or_instance()
 
-    if issubclass(model_class_or_instance, TenantModel):
-        return model_class_or_instance.tenant_id
-
-    if isinstance(model_class_or_instance, TenantModel):
-        return model_class_or_instance.__class__.tenant_id
-
-    raise ValueError('{} is not an instance or a subclass of ' +
-                         'TenantModel'.format(model_class_or_instance.__name__))
+    try:
+        return model_class_or_instance.tenant_field
+    except:
+        raise ValueError('''%s is not an instance or a subclass of TenantModel
+                         or does not inherit from TenantMixin'''
+                         % model_class_or_instance.__class__.__name__)
 
 
 def get_tenant_field(model_class_or_instance):
