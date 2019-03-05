@@ -113,29 +113,6 @@ class TenantModelTest(BaseTestCase):
             self.assertTrue('AND ("tests_projectmanager"."account_id" = ("tests_manager"."account_id"))' \
                             in captured_queries.captured_queries[1]['sql'])
 
-
-    def test_delete_tenant_set(self):
-        from .models import Project
-        projects = self.projects
-        account = self.account_fr
-
-        self.assertEqual(Project.objects.count(), 30)
-
-        set_current_tenant(account)
-        Project.objects.all().delete()
-        unset_current_tenant()
-
-        self.assertEqual(Project.objects.count(), 20)
-
-    def test_delete_tenant_not_set(self):
-        from .models import Project
-        projects = self.projects
-
-        self.assertEqual(Project.objects.count(), 30)
-        Project.objects.all().delete()
-        self.assertEqual(Project.objects.count(), 0)
-
-
     def test_create_project(self):
         # Using save()
         from .models import Project
@@ -187,3 +164,28 @@ class TenantModelTest(BaseTestCase):
         project = Project.objects.first()
         self.assertEqual(project.account, account)
         self.assertEqual(project.name, 'test update')
+
+    def test_delete_tenant_set(self):
+        from .models import Project
+        projects = self.projects
+        account = self.account_fr
+
+        self.assertEqual(Project.objects.count(), 30)
+
+        set_current_tenant(account)
+        with self.assertNumQueries(5) as captured_queries:
+            Project.objects.all().delete()
+            unset_current_tenant()
+
+            for query in captured_queries.captured_queries:
+                self.assertTrue('"account_id" = %d' % account.id in query['sql'])
+
+        self.assertEqual(Project.objects.count(), 20)
+
+    def test_delete_tenant_not_set(self):
+        from .models import Project
+        projects = self.projects
+
+        self.assertEqual(Project.objects.count(), 30)
+        Project.objects.all().delete()
+        self.assertEqual(Project.objects.count(), 0)
