@@ -4,6 +4,8 @@ from django.db import models
 from django.db.models.sql import DeleteQuery
 from django.db.models.deletion import Collector
 
+from .deletion import related_objects
+from .query import wrap_get_compiler
 from .utils import (
     set_current_tenant,
     get_current_tenant,
@@ -87,9 +89,6 @@ class TenantModelMixin(object):
     tenant_id = ''
 
     def __init__(self, *args, **kwargs):
-        from django_multitenant.query import wrap_get_compiler
-        from django_multitenant.deletion import related_objects
-
         if not hasattr(DeleteQuery.get_compiler, "_sign"):
             DeleteQuery.get_compiler = wrap_get_compiler(DeleteQuery.get_compiler)
             Collector.related_objects = related_objects
