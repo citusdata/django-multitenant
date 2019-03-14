@@ -14,9 +14,9 @@ class Migration(migrations.Migration):
 
     operations = [
         # necessary for tests
-        # migrations.RunSQL("CREATE EXTENSION IF NOT EXISTS citus;"),
-        # migrations.RunSQL("SELECT * from master_add_node('django-multitenant_worker1_1', 5432);"),
-        # migrations.RunSQL("SELECT * from master_add_node('django-multitenant_worker2_1', 5432);"),
+        migrations.RunSQL("CREATE EXTENSION IF NOT EXISTS citus;"),
+        migrations.RunSQL("SELECT * from master_add_node('django-multitenant_worker1_1', 5432);"),
+        migrations.RunSQL("SELECT * from master_add_node('django-multitenant_worker2_1', 5432);"),
 
         # Drop constraints
         migrations.RunSQL("""
