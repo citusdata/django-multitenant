@@ -69,7 +69,7 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
         # not executed separately: "ERROR: cannot execute multiple utility events"
         if not params:
             for statement in str(sql).split(';'):
-                if statement:
+                if statement and not statement.isspace():
                     super(DatabaseSchemaEditor, self).execute(statement)
         else:
             super(DatabaseSchemaEditor, self).execute(sql, params)
