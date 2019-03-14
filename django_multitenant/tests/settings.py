@@ -8,7 +8,7 @@ BASE_PATH = os.path.normpath(
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        'ENGINE': 'django_multitenant.backends.postgresql',
         "NAME": "postgres",
         "USER": "postgres",
         "PASSWORD": "",
