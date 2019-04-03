@@ -12,9 +12,8 @@ def wrap_get_compiler(base_get_compiler):
         if current_tenant:
             try:
                 tenant_column = get_tenant_column(obj.model)
-                tenant_value = getattr(current_tenant, current_tenant.tenant_id, None)
                 obj.add_q(Q(
-                    **{tenant_column: tenant_value}
+                    **{tenant_column: current_tenant.tenant_value}
                 ))
             except ValueError:
                 pass
