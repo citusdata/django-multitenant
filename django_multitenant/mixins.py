@@ -25,7 +25,7 @@ class TenantQuerySetMixin(object):
         current_tenant = get_current_tenant()
 
         if current_tenant:
-            current_tenant_id = getattr(current_tenant, current_tenant.tenant_id, None)
+            current_tenant_id = current_tenant.tenant_value
 
             extra_sql = []
             extra_params = []
@@ -51,7 +51,7 @@ class TenantQuerySetMixin(object):
         if current_tenant:
             tenant_column = get_tenant_column(self.model)
 
-            kwargs[tenant_column] = getattr(current_tenant, current_tenant.tenant_id, None)
+            kwargs[tenant_column] = current_tenant.tenant_value
 
         return super(TenantQuerySetMixin, self).create(*args, **kwargs)
 
@@ -76,9 +76,7 @@ class TenantManagerMixin(object):
         queryset = TenantQuerySet(self.model)
         current_tenant = get_current_tenant()
         if current_tenant:
-            current_tenant_id = getattr(current_tenant, current_tenant.tenant_id, None)
-
-            kwargs = { self.model.tenant_id: current_tenant_id}
+            kwargs = { self.model.tenant_id: current_tenant.tenant_value}
 
             return queryset.filter(**kwargs)
         return queryset
@@ -102,9 +100,7 @@ class TenantModelMixin(object):
         current_tenant = get_current_tenant()
 
         if current_tenant:
-            current_tenant_id = getattr(current_tenant, current_tenant.tenant_id, None)
-
-            kwargs = { self.__class__.tenant_id: current_tenant_id}
+            kwargs = { self.__class__.tenant_id: current_tenant.tenant_value}
             base_qs = base_qs.filter(**kwargs)
         else:
             logger.warning('Attempting to update %s instance "%s" without a current tenant '
@@ -117,3 +113,11 @@ class TenantModelMixin(object):
                                                        pk_val, values,
                                                        update_fields,
                                                        forced_update)
+
+    @property
+    def tenant_field(self):
+        return self.tenant_id
+
+    @property
+    def tenant_value(self):
+        return getattr(self, self.tenant_field, None)

@@ -23,23 +23,21 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
     # Override
     def _alter_field(self, model, old_field, new_field, old_type, new_type,
                      old_db_params, new_db_params, strict=False):
-        if isinstance(old_field, TenantForeignKey):
-            if old_field.remote_field and old_field.db_constraint:
-                fk_names = self._constraint_names(model, [old_field.column, self.get_tenant_column(model)], foreign_key=True)
-                if strict and len(fk_names) != 1:
-                    raise ValueError("Found wrong number (%s) of foreign key constraints for %s.%s" % (
-                        len(fk_names),
-                        model._meta.db_table,
-                        old_field.column,
-                    ))
-                for fk_name in fk_names:
-                    logger.info('Deleting foreign key constraint "%s"' % fk_name)
-                    sql = self._delete_constraint_sql(self.sql_delete_fk, model, fk_name)
-                    for statement in sql.split(';'):
-                        self.execute(statement)
 
-        return super(DatabaseSchemaEditor, self)._alter_field(model, old_field, new_field, old_type, new_type,
-                     old_db_params, new_db_params, strict)
+        super(DatabaseSchemaEditor, self)._alter_field(model, old_field,
+                                                       new_field, old_type,
+                                                       new_type, old_db_params,
+                                                       new_db_params, strict)
+
+        # If the pkey was dropped in the previous distribute migration,
+        # foreign key constraints didn't previously exists so django does not
+        # recreated them.
+        # Here we test if we are in this case
+        if isinstance(new_field, TenantForeignKey) and new_field.db_constraint:
+            fk_names = self._constraint_names(model, [new_field.column], foreign_key=True)
+            if not fk_names:
+                self.execute(self._create_fk_sql(model, new_field,
+                                                 "_fk_%(to_table)s_%(to_column)s"))
 
     # Override
     def _create_fk_sql(self, model, field, suffix):
@@ -68,8 +66,8 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
         # Hack: Citus will throw the following error if these statements are
         # not executed separately: "ERROR: cannot execute multiple utility events"
         if not params:
-            for statement in sql.split(';'):
-                if statement:
+            for statement in str(sql).split(';'):
+                if statement and not statement.isspace():
                     super(DatabaseSchemaEditor, self).execute(statement)
         else:
             super(DatabaseSchemaEditor, self).execute(sql, params)
@@ -85,6 +83,18 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
         else:
             # here you can do fallback logic if no model with db_table found
             raise ValueError('Model {}.{} not found!'.format(app_label, model_name))
+
+
+    def _create_index_name(self, model, column_names, suffix=""):
+        # compat with django 2.X and django 1.X
+        import django
+
+        if not isinstance(model, str) and django.VERSION[0] > 1:
+            model = model._meta.db_table
+
+        return super(DatabaseSchemaEditor, self)._create_index_name(model,
+                                                                    column_names,
+                                                                    suffix=suffix)
 
 
 class DatabaseWrapper(PostgresqlDatabaseWrapper):

@@ -82,8 +82,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Account')),
-                ('manager', django_multitenant.fields.TenantForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Manager')),
-                ('project', django_multitenant.fields.TenantForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Project')),
+                ('manager', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Manager')),
+                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Project')),
             ],
             options={
                 'abstract': False,
@@ -94,7 +94,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=255)),
-                ('organization', django_multitenant.fields.TenantForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Organization')),
+                ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Organization')),
             ],
             options={
                 'abstract': False,
@@ -118,7 +118,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255)),
                 ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Account')),
-                ('project', django_multitenant.fields.TenantForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tasks', to='tests.Project')),
+                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tasks', to='tests.Project')),
             ],
             options={
                 'abstract': False,
@@ -160,7 +160,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subtask',
             name='task',
-            field=django_multitenant.fields.TenantForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Task'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Task'),
         ),
         migrations.AddField(
             model_name='project',
@@ -170,7 +170,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='aliasedtask',
             name='project_alias',
-            field=django_multitenant.fields.TenantForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Project'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Project'),
         ),
         migrations.AddField(
             model_name='account',

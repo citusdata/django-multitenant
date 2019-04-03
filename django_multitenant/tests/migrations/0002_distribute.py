@@ -19,7 +19,13 @@ class Migration(migrations.Migration):
         migrations.RunSQL("SELECT * from master_add_node('django-multitenant_worker2_1', 5432);"),
 
         # Drop constraints
-        migrations.RunSQL("ALTER TABLE tests_aliasedtask DROP CONSTRAINT tests_aliasedtask_pkey CASCADE;"),
+        migrations.RunSQL("""
+        ALTER TABLE tests_aliasedtask
+        DROP CONSTRAINT tests_aliasedtask_pkey CASCADE;
+
+        ALTER TABLE tests_aliasedtask ADD CONSTRAINT
+        tests_aliasedtask_pkey PRIMARY KEY (account_id, id);
+        """),
         migrations.RunSQL("ALTER TABLE tests_country DROP CONSTRAINT tests_country_pkey CASCADE;"),
         migrations.RunSQL("ALTER TABLE tests_manager DROP CONSTRAINT tests_manager_pkey CASCADE;"),
         migrations.RunSQL("ALTER TABLE tests_project DROP CONSTRAINT tests_project_pkey CASCADE;"),
@@ -41,7 +47,6 @@ class Migration(migrations.Migration):
         migrations.RunSQL("SELECT create_distributed_table('tests_task', 'account_id');"),
 
         # Add constraints
-        migrations.RunSQL("ALTER TABLE tests_aliasedtask ADD CONSTRAINT tests_aliasedtask_pkey PRIMARY KEY (account_id, id);"),
         migrations.RunSQL("ALTER TABLE tests_country ADD CONSTRAINT tests_country_pkey PRIMARY KEY (id);"),
         migrations.RunSQL("ALTER TABLE tests_project ADD CONSTRAINT tests_project_pkey PRIMARY KEY (account_id, id);"),
         migrations.RunSQL("ALTER TABLE tests_manager ADD CONSTRAINT tests_manager_pkey PRIMARY KEY (account_id, id);"),

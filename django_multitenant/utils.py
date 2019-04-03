@@ -43,7 +43,7 @@ def get_tenant_column(model_class_or_instance):
         model_class_or_instance = model_class_or_instance()
 
     try:
-        return model_class_or_instance.tenant_id
+        return model_class_or_instance.tenant_field
     except:
         raise ValueError('''%s is not an instance or a subclass of TenantModel
                          or does not inherit from TenantMixin'''
