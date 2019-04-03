@@ -38,7 +38,6 @@ def get_current_tenant():
     return getattr(_thread_locals, 'tenant', None)
 
 
-
 def get_tenant_column(model_class_or_instance):
     if inspect.isclass(model_class_or_instance):
         model_class_or_instance = model_class_or_instance()

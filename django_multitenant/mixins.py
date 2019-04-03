@@ -1,8 +1,11 @@
 import logging
 
 from django.db import models
+from django.db.models.sql import DeleteQuery
+from django.db.models.deletion import Collector
 
-from .patch import patch_delete_queries_to_include_tenant_ids
+from .deletion import related_objects
+from .query import wrap_get_compiler
 from .utils import (
     set_current_tenant,
     get_current_tenant,
@@ -10,13 +13,12 @@ from .utils import (
     get_tenant_column
 )
 
+
 logger = logging.getLogger(__name__)
 
 
 
 class TenantQuerySetMixin(object):
-    #Modified QuerySet to add suitable filters on joins.
-
     def add_tenant_filters_with_joins(self):
         #This is adding tenant filters for all the models in the join.
 
@@ -37,8 +39,6 @@ class TenantQuerySetMixin(object):
 
                     if issubclass(current_model, TenantModel):
                         tenant_column = get_tenant_column(current_model)
-
-                        # Bad SQL injection
                         extra_sql.append(k + '."' + tenant_column + '" = %s')
 
                         extra_params.append(current_tenant_id)
@@ -61,7 +61,6 @@ class TenantQuerySetMixin(object):
         return super(TenantQuerySetMixin,self)._as_sql(connection)
 
 
-
 class TenantQuerySet(TenantQuerySetMixin, models.QuerySet):
     #Modified QuerySet to add suitable filters on joins.
     pass
@@ -75,7 +74,6 @@ class TenantManagerMixin(object):
         #Injects tenant_id filter on the current model for all the non-join/join queries. 
 
         queryset = TenantQuerySet(self.model)
-
         current_tenant = get_current_tenant()
         if current_tenant:
             kwargs = { self.model.tenant_id: current_tenant.tenant_value}
@@ -89,12 +87,16 @@ class TenantModelMixin(object):
     tenant_id = ''
 
     def __init__(self, *args, **kwargs):
-        patch_delete_queries_to_include_tenant_ids()
+        if not hasattr(DeleteQuery.get_compiler, "_sign"):
+            DeleteQuery.get_compiler = wrap_get_compiler(DeleteQuery.get_compiler)
+            Collector.related_objects = related_objects
+
         super(TenantModelMixin, self).__init__(*args, **kwargs)
 
-    #adding tenant filters for save
-    #Citus requires tenant_id filters for update, hence doing this below change.
     def _do_update(self, base_qs, using, pk_val, values, update_fields, forced_update):
+        #adding tenant filters for save
+        #Citus requires tenant_id filters for update, hence doing this below change.
+
         current_tenant = get_current_tenant()
 
         if current_tenant:

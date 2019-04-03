@@ -6,7 +6,7 @@ from .mixins import (TenantQuerySetMixin,
                      TenantQuerySet,
                      TenantManagerMixin,
                      TenantModelMixin)
-from .patch import patch_delete_queries_to_include_tenant_ids
+
 from .utils import (
     set_current_tenant,
     get_current_tenant,
