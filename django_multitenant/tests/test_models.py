@@ -173,7 +173,7 @@ class TenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), 30)
 
         set_current_tenant(account)
-        with self.assertNumQueries(5) as captured_queries:
+        with self.assertNumQueries(6) as captured_queries:
             Project.objects.all().delete()
             unset_current_tenant()
 
