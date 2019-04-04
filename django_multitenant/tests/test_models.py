@@ -1,5 +1,4 @@
 from django.db.utils import NotSupportedError
-from django.db.models import OuterRef, Subquery
 
 from django_multitenant.utils import set_current_tenant, unset_current_tenant
 
@@ -195,8 +194,14 @@ class TenantModelTest(BaseTestCase):
 
     def test_subquery(self):
         # we want all the projects with the name of their first task
+        import django
+        if django.VERSION[1] < 11:
+            # subqueries where only introduced in django 1.11
+            return
 
+        from django.db.models import OuterRef, Subquery
         from .models import Project, Task
+
         projects = self.projects
         account = self.account_fr
         tasks = self.tasks
