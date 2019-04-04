@@ -2,9 +2,7 @@ import logging
 
 from django.db import models
 
-from .mixins import (TenantQuerySetMixin,
-                     TenantQuerySet,
-                     TenantManagerMixin,
+from .mixins import (TenantManagerMixin,
                      TenantModelMixin)
 
 from .utils import (
@@ -19,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class TenantManager(TenantManagerMixin, models.Manager):
-    #Below is the manager related to the above class. 
+    #Below is the manager related to the above class.
     pass
 
 

@@ -1,3 +1,4 @@
+from django.db import connection
 from django.test import TestCase, TransactionTestCase
 
 from exam.cases import Exam
@@ -7,6 +8,11 @@ from .models import *
 
 
 class Fixtures(Exam):
+    # @after
+    # def print_after(self):
+    #     for q in connection.queries:
+    #         print(q['sql'])
+
     @fixture
     def india(self):
         return Country.objects.create(name='India')

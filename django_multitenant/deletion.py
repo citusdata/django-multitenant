@@ -1,5 +1,4 @@
-from .utils import get_current_tenant, get_tenant_column
-
+from .utils import (get_current_tenant, get_tenant_filters)
 
 
 def related_objects(obj, related, objs):
@@ -10,9 +9,7 @@ def related_objects(obj, related, objs):
 
     if current_tenant:
         try:
-            tenant_column = get_tenant_column(related.related_model)
-            tenant_value = getattr(current_tenant, current_tenant.tenant_id, None)
-            filters[tenant_column] = tenant_value
+            filters = get_tenant_filters(related.related_model, filters)
         except ValueError:
             pass
 

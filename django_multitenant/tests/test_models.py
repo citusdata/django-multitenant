@@ -1,4 +1,6 @@
 from django.db.utils import NotSupportedError
+from django.db.models import OuterRef, Subquery
+
 from django_multitenant.utils import set_current_tenant, unset_current_tenant
 
 from .base import BaseTestCase
@@ -189,3 +191,112 @@ class TenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), 30)
         Project.objects.all().delete()
         self.assertEqual(Project.objects.count(), 0)
+
+
+    def test_subquery(self):
+        # we want all the projects with the name of their first task
+
+        from .models import Project, Task
+        projects = self.projects
+        account = self.account_fr
+        tasks = self.tasks
+
+        self.assertEqual(Project.objects.count(), 30)
+
+        set_current_tenant(account)
+        with self.assertNumQueries(1) as captured_queries:
+            task_qs = Task.objects.filter(project=OuterRef("pk")).order_by('-name')
+            projects = Project.objects.all().annotate(
+                first_task_name=Subquery(
+                    task_qs.values('name')[:1]
+                )
+            )
+            for p in projects:
+                self.assertTrue(p.first_task_name is not None)
+
+            # check that tenant in subquery
+            for query in captured_queries.captured_queries:
+                self.assertTrue('U0."account_id" = %d' % account.id in query['sql'])
+                self.assertTrue('WHERE "tests_project"."account_id" = %d' % account.id in query['sql'])
+
+        unset_current_tenant()
+
+
+
+class MultipleTenantModelTest(BaseTestCase):
+    def test_filter_without_joins(self):
+        from .models import Project, Account
+        projects = self.projects
+        accounts = Account.objects.all().order_by('id')[1:]
+        unset_current_tenant()
+
+        self.assertEqual(Project.objects.count(), 30)
+        set_current_tenant(accounts)
+        self.assertEqual(Project.objects.count(), 20)
+
+    def test_filter_without_joins_on_tenant_id_not_pk(self):
+        from .models import TenantNotIdModel, SomeRelatedModel
+        unset_current_tenant()
+        tenants = self.tenant_not_id
+
+        self.assertEqual(SomeRelatedModel.objects.count(), 30)
+        set_current_tenant([tenants[0], tenants[1]])
+        self.assertEqual(SomeRelatedModel.objects.count(), 20)
+
+    def test_select_tenant_foreign_key(self):
+        from .models import Task, Account
+        self.tasks
+        unset_current_tenant()
+
+        task = Task.objects.first()
+        accounts = [task.account, Account.objects.last()]
+        set_current_tenant(accounts)
+
+        # Selecting task.project, account is tenant
+        # To push down, account_id should be in query
+        with self.assertNumQueries(1) as captured_queries:
+            project = task.project
+            self.assertTrue('AND "tests_project"."account_id" IN (%s)' % ', '.join([str(account.id) for account in accounts]) \
+                            in captured_queries.captured_queries[0]['sql'])
+
+
+    def test_prefetch_related(self):
+        from .models import Project, Account
+
+        unset_current_tenant()
+        project_managers = self.project_managers
+        project_id = project_managers[0].project_id
+        accounts = [project_managers[0].account, Account.objects.last()]
+        set_current_tenant(accounts)
+
+        with self.assertNumQueries(2) as captured_queries:
+            project = Project.objects.filter(pk=project_id).prefetch_related('managers').first()
+
+            self.assertTrue('WHERE ("tests_manager"."account_id" IN (%s)' % ', '.join([str(account.id) for account in accounts]) \
+                            in captured_queries.captured_queries[1]['sql'])
+            self.assertTrue('AND ("tests_projectmanager"."account_id" = ("tests_manager"."account_id"))' \
+                            in captured_queries.captured_queries[1]['sql'])
+
+
+    def test_delete_tenant_set(self):
+        from .models import Project, Account
+        unset_current_tenant()
+        projects = self.projects
+        accounts = Account.objects.all().order_by('id')[1:]
+        self.assertEqual(Project.objects.count(), 30)
+
+        set_current_tenant(accounts)
+        with self.assertNumQueries(7) as captured_queries:
+            Project.objects.all().delete()
+
+            for query in captured_queries.captured_queries:
+                self.assertTrue('"account_id" IN (%s)' % ', '.join([str(account.id) for account in accounts]))
+
+        unset_current_tenant()
+        self.assertEqual(Project.objects.count(), 10)
+
+
+    def test_subquery(self):
+        # subquery don't work for multi tenants
+        # we want all the projects with the name of their first task
+        pass
