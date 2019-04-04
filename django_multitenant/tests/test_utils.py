@@ -82,7 +82,7 @@ class UtilsTest(BaseTestCase):
 
         unset_current_tenant()
 
-    def test_tenant_filters_single_tenant(self):
+    def test_tenant_filters_multi_tenant(self):
         from .models import Project, Account
 
         projects = self.projects
@@ -90,9 +90,19 @@ class UtilsTest(BaseTestCase):
         set_current_tenant(accounts)
 
         self.assertEqual(get_tenant_filters(Project),
-                         {'account_id': [accounts[0].id, accounts[1].id]})
+                         {'account_id__in': [accounts[0].id, accounts[1].id]})
 
         unset_current_tenant()
 
     def test_current_tenant_value_queryset(self):
-        pass
+        from .models import Project, Account
+
+        projects = self.projects
+        accounts = Account.objects.all().order_by('id')
+        set_current_tenant(accounts)
+
+        value = get_current_tenant_value()
+
+        self.assertEqual(get_tenant_filters(Project),
+                         {'account_id__in': list(accounts.values_list('id', flat=True))})
+        unset_current_tenant()
