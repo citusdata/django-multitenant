@@ -226,6 +226,26 @@ class TenantModelTest(BaseTestCase):
 
         unset_current_tenant()
 
+    def test_task_manager(self):
+        from .models import Task
+
+        projects = self.projects
+        account = self.account_fr
+        tasks = self.tasks
+
+        set_current_tenant(account)
+
+        self.assertEqual(len(Task.objects.closed()), 0)
+        self.assertEqual(len(Task.objects.opened()), 50)
+
+        task = Task.objects.first()
+        task.opened = False
+        task.save()
+
+        self.assertEqual(len(Task.objects.closed()), 1)
+        self.assertEqual(len(Task.objects.opened()), 49)
+
+        unset_current_tenant()
 
 
 class MultipleTenantModelTest(BaseTestCase):

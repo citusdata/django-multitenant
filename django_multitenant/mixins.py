@@ -20,12 +20,10 @@ logger = logging.getLogger(__name__)
 
 class TenantManagerMixin(object):
     #Below is the manager related to the above class.
-
     def get_queryset(self):
         #Injecting tenant_id filters in the get_queryset.
         #Injects tenant_id filter on the current model for all the non-join/join queries. 
-
-        queryset = models.QuerySet(self.model)
+        queryset = self._queryset_class(self.model)
         current_tenant = get_current_tenant()
         if current_tenant:
             kwargs = get_tenant_filters(self.model)

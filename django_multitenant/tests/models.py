@@ -5,6 +5,7 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
 
+from django_multitenant.mixins import TenantModelMixin, TenantManagerMixin
 from django_multitenant.models import TenantModel
 from django_multitenant.fields import TenantForeignKey
 
@@ -46,12 +47,32 @@ class ProjectManager(TenantModel):
     tenant_id = 'account_id'
 
 
+class TaskQueryset(models.QuerySet):
+    def opened(self):
+        return self.filter(opened=True)
 
-class Task(TenantModel):
+    def closed(self):
+        return self.filter(opened=False)
+
+
+class TaskManager(TenantManagerMixin, models.Manager):
+    _queryset_class = TaskQueryset
+
+    def opened(self):
+        return self.get_queryset().opened()
+
+    def closed(self):
+        return self.get_queryset().closed()
+
+
+class Task(TenantModelMixin, models.Model):
     name = models.CharField(max_length=255)
     project = TenantForeignKey(Project, on_delete=models.CASCADE,
                                related_name='tasks')
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    opened = models.BooleanField(default=True)
+
+    objects = TaskManager()
 
     tenant_id = 'account_id'
 
@@ -97,7 +118,6 @@ class TenantNotIdModel(TenantModel):
     name = models.CharField(max_length=255)
 
     tenant_id = 'tenant_column'
-
 
 
 class SomeRelatedModel(TenantModel):
