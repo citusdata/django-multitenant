@@ -45,7 +45,7 @@ except ImportError:
 from setuptools import setup, find_packages
 setup(
     name="django-multitenant",
-    version="2.0.2",
+    version="2.0.3",
     packages=find_packages(),
 
     #install_requires=['gevent>=1.1.1'],
