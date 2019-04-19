@@ -22,6 +22,10 @@ class Account(TenantModel):
     # TODO change to Meta
     tenant_id = 'id'
 
+    def __str__(self):
+        return "{}".format(self.name)
+
+
 
 class Manager(TenantModel):
     name = models.CharField(max_length=255)
@@ -38,6 +42,9 @@ class Project(TenantModel):
     managers = models.ManyToManyField(Manager, through='ProjectManager')
     tenant_id = 'account_id'
 
+    def __str__(self):
+        return "{} ({})".format(self.name, self.account)
+
 
 class ProjectManager(TenantModel):
     project = TenantForeignKey(Project, on_delete=models.CASCADE)
@@ -45,6 +52,7 @@ class ProjectManager(TenantModel):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
     tenant_id = 'account_id'
+
 
 
 class TaskQueryset(models.QuerySet):
@@ -75,6 +83,10 @@ class Task(TenantModelMixin, models.Model):
     objects = TaskManager()
 
     tenant_id = 'account_id'
+
+
+    def __str__(self):
+        return "{} ({})".format(self.name, self.project)
 
 
 class SubTask(TenantModel):

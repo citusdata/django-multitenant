@@ -4,3 +4,9 @@ test:
 
 dev-dependencies:
 	pip install -r requirements/test.txt
+
+
+
+release:
+	python setup.py sdist
+	twine upload --skip-existing dist/*

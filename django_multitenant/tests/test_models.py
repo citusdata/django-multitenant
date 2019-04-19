@@ -248,6 +248,30 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
 
+    def test_str_model_tenant_set(self):
+        from .models import Task
+
+        projects = self.projects
+        account = self.account_fr
+        tasks = self.tasks
+
+        set_current_tenant(account)
+
+        print(Task.objects.first())
+
+        unset_current_tenant()
+
+
+    def test_str_model_tenant_not_set(self):
+        from .models import Task
+
+        projects = self.projects
+        account = self.account_fr
+        tasks = self.tasks
+
+        print(Task.objects.first())
+
+
 class MultipleTenantModelTest(BaseTestCase):
     def test_filter_without_joins(self):
         from .models import Project, Account

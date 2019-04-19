@@ -32,16 +32,17 @@ class TenantForeignKey(models.ForeignKey):
         A parallel method is get_extra_restriction() which is used in
         JOIN and subquery conditions.
         """
+
         current_tenant = get_current_tenant()
         if current_tenant:
             return get_tenant_filters(instance)
         else:
-            logger.warn('TenantForeignKey field %s.%s on instance "%s" '
+            logger.warn('TenantForeignKey field %s.%s'
                         'accessed without a current tenant set. '
                         'This may cause issues in a partitioned environment. '
                         'Recommend calling set_current_tenant() before accessing '
                         'this field.',
-                        self.model.__name__, self.name, instance)
+                        self.model.__name__, self.name)
             return super(TenantForeignKey, self).get_extra_descriptor_filter(instance)
 
     # Override
