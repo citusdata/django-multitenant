@@ -11,7 +11,7 @@ from collections import OrderedDict
 # file kept for compatibility with old version of the library
 
 from .fields import TenantForeignKey, TenantOneToOneField
-from .models import TenantManager, TenantModel, TenantQuerySet
+from .models import TenantManager, TenantModel
 from .thread import ThreadLocals
 from .utils import (get_current_user, get_model_by_db_table,
                     get_current_tenant, set_current_tenant)
