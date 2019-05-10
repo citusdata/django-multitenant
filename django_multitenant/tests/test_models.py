@@ -127,6 +127,23 @@ class TenantModelTest(BaseTestCase):
 
         self.assertEqual(Project.objects.count(), 1)
 
+    def test_create_project_tenant_set(self):
+        # Using save()
+        from .models import Project
+        account = self.account_fr
+
+        set_current_tenant(account)
+        project = Project()
+        project.name = 'test save()'
+        project.save()
+
+        self.assertEqual(Project.objects.count(), 1)
+
+        Project.objects.create(name='test create')
+        self.assertEqual(Project.objects.count(), 2)
+
+        unset_current_tenant()
+
     def test_update_tenant_project(self):
         from .models import Project
         account = self.account_fr
@@ -275,13 +292,15 @@ class TenantModelTest(BaseTestCase):
 class MultipleTenantModelTest(BaseTestCase):
     def test_filter_without_joins(self):
         from .models import Project, Account
+        unset_current_tenant()
         projects = self.projects
         accounts = Account.objects.all().order_by('id')[1:]
-        unset_current_tenant()
 
         self.assertEqual(Project.objects.count(), 30)
         set_current_tenant(accounts)
         self.assertEqual(Project.objects.count(), 20)
+
+        unset_current_tenant()
 
     def test_filter_without_joins_on_tenant_id_not_pk(self):
         from .models import TenantNotIdModel, SomeRelatedModel
@@ -292,10 +311,12 @@ class MultipleTenantModelTest(BaseTestCase):
         set_current_tenant([tenants[0], tenants[1]])
         self.assertEqual(SomeRelatedModel.objects.count(), 20)
 
+        unset_current_tenant()
+
     def test_select_tenant_foreign_key(self):
         from .models import Task, Account
-        self.tasks
         unset_current_tenant()
+        self.tasks
 
         task = Task.objects.first()
         accounts = [task.account, Account.objects.last()]
@@ -308,10 +329,11 @@ class MultipleTenantModelTest(BaseTestCase):
             self.assertTrue('AND "tests_project"."account_id" IN (%s)' % ', '.join([str(account.id) for account in accounts]) \
                             in captured_queries.captured_queries[0]['sql'])
 
+        unset_current_tenant()
+
 
     def test_prefetch_related(self):
         from .models import Project, Account
-
         unset_current_tenant()
         project_managers = self.project_managers
         project_id = project_managers[0].project_id
@@ -326,6 +348,7 @@ class MultipleTenantModelTest(BaseTestCase):
             self.assertTrue('AND ("tests_projectmanager"."account_id" = ("tests_manager"."account_id"))' \
                             in captured_queries.captured_queries[1]['sql'])
 
+        unset_current_tenant()
 
     def test_delete_tenant_set(self):
         from .models import Project, Account

@@ -9,6 +9,7 @@ from .query import wrap_get_compiler
 from .utils import (
     set_current_tenant,
     get_current_tenant,
+    get_current_tenant_value,
     get_model_by_db_table,
     get_tenant_column,
     get_tenant_filters
@@ -62,6 +63,13 @@ class TenantModelMixin(object):
                                                        pk_val, values,
                                                        update_fields,
                                                        forced_update)
+
+    def save(self, *args, **kwargs):
+        tenant_value = get_current_tenant_value()
+        if not self.pk and tenant_value and not isinstance(tenant_value, list):
+            setattr(self, self.tenant_field, tenant_value)
+
+        return super(TenantModelMixin, self).save(*args, **kwargs)
 
     @property
     def tenant_field(self):
