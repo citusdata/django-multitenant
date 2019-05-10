@@ -243,6 +243,43 @@ class TenantModelTest(BaseTestCase):
 
         unset_current_tenant()
 
+
+    def test_subquery_joins(self):
+        # we want all the projects with the name of their first task
+        import django
+        if django.VERSION[1] < 11:
+            # subqueries where only introduced in django 1.11
+            return
+
+        from django.db.models import OuterRef, Subquery
+        from .models import Project, SubTask
+
+        projects = self.projects
+        account = self.account_fr
+        subtasks = self.subtasks
+
+        self.assertEqual(Project.objects.count(), 30)
+
+        set_current_tenant(account)
+        with self.assertNumQueries(1) as captured_queries:
+            subtask_qs = SubTask.objects.filter(project=OuterRef("pk"), task__opened=True).order_by('-name')
+            projects = Project.objects.all().annotate(
+                first_subtask_name=Subquery(
+                    subtask_qs.values('name')[:1]
+                )
+            )
+            for p in projects:
+                self.assertTrue(p.first_subtask_name is not None)
+
+            # check that tenant in subquery
+            for query in captured_queries.captured_queries:
+                self.assertTrue('U0."account_id" = %d' % account.id in query['sql'])
+                self.assertTrue('(U0."task_id" = U3."id" AND (U0."account_id" = (U3."account_id")' in query['sql'])
+                self.assertTrue('WHERE "tests_project"."account_id" = %d' % account.id in query['sql'])
+
+        unset_current_tenant()
+
+
     def test_task_manager(self):
         from .models import Task
 

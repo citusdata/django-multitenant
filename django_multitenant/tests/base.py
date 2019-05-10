@@ -112,7 +112,20 @@ class Fixtures(Exam):
 
     @fixture
     def subtasks(self):
-        pass
+        subtasks = []
+
+        for task in self.tasks:
+            for i in range(5):
+                subtasks.append(
+                    SubTask.objects.create(
+                        name='subtask project %i, task %i',
+                        type='test',
+                        account=task.account,
+                        project=task.project,
+                        task=task)
+                )
+
+        return subtasks
 
     @fixture
     def unscoped(self):
