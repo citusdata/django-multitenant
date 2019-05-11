@@ -1,7 +1,7 @@
 import logging
 from django.db import models
 
-from .utils import get_current_tenant
+from .utils import get_current_tenant, get_tenant_column, get_tenant_filters
 
 logger = logging.getLogger(__name__)
 
@@ -32,16 +32,17 @@ class TenantForeignKey(models.ForeignKey):
         A parallel method is get_extra_restriction() which is used in
         JOIN and subquery conditions.
         """
+
         current_tenant = get_current_tenant()
         if current_tenant:
-            return {instance.__class__.tenant_id: current_tenant.id}
+            return get_tenant_filters(instance)
         else:
-            logger.warn('TenantForeignKey field %s.%s on instance "%s" '
+            logger.warn('TenantForeignKey field %s.%s'
                         'accessed without a current tenant set. '
                         'This may cause issues in a partitioned environment. '
                         'Recommend calling set_current_tenant() before accessing '
                         'this field.',
-                        self.model.__name__, self.name, instance)
+                        self.model.__name__, self.name)
             return super(TenantForeignKey, self).get_extra_descriptor_filter(instance)
 
     # Override
@@ -61,8 +62,8 @@ class TenantForeignKey(models.ForeignKey):
         # Fetch tenant column names for both sides of the relation
         lhs_model = self.model
         rhs_model = self.related_model
-        lhs_tenant_id = lhs_model.tenant_id
-        rhs_tenant_id = rhs_model.tenant_id
+        lhs_tenant_id = get_tenant_column(lhs_model)
+        rhs_tenant_id = get_tenant_column(rhs_model)
 
         # Fetch tenant fields for both sides of the relation
         lhs_tenant_field = lhs_model._meta.get_field(lhs_tenant_id)

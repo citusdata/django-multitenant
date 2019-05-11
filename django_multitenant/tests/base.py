@@ -1,3 +1,4 @@
+from django.db import connection
 from django.test import TestCase, TransactionTestCase
 
 from exam.cases import Exam
@@ -7,6 +8,11 @@ from .models import *
 
 
 class Fixtures(Exam):
+    # @after
+    # def print_after(self):
+    #     for q in connection.queries:
+    #         print(q['sql'])
+
     @fixture
     def india(self):
         return Country.objects.create(name='India')
@@ -106,7 +112,20 @@ class Fixtures(Exam):
 
     @fixture
     def subtasks(self):
-        pass
+        subtasks = []
+
+        for task in self.tasks:
+            for i in range(5):
+                subtasks.append(
+                    SubTask.objects.create(
+                        name='subtask project %i, task %i',
+                        type='test',
+                        account_id=task.account_id,
+                        project_id=task.project_id,
+                        task=task)
+                )
+
+        return subtasks
 
     @fixture
     def unscoped(self):

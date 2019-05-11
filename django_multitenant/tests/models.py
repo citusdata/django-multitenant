@@ -5,6 +5,7 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
 
+from django_multitenant.mixins import TenantModelMixin, TenantManagerMixin
 from django_multitenant.models import TenantModel
 from django_multitenant.fields import TenantForeignKey
 
@@ -20,6 +21,10 @@ class Account(TenantModel):
 
     # TODO change to Meta
     tenant_id = 'id'
+
+    def __str__(self):
+        return "{}".format(self.name)
+
 
 
 class Manager(TenantModel):
@@ -37,6 +42,9 @@ class Project(TenantModel):
     managers = models.ManyToManyField(Manager, through='ProjectManager')
     tenant_id = 'account_id'
 
+    def __str__(self):
+        return "{} ({})".format(self.name, self.account)
+
 
 class ProjectManager(TenantModel):
     project = TenantForeignKey(Project, on_delete=models.CASCADE)
@@ -47,13 +55,38 @@ class ProjectManager(TenantModel):
 
 
 
-class Task(TenantModel):
+class TaskQueryset(models.QuerySet):
+    def opened(self):
+        return self.filter(opened=True)
+
+    def closed(self):
+        return self.filter(opened=False)
+
+
+class TaskManager(TenantManagerMixin, models.Manager):
+    _queryset_class = TaskQueryset
+
+    def opened(self):
+        return self.get_queryset().opened()
+
+    def closed(self):
+        return self.get_queryset().closed()
+
+
+class Task(TenantModelMixin, models.Model):
     name = models.CharField(max_length=255)
     project = TenantForeignKey(Project, on_delete=models.CASCADE,
                                related_name='tasks')
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    opened = models.BooleanField(default=True)
+
+    objects = TaskManager()
 
     tenant_id = 'account_id'
+
+
+    def __str__(self):
+        return "{} ({})".format(self.name, self.project)
 
 
 class SubTask(TenantModel):
@@ -97,7 +130,6 @@ class TenantNotIdModel(TenantModel):
     name = models.CharField(max_length=255)
 
     tenant_id = 'tenant_column'
-
 
 
 class SomeRelatedModel(TenantModel):

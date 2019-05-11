@@ -19,6 +19,7 @@ def get_current_user():
     """
     return getattr(_thread_locals, 'user', None)
 
+
 def get_model_by_db_table(db_table):
     for model in apps.get_models():
         if model._meta.db_table == db_table:
@@ -27,6 +28,7 @@ def get_model_by_db_table(db_table):
         # here you can do fallback logic if no model with db_table found
         raise ValueError('No model found with db_table {}!'.format(db_table))
         # or return None
+
 
 def get_current_tenant():
     """
@@ -58,6 +60,38 @@ def get_tenant_field(model_class_or_instance):
     except StopIteration:
         raise ValueError('No field found in {} with column name "{}"'.format(
                          model_class_or_instance, tenant_column))
+
+
+def get_current_tenant_value():
+    current_tenant = get_current_tenant()
+    if not current_tenant:
+        return None
+
+    try:
+        current_tenant = list(current_tenant)
+    except TypeError:
+        return current_tenant.tenant_value
+
+    values = []
+    for t in current_tenant:
+        values.append(t.tenant_value)
+    return values
+
+
+def get_tenant_filters(table, filters=None):
+    filters = filters or {}
+
+    current_tenant_value = get_current_tenant_value()
+
+    if not current_tenant_value:
+        return filters
+
+    if isinstance(current_tenant_value, list):
+        filters['%s__in' % get_tenant_column(table)] = current_tenant_value
+    else:
+        filters[get_tenant_column(table)] = current_tenant_value
+
+    return filters
 
 
 def set_current_tenant(tenant):

@@ -1,7 +1,7 @@
 from django.db.models.sql.subqueries import DeleteQuery
 from django.db.models import Q
 
-from .utils import get_current_tenant, get_tenant_column
+from .utils import get_current_tenant, get_tenant_column, get_tenant_filters
 
 
 def wrap_get_compiler(base_get_compiler):
@@ -11,9 +11,9 @@ def wrap_get_compiler(base_get_compiler):
 
         if current_tenant:
             try:
-                tenant_column = get_tenant_column(obj.model)
+                filters = get_tenant_filters(obj.model)
                 obj.add_q(Q(
-                    **{tenant_column: current_tenant.tenant_value}
+                    **filters
                 ))
             except ValueError:
                 pass
