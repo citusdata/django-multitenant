@@ -212,7 +212,7 @@ class TenantModelTest(BaseTestCase):
     def test_subquery(self):
         # we want all the projects with the name of their first task
         import django
-        if django.VERSION[1] < 11:
+        if django.VERSION[0] == 1 and django.VERSION[1] < 11:
             # subqueries where only introduced in django 1.11
             return
 
@@ -247,7 +247,7 @@ class TenantModelTest(BaseTestCase):
     def test_subquery_joins(self):
         # we want all the projects with the name of their first task
         import django
-        if django.VERSION[1] < 11:
+        if django.VERSION[0] == 1 and django.VERSION[1] < 11:
             # subqueries where only introduced in django 1.11
             return
 
