@@ -120,8 +120,8 @@ class Fixtures(Exam):
                     SubTask.objects.create(
                         name='subtask project %i, task %i',
                         type='test',
-                        account=task.account,
-                        project=task.project,
+                        account_id=task.account_id,
+                        project_id=task.project_id,
                         task=task)
                 )
 
