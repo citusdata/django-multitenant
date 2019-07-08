@@ -6,8 +6,25 @@ from .utils import get_current_tenant, get_tenant_column, get_tenant_filters
 logger = logging.getLogger(__name__)
 
 
+class TenantIDFieldMixin:
+    """
+    Since migrations shouldn't import the models they depend on,
+    and we need Model.tenant_id to figure out how to create our composite constraints for sharding,
+    store tenant_id on the field itself and add it to the migrations.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.tenant_id = kwargs.pop("tenant_id", None)
+        super().__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super().deconstruct()
+        kwargs["tenant_id"] = self.tenant_id
+        return name, path, args, kwargs
+
+
 class TenantForeignKey(models.ForeignKey):
-    '''
+    """
     Should be used in place of models.ForeignKey for all foreign key relationships to
     subclasses of TenantModel.
 
@@ -16,7 +33,7 @@ class TenantForeignKey(models.ForeignKey):
 
     Adds clause to forward accesses through this field to include tenant_id in the
     TenantModel lookup.
-    '''
+    """
 
     # Override
     def get_extra_descriptor_filter(self, instance):
@@ -37,12 +54,15 @@ class TenantForeignKey(models.ForeignKey):
         if current_tenant:
             return get_tenant_filters(instance)
         else:
-            logger.warn('TenantForeignKey field %s.%s'
-                        'accessed without a current tenant set. '
-                        'This may cause issues in a partitioned environment. '
-                        'Recommend calling set_current_tenant() before accessing '
-                        'this field.',
-                        self.model.__name__, self.name)
+            logger.warn(
+                "TenantForeignKey field %s.%s"
+                "accessed without a current tenant set. "
+                "This may cause issues in a partitioned environment. "
+                "Recommend calling set_current_tenant() before accessing "
+                "this field.",
+                self.model.__name__,
+                self.name,
+            )
             return super(TenantForeignKey, self).get_extra_descriptor_filter(instance)
 
     # Override
@@ -74,14 +94,30 @@ class TenantForeignKey(models.ForeignKey):
         lookup_rhs = rhs_tenant_field.get_col(alias)
 
         # Create "AND lhs.tenant_id = rhs.tenant_id" as a new condition
-        lookup = lhs_tenant_field.get_lookup('exact')(lookup_lhs, lookup_rhs)
+        lookup = lhs_tenant_field.get_lookup("exact")(lookup_lhs, lookup_rhs)
         condition = where_class()
-        condition.add(lookup, 'AND')
+        condition.add(lookup, "AND")
         return condition
 
+    def _check_unique_target(self):
+        # Disable "<field> must set unique=True because it is referenced by a foreign key." error (ID fields.E311),
+        # as we can't enforce that with composite keys.
+        return []
 
-class TenantOneToOneField(models.OneToOneField, TenantForeignKey):
+
+class TenantOneToOneField(models.OneToOneField, TenantIDFieldMixin, TenantForeignKey):
     # Override
     def __init__(self, *args, **kwargs):
-        kwargs['unique'] = False
+        kwargs["unique"] = False
         super(TenantOneToOneField, self).__init__(*args, **kwargs)
+
+
+class TenantPrimaryKey(TenantIDFieldMixin, models.AutoField):
+    def __init__(self, *args, **kwargs):
+        kwargs["primary_key"] = True
+        super().__init__(*args, **kwargs)
+
+    def _check_primary_key(self):
+        # Disable "AutoFields must set primary_key=True" error (ID fields.E100),
+        # as we can't enforce that with composite keys.
+        return []

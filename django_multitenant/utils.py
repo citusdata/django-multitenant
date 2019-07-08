@@ -17,7 +17,7 @@ def get_current_user():
     logged in user, even if the request object is not in scope.  The best way to do this is
     by storing the user object in middleware while processing the request.
     """
-    return getattr(_thread_locals, 'user', None)
+    return getattr(_thread_locals, "user", None)
 
 
 def get_model_by_db_table(db_table):
@@ -26,7 +26,7 @@ def get_model_by_db_table(db_table):
             return model
     else:
         # here you can do fallback logic if no model with db_table found
-        raise ValueError('No model found with db_table {}!'.format(db_table))
+        raise ValueError("No model found with db_table {}!".format(db_table))
         # or return None
 
 
@@ -37,7 +37,7 @@ def get_current_tenant():
         tenant = get_current_tenant()
     """
     # tenant may not be set yet, if request user is anonymous, or has no profile,
-    return getattr(_thread_locals, 'tenant', None)
+    return getattr(_thread_locals, "tenant", None)
 
 
 def get_tenant_column(model_class_or_instance):
@@ -47,19 +47,20 @@ def get_tenant_column(model_class_or_instance):
     try:
         return model_class_or_instance.tenant_field
     except:
-        raise ValueError('''%s is not an instance or a subclass of TenantModel
-                         or does not inherit from TenantMixin'''
-                         % model_class_or_instance.__class__.__name__)
+        raise ValueError(
+            """%s is not an instance or a subclass of TenantModel
+                         or does not inherit from TenantMixin"""
+            % model_class_or_instance.__class__.__name__
+        )
 
 
 def get_tenant_field(model_class_or_instance):
-    tenant_column = get_tenant_column(model_class_or_instance)
-    all_fields = model_class_or_instance._meta.fields
-    try:
-        return next(field for field in all_fields if field.column == tenant_column)
-    except StopIteration:
-        raise ValueError('No field found in {} with column name "{}"'.format(
-                         model_class_or_instance, tenant_column))
+    from .fields import TenantPrimaryKey
+
+    for field in model_class_or_instance._meta.fields:
+        if isinstance(field, TenantPrimaryKey):
+            return field.tenant_id
+    raise ValueError(f"{model_class_or_instance} has no TenantPrimaryKey")
 
 
 def get_current_tenant_value():
@@ -87,7 +88,7 @@ def get_tenant_filters(table, filters=None):
         return filters
 
     if isinstance(current_tenant_value, list):
-        filters['%s__in' % get_tenant_column(table)] = current_tenant_value
+        filters["%s__in" % get_tenant_column(table)] = current_tenant_value
     else:
         filters[get_tenant_column(table)] = current_tenant_value
 
@@ -95,8 +96,8 @@ def get_tenant_filters(table, filters=None):
 
 
 def set_current_tenant(tenant):
-    setattr(_thread_locals, 'tenant', tenant)
+    setattr(_thread_locals, "tenant", tenant)
 
 
 def unset_current_tenant():
-    setattr(_thread_locals, 'tenant', None)
+    setattr(_thread_locals, "tenant", None)
