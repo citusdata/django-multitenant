@@ -1,4 +1,5 @@
 import logging
+import sys
 from django.conf import settings
 from django.db import connections
 from django.db.backends.postgresql.base import (
