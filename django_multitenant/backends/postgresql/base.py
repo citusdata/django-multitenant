@@ -25,7 +25,6 @@ logger = logging.getLogger(__name__)
 class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
     # Override
     def __enter__(self, *args, **kwargs):
-        self.table_distribution_sql = []
         self.composite_constraints_sql = []
         ret = super(DatabaseSchemaEditor, self).__enter__()
         return ret
@@ -116,18 +115,34 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
             if isinstance(field, TenantPrimaryKey):
                 quoted_tenant_column = self.quote_name(field.tenant_id)
                 constraint_name = self.quote_name(f"{table_name}_pkey")
-                self.composite_constraints_sql.extend(
-                    [
-                        f"""
-                    ---
-                    --- Add composite primary key to {table_name}
-                    ---
-                    ALTER TABLE {quoted_table_name}
-                    ADD CONSTRAINT {constraint_name}
-                    PRIMARY KEY ({quoted_tenant_column}, id)
-                    """
-                    ]
-                )
+
+                if field.tenant_id == "id":
+                    # This is a root distributed table
+                    self.composite_constraints_sql.extend(
+                        [
+                            f"""
+                        ---
+                        --- Add primary key to {table_name}
+                        ---
+                        ALTER TABLE {quoted_table_name}
+                        ADD CONSTRAINT {constraint_name}
+                        PRIMARY KEY (id)
+                        """
+                        ]
+                    )
+                else:
+                    self.composite_constraints_sql.extend(
+                        [
+                            f"""
+                        ---
+                        --- Add composite primary key to {table_name}
+                        ---
+                        ALTER TABLE {quoted_table_name}
+                        ADD CONSTRAINT {constraint_name}
+                        PRIMARY KEY ({quoted_tenant_column}, id)
+                        """
+                        ]
+                    )
             elif isinstance(field, TenantOneToOneField):
                 tenant_column = field.tenant_id
                 quoted_tenant_column = self.quote_name(tenant_column)
@@ -152,28 +167,20 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
                 )
 
         if issubclass(model, TenantModelMixin):
-            if table_name == "core_brand":
-                # Brand is distributed, but has no TenantPrimaryKey, as it is the model the other tenants are based on.
-                distribution_column_name = "id"
-            else:
-                distribution_column_name = get_tenant_field(model)
-            self.table_distribution_sql.extend(
-                [
-                    f"""
+            distribution_column_name = get_tenant_field(model)
+            self.execute(
+                f"""
                 ---
                 --- Register {table_name} as a distributed (sharded) table
                 ---
                 SELECT CREATE_DISTRIBUTED_TABLE('{table_name}', '{distribution_column_name}');
                 """
-                ]
             )
 
     def __exit__(self, exc_type, exc_value, traceback):
         # We need to ensure our tables are distributed correctly before we try to apply constraints,
         # as otherwise we'd end up trying to apply constraints between distributed and local tables, which is invalid.
         if exc_type is None:
-            for sql in self.table_distribution_sql:
-                self.execute(sql)
             for sql in self.composite_constraints_sql:
                 self.execute(sql)
         return super().__exit__(exc_type, exc_value, traceback)
