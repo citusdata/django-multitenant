@@ -41,20 +41,6 @@ def get_current_tenant():
 
 
 def get_tenant_column(model_class_or_instance):
-    if inspect.isclass(model_class_or_instance):
-        model_class_or_instance = model_class_or_instance()
-
-    try:
-        return model_class_or_instance.tenant_field
-    except:
-        raise ValueError(
-            """%s is not an instance or a subclass of TenantModel
-                         or does not inherit from TenantMixin"""
-            % model_class_or_instance.__class__.__name__
-        )
-
-
-def get_tenant_field(model_class_or_instance):
     from .fields import TenantPrimaryKey
 
     for field in model_class_or_instance._meta.fields:

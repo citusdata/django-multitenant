@@ -16,7 +16,7 @@ from django_multitenant.mixins import TenantModelMixin
 from django_multitenant.utils import (
     get_model_by_db_table,
     get_tenant_column,
-    get_tenant_field,
+    get_tenant_column,
 )
 
 logger = logging.getLogger(__name__)
@@ -167,7 +167,7 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
                 )
 
         if issubclass(model, TenantModelMixin):
-            distribution_column_name = get_tenant_field(model)
+            distribution_column_name = get_tenant_column(model)
             self.execute(
                 f"""
                 ---
