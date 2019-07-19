@@ -1,5 +1,5 @@
 psycopg2
-Django==1.11.20
+Django==1.11.22
 tox
 pytest
 pytest-cov
