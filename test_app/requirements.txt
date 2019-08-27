@@ -1,7 +1,0 @@
-Django==1.11.22
-django-money==0.9.1
-django-simple-multitenant==0.1.0
-psycopg2==2.6.2
-py-moneyed==0.6.0
-django-extensions==1.7.6
-bpython==0.16
