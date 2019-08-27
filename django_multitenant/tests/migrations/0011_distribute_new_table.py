@@ -7,6 +7,8 @@ import django.db.models.deletion
 import django_multitenant.fields
 import django_multitenant.mixins
 
+from django_multitenant.db import migrations as tenant_migrations
+
 
 class Migration(migrations.Migration):
 
@@ -17,6 +19,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunSQL("ALTER TABLE tests_tempmodel DROP CONSTRAINT tests_tempmodel_pkey CASCADE;"),
         migrations.RunSQL("ALTER TABLE tests_tempmodel ADD CONSTRAINT tests_tempmodel_pkey PRIMARY KEY (account_id, id);"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_tempmodel', 'account_id');"),
+        tenant_migrations.Distribute('TempModel'),
 
     ]

@@ -4,9 +4,11 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
+from django_multitenant.db import migrations as tenant_migrations
 
 
 class Migration(migrations.Migration):
+    atomic = False
 
     dependencies = [
         ('tests', '0001_initial'),
@@ -35,16 +37,16 @@ class Migration(migrations.Migration):
         migrations.RunSQL("ALTER TABLE tests_task DROP CONSTRAINT tests_task_pkey CASCADE;"),
 
         # distribute
-        migrations.RunSQL("SELECT create_reference_table('tests_country');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_account', 'id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_aliasedtask', 'account_id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_manager', 'account_id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_organization', 'id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_project', 'account_id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_projectmanager', 'account_id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_record', 'organization_id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_subtask', 'account_id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_task', 'account_id');"),
+        tenant_migrations.Distribute('Country', reference=True),
+        tenant_migrations.Distribute('Account'),
+        tenant_migrations.Distribute('AliasedTask'),
+        tenant_migrations.Distribute('Manager'),
+        tenant_migrations.Distribute('Organization'),
+        tenant_migrations.Distribute('Project'),
+        tenant_migrations.Distribute('ProjectManager'),
+        tenant_migrations.Distribute('Record'),
+        tenant_migrations.Distribute('SubTask'),
+        tenant_migrations.Distribute('Task'),
 
         # Add constraints
         migrations.RunSQL("ALTER TABLE tests_country ADD CONSTRAINT tests_country_pkey PRIMARY KEY (id);"),
