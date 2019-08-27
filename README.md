@@ -1,4 +1,4 @@
-# django-multitenant [![Build Status](https://travis-ci.org/citusdata/django-multitenant.svg?branch=unit-test)](https://travis-ci.org/citusdata/django-multitenant)
+# django-multitenant [![Build Status](https://travis-ci.org/citusdata/django-multitenant.svg?branch=master)](https://travis-ci.org/citusdata/django-multitenant)
 Python/Django support for distributed multi-tenant databases like Postgres+Citus
 
 Enables easy scale-out by adding the tenant context to your queries, enabling the database (e.g. Citus) to efficiently route queries to the right database node.
