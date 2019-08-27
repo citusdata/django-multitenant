@@ -28,6 +28,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='tempmodel',
             name='account',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Account'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Account', db_constraint=False),
         ),
     ]

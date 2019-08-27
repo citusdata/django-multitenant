@@ -5,6 +5,8 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import django.db.models.deletion
 
+from django_multitenant.db import migrations as tenant_migrations
+
 
 class Migration(migrations.Migration):
 
@@ -16,8 +18,8 @@ class Migration(migrations.Migration):
         migrations.RunSQL("ALTER TABLE tests_tenantnotidmodel DROP CONSTRAINT tests_tenantnotidmodel_pkey CASCADE;"),
         migrations.RunSQL("ALTER TABLE tests_somerelatedmodel DROP CONSTRAINT tests_somerelatedmodel_pkey CASCADE;"),
 
-        migrations.RunSQL("SELECT create_distributed_table('tests_tenantnotidmodel', 'tenant_column');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_somerelatedmodel', 'related_tenant_id');"),
+        tenant_migrations.Distribute('TenantNotIdModel'),
+        tenant_migrations.Distribute('SomeRelatedModel'),
 
         migrations.RunSQL("ALTER TABLE tests_somerelatedmodel ADD CONSTRAINT tests_somerelatedmodel_pkey PRIMARY KEY (related_tenant_id, id);"),
         migrations.RunSQL("ALTER TABLE tests_tenantnotidmodel ADD CONSTRAINT tests_tenantnotidmodel_pkey PRIMARY KEY (tenant_column);")
