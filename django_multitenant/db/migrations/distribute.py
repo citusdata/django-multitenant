@@ -12,9 +12,9 @@ class Distribute(Operation):
 
     def get_query(self):
         if self.reference:
-            self.query = "SELECT create_reference_table(%s)"
-        else:
-            self.query = "SELECT create_distributed_table(%s, %s)"
+            return "SELECT create_reference_table(%s)"
+
+        return "SELECT create_distributed_table(%s, %s)"
 
     def state_forwards(self, app_label, state):
         # Distribute objects have no state effect.
