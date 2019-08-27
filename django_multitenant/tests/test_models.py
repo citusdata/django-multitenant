@@ -1,3 +1,5 @@
+import re
+
 from django.db.utils import NotSupportedError
 
 from django_multitenant.utils import set_current_tenant, unset_current_tenant
@@ -274,7 +276,9 @@ class TenantModelTest(BaseTestCase):
             # check that tenant in subquery
             for query in captured_queries.captured_queries:
                 self.assertTrue('U0."account_id" = %d' % account.id in query['sql'])
-                self.assertTrue('(U0."task_id" = U3."id" AND (U0."account_id" = (U3."account_id")' in query['sql'])
+
+                pattern = '\(U0."task_id" = U\d."id" AND \(U0."account_id" = \(U\d."account_id"\)'
+                self.assertTrue(bool(re.search(pattern, query['sql'])))
                 self.assertTrue('WHERE "tests_project"."account_id" = %d' % account.id in query['sql'])
 
         unset_current_tenant()
