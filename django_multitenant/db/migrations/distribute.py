@@ -1,6 +1,7 @@
 from django.apps.registry import apps as global_apps
 from django.db import connection
 from django.db.migrations.operations.base import Operation
+from django.db.migrations.state import _get_app_label_and_model_name
 
 from django_multitenant.utils import get_tenant_column
 
@@ -21,6 +22,12 @@ class Distribute(Operation):
         pass
 
     def database_forwards(self, app_label, schema_editor, from_state, to_state):
+        # The following step is necessary because if we distribute a table from a different app
+        # than the one in which the migrations/00XX_distribute.py is, we need to load the different
+        # app to get the model
+        new_app_label, self.model_name = _get_app_label_and_model_name(self.model_name)
+        app_label = new_app_label or app_label
+
         # Using the current state of the migration, it retrieves a class '__fake__.ModelName'
         # As it's using the state, if the model has been deleted since, it will still find the model
         # This will fail if it's trying to find a model that never existed
