@@ -77,6 +77,7 @@ class MigrationTest(TransactionTestCase):
             operation.database_forwards("tests", editor, project_state, new_state)
 
         self.assertTableIsDistributed('tests_migrationtestmodel', 'id')
+        self.undistribute_table('tests_migrationtestmodel')
 
     def test_reference_table(self):
         project_state = ProjectState(real_apps=['tests'])
@@ -90,6 +91,7 @@ class MigrationTest(TransactionTestCase):
             operation.database_forwards("tests", editor, project_state, new_state)
 
         self.assertTableIsReference('tests_migrationtestreferencemodel')
+        self.undistribute_table('tests_migrationtestreferencemodel')
 
     def test_reference_different_app_table(self):
         project_state = ProjectState(real_apps=['auth'])
