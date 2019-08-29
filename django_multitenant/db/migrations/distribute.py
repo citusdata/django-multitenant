@@ -56,3 +56,6 @@ class Distribute(Operation):
             self.args.append(get_tenant_column(self.model))
 
         schema_editor.execute(self.get_query(), params=self.args)
+
+    def describe(self):
+        return "Run create_(distributed/reference)_table statement"

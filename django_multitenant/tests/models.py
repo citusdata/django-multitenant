@@ -137,3 +137,12 @@ class SomeRelatedModel(TenantModel):
     name = models.CharField(max_length=255)
 
     tenant_id = 'related_tenant_id'
+
+
+class MigrationTestModel(TenantModel):
+    name = models.CharField(max_length=255)
+    tenant_id = 'id'
+
+
+class MigrationTestReferenceModel(models.Model):
+    name = models.CharField(max_length=255)
