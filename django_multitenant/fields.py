@@ -37,7 +37,7 @@ class TenantForeignKey(models.ForeignKey):
         if current_tenant:
             return get_tenant_filters(instance)
         else:
-            logger.warn('TenantForeignKey field %s.%s'
+            logger.warn('TenantForeignKey field %s.%s '
                         'accessed without a current tenant set. '
                         'This may cause issues in a partitioned environment. '
                         'Recommend calling set_current_tenant() before accessing '
