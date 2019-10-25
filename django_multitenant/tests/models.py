@@ -47,7 +47,8 @@ class Project(TenantModel):
 
 
 class ProjectManager(TenantModel):
-    project = TenantForeignKey(Project, on_delete=models.CASCADE)
+    project = TenantForeignKey(Project, on_delete=models.CASCADE,
+                               related_name='projectmanagers')
     manager = TenantForeignKey(Manager, on_delete=models.CASCADE)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
 

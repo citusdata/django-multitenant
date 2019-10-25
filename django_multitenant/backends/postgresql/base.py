@@ -35,7 +35,14 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
         # recreated them.
         # Here we test if we are in this case
         if isinstance(new_field, TenantForeignKey) and new_field.db_constraint:
-            fk_names = self._constraint_names(model, [new_field.column], foreign_key=True)
+            from_model = get_model_by_db_table(model._meta.db_table)
+            fk_names = (self._constraint_names(model,
+                                               [new_field.column],
+                                               foreign_key=True) +
+                        self._constraint_names(model,
+                                               [new_field.column,
+                                                get_tenant_column(from_model)],
+                                               foreign_key=True))
             if not fk_names:
                 self.execute(self._create_fk_sql(model, new_field,
                                                  "_fk_%(to_table)s_%(to_column)s"))
