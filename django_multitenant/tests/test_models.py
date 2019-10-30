@@ -5,7 +5,6 @@ from django.db.utils import NotSupportedError
 from django_multitenant.utils import set_current_tenant, unset_current_tenant
 
 from .base import BaseTestCase
-# from .models import Project, Account
 
 
 
@@ -328,6 +327,41 @@ class TenantModelTest(BaseTestCase):
         tasks = self.tasks
 
         print(Task.objects.first())
+
+    def test_exclude_tenant_set(self):
+        from .models import Task
+        projects = self.projects
+        account_fr = self.account_fr
+        tasks = self.tasks
+
+        unset_current_tenant()
+        set_current_tenant(account_fr)
+
+        tasks = Task.objects.exclude(project__isnull=True)
+
+        self.assertEqual(tasks.count(), 50)
+
+        unset_current_tenant()
+
+    def test_exclude_tenant_not_set(self):
+        from .models import Task
+        projects = self.projects
+        account_fr = self.account_fr
+        tasks = self.tasks
+
+        tasks = Task.objects.exclude(project__isnull=True)
+        self.assertEqual(tasks.count(), 150)
+
+    def test_exclude_related(self):
+        from .models import Project, Manager, ProjectManager
+        project = self.projects[0]
+        project_managers = self.project_managers
+        account = project.account
+        manager = Manager.objects.create(name='Louise', account=account)
+        ProjectManager.objects.create(account=account, project=project, manager=manager)
+
+        excluded = Project.objects.exclude(projectmanagers__manager__name='Louise')
+        self.assertEqual(excluded.count(), 29)
 
 
 class MultipleTenantModelTest(BaseTestCase):
