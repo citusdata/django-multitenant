@@ -1,5 +1,6 @@
 import re
 
+from django.db.models import Count
 from django.db.utils import NotSupportedError
 
 from django_multitenant.utils import set_current_tenant, unset_current_tenant
@@ -413,3 +414,11 @@ class MultipleTenantModelTest(BaseTestCase):
         # subquery don't work for multi tenants
         # we want all the projects with the name of their first task
         pass
+
+    def test_aggregate(self):
+        from .models import *
+        projects = self.projects
+        managers = self.project_managers
+        unset_current_tenant()
+        projects_per_manager = ProjectManager.objects.annotate(Count('project_id'))
+        list(projects_per_manager)
