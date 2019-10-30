@@ -1,6 +1,7 @@
 import logging
 from django.apps import apps
 from django.db.backends.postgresql.base import (
+    DatabaseFeatures as PostgresqlDatabaseFeatures,
     DatabaseWrapper as PostgresqlDatabaseWrapper,
     DatabaseSchemaEditor as PostgresqlDatabaseSchemaEditor,
     DatabaseCreation,
@@ -101,7 +102,13 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
                                                                     column_names,
                                                                     suffix=suffix)
 
+class DatabaseFeatures(PostgresqlDatabaseFeatures):
+    # The default Django behaviour is to collapse the fields to just the 'id' field
+    # This doesn't work because we're using a composite primary key.
+    allows_group_by_selected_pks = False
+
 
 class DatabaseWrapper(PostgresqlDatabaseWrapper):
     # Override
     SchemaEditorClass = DatabaseSchemaEditor
+    features_class = DatabaseFeatures
