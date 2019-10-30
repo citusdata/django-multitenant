@@ -413,3 +413,9 @@ class MultipleTenantModelTest(BaseTestCase):
         # subquery don't work for multi tenants
         # we want all the projects with the name of their first task
         pass
+
+    def test_issue_54(self):
+        from .models import *
+        projects = self.projects
+        excluded = Project.objects.exclude(projectmanagers__manager__name='Manager 1')
+        self.assertEqual(excluded.count(), 10)

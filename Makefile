@@ -1,5 +1,5 @@
 test:
-	@(py.test -s django_multitenant/tests/ -k 'not concurrency')	
+	@(python -m pytest django_multitenant/tests/ -k 'not concurrency')
 
 
 dev-dependencies:
