@@ -46,6 +46,12 @@ In order to use this library you can either use Mixins or have your models inher
    models.ForeignKey
 1. A sample model implementing the above 2 steps:
   ```python
+    class Store(TenantModel):
+      tenant_id = 'id'
+      name =  models.CharField(max_length=50)
+      address = models.CharField(max_length=255)
+      email = models.CharField(max_length=50)
+
     class Product(TenantModel):
       store = models.ForeignKey(Store)
       tenant_id='store_id'
