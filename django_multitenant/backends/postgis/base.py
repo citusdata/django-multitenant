@@ -11,14 +11,14 @@ logger = logging.getLogger(__name__)
 class PostGISSchemaEditor(BasePostGISSchemaEditor):
     # Override
     def __enter__(self):
-        ret = super(DatabaseSchemaEditor, self).__enter__()
+        ret = super(PostGISSchemaEditor, self).__enter__()
         return ret
 
     # Override
     def _alter_field(self, model, old_field, new_field, old_type, new_type,
                      old_db_params, new_db_params, strict=False):
 
-        super(DatabaseSchemaEditor, self)._alter_field(model, old_field,
+        super(PostGISSchemaEditor, self)._alter_field(model, old_field,
                                                        new_field, old_type,
                                                        new_type, old_db_params,
                                                        new_db_params, strict)
@@ -67,7 +67,7 @@ class PostGISSchemaEditor(BasePostGISSchemaEditor):
                 "to_column": ', '.join([self.quote_name(to_col) for to_col in to_columns]),
                 "deferrable": self.connection.ops.deferrable_sql(),
             }
-        return super(DatabaseSchemaEditor, self)._create_fk_sql(model, field, suffix)
+        return super(PostGISSchemaEditor, self)._create_fk_sql(model, field, suffix)
 
     # Override
     def execute(self, sql, params=()):
@@ -76,9 +76,9 @@ class PostGISSchemaEditor(BasePostGISSchemaEditor):
         if sql and not params:
             for statement in str(sql).split(';'):
                 if statement and not statement.isspace():
-                    super(DatabaseSchemaEditor, self).execute(statement)
+                    super(PostGISSchemaEditor, self).execute(statement)
         elif sql:
-            super(DatabaseSchemaEditor, self).execute(sql, params)
+            super(PostGISSchemaEditor, self).execute(sql, params)
 
 
     def _create_index_name(self, model, column_names, suffix=""):
@@ -88,7 +88,7 @@ class PostGISSchemaEditor(BasePostGISSchemaEditor):
         if not isinstance(model, str) and django.VERSION[0] > 1:
             model = model._meta.db_table
 
-        return super(DatabaseSchemaEditor, self)._create_index_name(model,
+        return super(PostGISSchemaEditor, self)._create_index_name(model,
                                                                     column_names,
                                                                     suffix=suffix)
 
