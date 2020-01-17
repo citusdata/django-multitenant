@@ -136,12 +136,8 @@ class Fixtures(Exam):
         pass
 
     @fixture
-    def organizations(self):
-        pass
-
-    @fixture
-    def records(self):
-        pass
+    def organization(self):
+        return Organization.objects.create(name='organization')
 
     @fixture
     def tenant_not_id(self):

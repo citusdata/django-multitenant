@@ -447,3 +447,21 @@ class MultipleTenantModelTest(BaseTestCase):
         # subquery don't work for multi tenants
         # we want all the projects with the name of their first task
         pass
+
+
+    def test_uuid_create(self):
+        from .models import Record
+        organization = self.organization
+        set_current_tenant(organization)
+        record = Record.objects.create(name='record1')
+        self.assertEqual(record.organization_id, organization.id)
+
+    def test_uuid_save(self):
+        from .models import Record
+        organization = self.organization
+        set_current_tenant(organization)
+        record = Record(name='record1')
+        record.save()
+
+        record = Record.objects.first()
+        self.assertEqual(record.organization_id, organization.id)
