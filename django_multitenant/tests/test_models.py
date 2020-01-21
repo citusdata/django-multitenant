@@ -80,7 +80,7 @@ class TenantModelTest(BaseTestCase):
             task = Task.objects.filter(pk=task_id).select_related('project').first()
 
             self.assertEqual(task.account_id, task.project.account_id)
-            pattern = 'INNER JOIN "tests_project" ON \("tests_task"."project_id" = "tests_project"."id" AND \("tests_task"."account_id" = ."tests_project"."account_id"\)\)'
+            pattern = 'INNER JOIN "tests_project" ON \("tests_task"."project_id" = "tests_project"."id" AND \("tests_task"."account_id" = .?"tests_project"."account_id"\)\)'
             self.assertTrue(bool(re.search(pattern, captured_queries.captured_queries[0]['sql'])))
 
     def test_filter_select_related_not_id_field(self):
@@ -111,7 +111,7 @@ class TenantModelTest(BaseTestCase):
 
             self.assertTrue('WHERE ("tests_manager"."account_id" = %d' % project.account_id \
                             in captured_queries.captured_queries[1]['sql'])
-            pattern = 'AND \("tests_projectmanager"."account_id" = ."tests_manager"."account_id"\)'
+            pattern = 'AND \("tests_projectmanager"."account_id" = .?"tests_manager"."account_id"\)'
             self.assertTrue(bool(re.search(pattern, captured_queries.captured_queries[1]['sql'])))
 
     def test_create_project(self):
@@ -275,7 +275,7 @@ class TenantModelTest(BaseTestCase):
             for query in captured_queries.captured_queries:
                 self.assertTrue('U0."account_id" = %d' % account.id in query['sql'])
 
-                pattern = '\(U0."task_id" = U\d."id" AND \(U0."account_id" = .U\d."account_id"\)'
+                pattern = '\(U0."task_id" = U\d."id" AND \(U0."account_id" = .?U\d."account_id"\)'
                 self.assertTrue(bool(re.search(pattern, query['sql'])))
                 self.assertTrue('WHERE "tests_project"."account_id" = %d' % account.id in query['sql'])
 
@@ -420,7 +420,7 @@ class MultipleTenantModelTest(BaseTestCase):
             self.assertTrue('WHERE ("tests_manager"."account_id" IN (%s)' % ', '.join([str(account.id) for account in accounts]) \
                             in captured_queries.captured_queries[1]['sql'])
 
-            pattern = 'AND \("tests_projectmanager"."account_id" = ."tests_manager"."account_id"\)'
+            pattern = 'AND \("tests_projectmanager"."account_id" = .?"tests_manager"."account_id"\)'
             self.assertTrue(bool(re.search(pattern, captured_queries.captured_queries[1]['sql'])))
 
         unset_current_tenant()
