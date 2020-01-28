@@ -13,6 +13,7 @@ from django_multitenant.fields import TenantForeignKey
 class Country(models.Model):
     name = models.CharField(max_length=255)
 
+
 class Account(TenantModel):
     name = models.CharField(max_length=255)
     domain = models.CharField(max_length=255)
@@ -25,6 +26,29 @@ class Account(TenantModel):
     def __str__(self):
         return "{}".format(self.name)
 
+
+class Employee(models.Model):
+    account = models.ForeignKey(Account,
+                                on_delete=models.CASCADE,
+                                null=True,
+                                blank=True,
+                                related_name='employees')
+    created_by = models.ForeignKey('self',
+                                   blank=True,
+                                   null=True,
+                                   related_name='users_created',
+                                   on_delete=models.SET_NULL)
+    name = models.CharField(max_length=255)
+
+
+class ModelConfig(TenantModel):
+    name = models.CharField(max_length=255)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE,
+                                related_name='configs')
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE,
+                                 related_name='configs')
+
+    tenant_id = 'account_id'
 
 
 class Manager(TenantModel):
