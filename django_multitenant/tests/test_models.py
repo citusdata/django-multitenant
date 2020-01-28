@@ -447,3 +447,25 @@ class MultipleTenantModelTest(BaseTestCase):
         # subquery don't work for multi tenants
         # we want all the projects with the name of their first task
         pass
+
+    def test_delete_cascade_reference(self):
+        from .models import Country, Account
+        unset_current_tenant()
+
+        country = self.france
+        account1 = Account.objects.create(name='Account FR',
+                                          country=country,
+                                          subdomain='fr.',
+                                          domain='citusdata.com')
+
+        account2 = Account.objects.create(name='Account FR 2',
+                                          country=country,
+                                          subdomain='fr.',
+                                          domain='msft.com')
+
+        self.assertEqual(Account.objects.count(), 2)
+
+        country.delete()
+
+        self.assertEqual(Account.objects.count(), 0)
+        self.assertEqual(Country.objects.count(), 0)
