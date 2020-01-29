@@ -3,16 +3,16 @@ version: '2.1'
 services:
   master:
     container_name: "${COMPOSE_PROJECT_NAME:-citus}_master"
-    image: 'citusdata/citus:9.1.1'
+    image: 'citusdata/citus:9.0.1'
     ports: ['5600:5432']
     labels: ['com.citusdata.role=Master']
   worker1:
-    image: 'citusdata/citus:9.1.1'
+    image: 'citusdata/citus:9.0.1'
     ports: ['5601:5432']
     labels: ['com.citusdata.role=Worker']
     depends_on: { manager: { condition: service_healthy } }
   worker2:
-    image: 'citusdata/citus:9.1.1'
+    image: 'citusdata/citus:9.0.1'
     ports: ['5602:5432']
     labels: ['com.citusdata.role=Worker']
     depends_on: { manager: { condition: service_healthy } }
