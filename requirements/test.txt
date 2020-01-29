@@ -5,3 +5,4 @@ pytest
 pytest-cov
 pytest-django
 exam
+ipdb
