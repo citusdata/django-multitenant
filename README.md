@@ -21,11 +21,10 @@ https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-
 
 | Python        | Django        |
 | ------------- | -------------:|
+| 2.7           | 1.9           |
+| 2.7           | 1.10          |
 | 2.7           | 1.11          |
-| 3.X           | 2.0           |
-| 3.X           | 2.1           |
-| 3.X           | 2.2           |
-| 3.X           | 3.0           |
+| 3.6           | 2.0           |
 
 
 ## Usage:
