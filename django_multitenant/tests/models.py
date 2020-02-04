@@ -19,11 +19,6 @@ class Account(TenantModel):
     domain = models.CharField(max_length=255)
     subdomain = models.CharField(max_length=255)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
-    employee = models.ForeignKey('Employee', on_delete=models.CASCADE,
-                                 related_name='accounts',
-                                 null=True,
-                                 blank=True)
-
 
     # TODO change to Meta
     tenant_id = 'id'
@@ -43,7 +38,6 @@ class Employee(models.Model):
                                    null=True,
                                    related_name='users_created',
                                    on_delete=models.SET_NULL)
-
     name = models.CharField(max_length=255)
 
 
@@ -52,9 +46,7 @@ class ModelConfig(TenantModel):
     account = models.ForeignKey(Account, on_delete=models.CASCADE,
                                 related_name='configs')
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,
-                                 related_name='configs',
-                                 null=True,
-                                 blank=True)
+                                 related_name='configs')
 
     tenant_id = 'account_id'
 
@@ -63,6 +55,7 @@ class Manager(TenantModel):
     name = models.CharField(max_length=255)
     account = models.ForeignKey(Account, on_delete=models.CASCADE,
                                 related_name='managers')
+
     tenant_id = 'account_id'
 
 
@@ -71,10 +64,6 @@ class Project(TenantModel):
     account = models.ForeignKey(Account, related_name='projects',
                                 on_delete=models.CASCADE)
     managers = models.ManyToManyField(Manager, through='ProjectManager')
-    employee = models.ForeignKey(Employee, related_name='projects',
-                                 on_delete=models.SET_NULL,
-                                 null=True,
-                                 blank=True)
     tenant_id = 'account_id'
 
     def __str__(self):

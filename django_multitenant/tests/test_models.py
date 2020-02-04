@@ -472,7 +472,7 @@ class MultipleTenantModelTest(BaseTestCase):
 
 
     def test_delete_cascade_distributed_to_reference(self):
-        from .models import Account, Employee, ModelConfig, Project
+        from .models import Account, Employee, ModelConfig
         unset_current_tenant()
 
         account = self.account_fr
@@ -480,29 +480,16 @@ class MultipleTenantModelTest(BaseTestCase):
         modelconfig = ModelConfig.objects.create(account=account,
                                                  employee=employee,
                                                  name='test')
-        projects = self.projects
 
-
-        for project in projects:
-            if project.account == account:
-                project.employee = employee
-                project.save(update_fields=['employee'])
-
-        account.employee = employee
-        account.save()
-
-        self.assertEqual(Account.objects.count(), 3)
+        self.assertEqual(Account.objects.count(), 1)
         self.assertEqual(Employee.objects.count(), 1)
         self.assertEqual(ModelConfig.objects.count(), 1)
-        self.assertEqual(Project.objects.count(), 30)
 
         set_current_tenant(account)
-        account.delete()
 
-        # Once deleted, we don't have a current tenant
-        self.assertEqual(Account.objects.count(), 2)
+        account.delete()
+        self.assertEqual(Account.objects.count(), 0)
         self.assertEqual(Employee.objects.count(), 0)
         self.assertEqual(ModelConfig.objects.count(), 0)
-        self.assertEqual(Project.objects.count(), 20)
 
         unset_current_tenant()
