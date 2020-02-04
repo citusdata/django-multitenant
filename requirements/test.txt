@@ -1,5 +1,5 @@
 psycopg2
-Django<3
+Django
 tox
 pytest
 pytest-cov

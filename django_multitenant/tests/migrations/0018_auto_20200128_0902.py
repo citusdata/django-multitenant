@@ -9,8 +9,6 @@ from django_multitenant.db import migrations as tenant_migrations
 
 class Migration(migrations.Migration):
 
-    atomic = False
-
     dependencies = [
         ('tests', '0017_auto_20200128_0853'),
     ]

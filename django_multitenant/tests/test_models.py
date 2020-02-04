@@ -477,9 +477,10 @@ class MultipleTenantModelTest(BaseTestCase):
 
         account = self.account_fr
         employee = Employee.objects.create(account=account, name='Louise')
-        modelconfig = ModelConfig.objects.create(account=account,
-                                                 employee=employee,
-                                                 name='test')
+        modelconfig = ModelConfig.objects.creatte(account=account,
+                                                  employee=employee,
+                                                  name='test')
+
 
         self.assertEqual(Account.objects.count(), 1)
         self.assertEqual(Employee.objects.count(), 1)
