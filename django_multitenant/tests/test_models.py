@@ -448,7 +448,7 @@ class MultipleTenantModelTest(BaseTestCase):
         # we want all the projects with the name of their first task
         pass
 
-    def test_delete_cascade_reference_to_distributed(self):
+    def test_delete_cascade_reference(self):
         from .models import Country, Account
         unset_current_tenant()
 
@@ -469,28 +469,3 @@ class MultipleTenantModelTest(BaseTestCase):
 
         self.assertEqual(Account.objects.count(), 0)
         self.assertEqual(Country.objects.count(), 0)
-
-
-    def test_delete_cascade_distributed_to_reference(self):
-        from .models import Account, Employee, ModelConfig
-        unset_current_tenant()
-
-        account = self.account_fr
-        employee = Employee.objects.create(account=account, name='Louise')
-        modelconfig = ModelConfig.objects.creatte(account=account,
-                                                  employee=employee,
-                                                  name='test')
-
-
-        self.assertEqual(Account.objects.count(), 1)
-        self.assertEqual(Employee.objects.count(), 1)
-        self.assertEqual(ModelConfig.objects.count(), 1)
-
-        set_current_tenant(account)
-
-        account.delete()
-        self.assertEqual(Account.objects.count(), 0)
-        self.assertEqual(Employee.objects.count(), 0)
-        self.assertEqual(ModelConfig.objects.count(), 0)
-
-        unset_current_tenant()

@@ -2,8 +2,6 @@
 import os
 import django
 
-print('test')
-
 BASE_PATH = os.path.normpath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
 )
@@ -23,6 +21,25 @@ DATABASES = {
     }
 }
 
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": "citus",
+#         "USER": "citus",
+#         "PASSWORD": "GB7TYh-6ITjhmpOu2uClOQ",
+#         "HOST": "c.fpt7dawylvzhhdmd2uitsoaoqpq.db.citusdata.com",
+#         "PORT": 5432,
+#         'OPTIONS': {
+#             'sslmode': 'require',
+#         },
+#         "TEST": {
+#             "NAME": "citus",
+#             "SERIALIZE": False
+#         }
+#     }
+# }
+
 SITE_ID = 1
 DEBUG = True
 
@@ -36,12 +53,8 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 )
 
-
-MIDDLEWARE = MIDDLEWARE_CLASSES
-
 INSTALLED_APPS = [
     "django.contrib.admin",
-    "django.contrib.messages",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -53,21 +66,3 @@ INSTALLED_APPS = [
 SECRET_KEY = "blabla"
 
 ROOT_URLCONF = "django_multitenant.tests.urls"
-
-
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
