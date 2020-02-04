@@ -87,12 +87,15 @@ class Fixtures(Exam):
         tasks = []
 
         for project in self.projects:
+            previous_task = None
             for i in range(5):
-                tasks.append(
-                    Task.objects.create(
-                        name='task project %s %i' %(project.name, i),
-                        project_id=project.pk,
-                        account_id=project.account_id))
+                previous_task = Task.objects.create(
+                    name='task project %s %i' %(project.name, i),
+                    project_id=project.pk,
+                    account_id=project.account_id,
+                    parent=previous_task)
+
+                tasks.append(previous_task)
 
         return tasks
 
