@@ -1,11 +1,11 @@
 import re
 
+from django.conf import settings
 from django.db.utils import NotSupportedError
 
 from django_multitenant.utils import set_current_tenant, unset_current_tenant
 
 from .base import BaseTestCase
-
 
 
 class TenantModelTest(BaseTestCase):
@@ -145,6 +145,9 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_update_tenant_project(self):
+        if not settings.USE_CITUS:
+            return
+
         from .models import Project
         account = self.account_fr
 

@@ -2,17 +2,13 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
+from django.conf import settings
 import django_multitenant.fields
 
 from django_multitenant.db import migrations as tenant_migrations
 
 
-class Migration(migrations.Migration):
-
-    dependencies = [
-        ('tests', '0016_auto_20191025_0844'),
-    ]
-
+def get_operations():
     operations = [
         migrations.CreateModel(
             name='Employee',
@@ -23,6 +19,17 @@ class Migration(migrations.Migration):
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='users_created', to='tests.Employee')),
             ],
         ),
-
-        tenant_migrations.Distribute('Employee', reference=True),
     ]
+
+    if settings.USE_CITUS:
+        operations += [tenant_migrations.Distribute('Employee', reference=True),]
+
+    return operations
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('tests', '0016_auto_20191025_0844'),
+    ]
+
+    operations = get_operations()
