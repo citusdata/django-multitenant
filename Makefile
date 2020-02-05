@@ -1,5 +1,6 @@
 test:
-	@(py.test -s django_multitenant/tests/ -k 'not concurrency')	
+	DJANGO_SETTINGS_MODULE=django_multitenant.tests.settings py.test -s django_multitenant/tests/ -k 'not concurrency'
+	DJANGO_SETTINGS_MODULE=django_multitenant.tests.single_node_settings py.test -s django_multitenant/tests/ -k 'not concurrency'
 
 
 dev-dependencies:

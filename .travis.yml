@@ -6,7 +6,6 @@ env:
   - PREPARED_STATEMENTS=0
   - PREPARED_STATEMENTS=1
 
-
 services:
   - docker
 
@@ -23,5 +22,4 @@ before_install:
 install: pip install tox
 
 script:
-  - DJANGO_SETTINGS_MODULE=django_multitenant.tests.single_node_settings tox
-  - DJANGO_SETTINGS_MODULE=django_multitenant.tests.settings tox
+  - tox
