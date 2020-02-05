@@ -23,5 +23,5 @@ before_install:
 install: pip install tox
 
 script:
-  - tox -- --settings=django_multitenant.tests.single_node_settings
-  - tox
+  - DJANGO_SETTINGS_MODULE=django_multitenant.tests.single_node_settings tox
+  - DJANGO_SETTINGS_MODULE=django_multitenant.tests.settings tox
