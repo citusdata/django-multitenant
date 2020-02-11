@@ -116,6 +116,9 @@ class Task(TenantModelMixin, models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     opened = models.BooleanField(default=True)
 
+    parent = TenantForeignKey('self', on_delete=models.CASCADE, db_index=False,
+                              blank=True, null=True)
+
     objects = TaskManager()
 
     tenant_id = 'account_id'

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
+    "django.contrib.messages",
     "django.contrib.sites",
     "django_multitenant",
     "django_multitenant.tests",
@@ -52,7 +53,6 @@ INSTALLED_APPS = [
 SECRET_KEY = "blabla"
 
 ROOT_URLCONF = "django_multitenant.tests.urls"
-
 
 
 TEMPLATES = [
@@ -66,10 +66,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',
             ],
         },
     },
 ]
-
 
 USE_CITUS = True
