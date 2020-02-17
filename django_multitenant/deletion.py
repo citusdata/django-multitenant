@@ -1,8 +1,4 @@
-from django.db.models.deletion import Collector
-from django.db import connections, transaction
-
-from .utils import (get_current_tenant, get_tenant_filters,
-                    is_distributed_model)
+from .utils import (get_current_tenant, get_tenant_filters)
 
 
 def related_objects(obj, related, objs):
