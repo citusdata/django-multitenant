@@ -33,6 +33,7 @@ class Account(TenantModel):
 
 
 class Employee(models.Model):
+    # Reference table
     account = models.ForeignKey(Account,
                                 on_delete=models.CASCADE,
                                 null=True,

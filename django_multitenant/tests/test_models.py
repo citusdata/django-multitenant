@@ -365,6 +365,65 @@ class TenantModelTest(BaseTestCase):
         excluded = Project.objects.exclude(projectmanagers__manager__name='Louise')
         self.assertEqual(excluded.count(), 29)
 
+    def test_delete_cascade_reference_to_distributed(self):
+        from .models import Country, Account
+        unset_current_tenant()
+
+        country = self.france
+        account1 = Account.objects.create(name='Account FR',
+                                          country=country,
+                                          subdomain='fr.',
+                                          domain='citusdata.com')
+
+        account2 = Account.objects.create(name='Account FR 2',
+                                          country=country,
+                                          subdomain='fr.',
+                                          domain='msft.com')
+
+        self.assertEqual(Account.objects.count(), 2)
+
+        country.delete()
+
+        self.assertEqual(Account.objects.count(), 0)
+        self.assertEqual(Country.objects.count(), 0)
+
+
+    def test_delete_cascade_distributed_to_reference(self):
+        from .models import Account, Employee, ModelConfig, Project
+        unset_current_tenant()
+
+        account = self.account_fr
+        employee = Employee.objects.create(account=account, name='Louise')
+        modelconfig = ModelConfig.objects.create(account=account,
+                                                 employee=employee,
+                                                 name='test')
+        projects = self.projects
+
+
+        for project in projects:
+            if project.account == account:
+                project.employee = employee
+                project.save(update_fields=['employee'])
+
+        account.employee = employee
+        account.save()
+
+        self.assertEqual(Account.objects.count(), 3)
+        self.assertEqual(Employee.objects.count(), 1)
+        self.assertEqual(ModelConfig.objects.count(), 1)
+        self.assertEqual(Project.objects.count(), 30)
+
+        set_current_tenant(account)
+        account.delete()
+
+        # Once deleted, we don't have a current tenant
+        self.assertEqual(Account.objects.count(), 2)
+        self.assertEqual(Employee.objects.count(), 0)
+        self.assertEqual(ModelConfig.objects.count(), 0)
+        self.assertEqual(Project.objects.count(), 20)
+
+        unset_current_tenant()
+
 
 class MultipleTenantModelTest(BaseTestCase):
     def test_filter_without_joins(self):
@@ -450,62 +509,3 @@ class MultipleTenantModelTest(BaseTestCase):
         # subquery don't work for multi tenants
         # we want all the projects with the name of their first task
         pass
-
-    def test_delete_cascade_reference_to_distributed(self):
-        from .models import Country, Account
-        unset_current_tenant()
-
-        country = self.france
-        account1 = Account.objects.create(name='Account FR',
-                                          country=country,
-                                          subdomain='fr.',
-                                          domain='citusdata.com')
-
-        account2 = Account.objects.create(name='Account FR 2',
-                                          country=country,
-                                          subdomain='fr.',
-                                          domain='msft.com')
-
-        self.assertEqual(Account.objects.count(), 2)
-
-        country.delete()
-
-        self.assertEqual(Account.objects.count(), 0)
-        self.assertEqual(Country.objects.count(), 0)
-
-
-    def test_delete_cascade_distributed_to_reference(self):
-        from .models import Account, Employee, ModelConfig, Project
-        unset_current_tenant()
-
-        account = self.account_fr
-        employee = Employee.objects.create(account=account, name='Louise')
-        modelconfig = ModelConfig.objects.create(account=account,
-                                                 employee=employee,
-                                                 name='test')
-        projects = self.projects
-
-
-        for project in projects:
-            if project.account == account:
-                project.employee = employee
-                project.save(update_fields=['employee'])
-
-        account.employee = employee
-        account.save()
-
-        self.assertEqual(Account.objects.count(), 3)
-        self.assertEqual(Employee.objects.count(), 1)
-        self.assertEqual(ModelConfig.objects.count(), 1)
-        self.assertEqual(Project.objects.count(), 30)
-
-        set_current_tenant(account)
-        account.delete()
-
-        # Once deleted, we don't have a current tenant
-        self.assertEqual(Account.objects.count(), 2)
-        self.assertEqual(Employee.objects.count(), 0)
-        self.assertEqual(ModelConfig.objects.count(), 0)
-        self.assertEqual(Project.objects.count(), 20)
-
-        unset_current_tenant()
