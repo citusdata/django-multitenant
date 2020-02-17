@@ -2,6 +2,7 @@
 import os
 import django
 
+
 BASE_PATH = os.path.normpath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
 )
@@ -39,10 +40,10 @@ MIDDLEWARE = MIDDLEWARE_CLASSES
 
 INSTALLED_APPS = [
     "django.contrib.admin",
+    "django.contrib.messages",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
-    "django.contrib.messages",
     "django.contrib.sites",
     "django_multitenant",
     "django_multitenant.tests",
@@ -69,3 +70,5 @@ TEMPLATES = [
         },
     },
 ]
+
+USE_CITUS = True
