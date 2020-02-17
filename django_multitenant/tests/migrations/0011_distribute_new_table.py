@@ -4,10 +4,24 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import django.db.models.deletion
+from django.conf import settings
 import django_multitenant.fields
 import django_multitenant.mixins
 
 from django_multitenant.db import migrations as tenant_migrations
+
+
+def get_operations():
+    operations = [
+        migrations.RunSQL("ALTER TABLE tests_tempmodel DROP CONSTRAINT tests_tempmodel_pkey CASCADE;"),
+        migrations.RunSQL("ALTER TABLE tests_tempmodel ADD CONSTRAINT tests_tempmodel_pkey PRIMARY KEY (account_id, id);")]
+
+    if settings.USE_CITUS:
+        operations += [
+            tenant_migrations.Distribute('TempModel'),
+        ]
+
+    return operations
 
 
 class Migration(migrations.Migration):
@@ -15,10 +29,4 @@ class Migration(migrations.Migration):
     dependencies = [
         ('tests', '0010_auto_20190517_1514'),
     ]
-
-    operations = [
-        migrations.RunSQL("ALTER TABLE tests_tempmodel DROP CONSTRAINT tests_tempmodel_pkey CASCADE;"),
-        migrations.RunSQL("ALTER TABLE tests_tempmodel ADD CONSTRAINT tests_tempmodel_pkey PRIMARY KEY (account_id, id);"),
-        tenant_migrations.Distribute('TempModel'),
-
-    ]
+    operations = get_operations()

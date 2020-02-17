@@ -100,3 +100,11 @@ def set_current_tenant(tenant):
 
 def unset_current_tenant():
     setattr(_thread_locals, 'tenant', None)
+
+
+def is_distributed_model(model):
+    try:
+        get_tenant_field(model)
+        return True
+    except ValueError:
+        return False

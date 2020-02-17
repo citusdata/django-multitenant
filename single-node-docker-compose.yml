@@ -1,0 +1,8 @@
+version: '2.1'
+
+services:
+  db:
+    image: "postgres:11"
+    container_name: "${COMPOSE_PROJECT_NAME:-single}_node_postgres"
+    ports:
+      - "5604:5432"
