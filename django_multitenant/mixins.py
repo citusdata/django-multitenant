@@ -69,7 +69,7 @@ class TenantModelMixin(object):
 
     def save(self, *args, **kwargs):
         tenant_value = get_current_tenant_value()
-        if not self.pk and tenant_value and not isinstance(tenant_value, list):
+        if self.tenant_value is None and tenant_value and not isinstance(tenant_value, list):
             setattr(self, self.tenant_field, tenant_value)
 
         return super(TenantModelMixin, self).save(*args, **kwargs)
