@@ -36,7 +36,7 @@ class TenantForeignKey(models.ForeignKey):
 
         current_tenant = get_current_tenant()
         if current_tenant:
-            return get_tenant_filters(instance)
+            return get_tenant_filters(self.related_model)
         else:
             logger.warn('TenantForeignKey field %s.%s '
                         'accessed without a current tenant set. '

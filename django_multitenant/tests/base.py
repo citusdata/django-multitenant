@@ -100,6 +100,21 @@ class Fixtures(Exam):
         return tasks
 
     @fixture
+    def revenues(self):
+        revenues = []
+
+        for project in self.projects:
+            for i in range(5):
+                revenue = Revenue.objects.create(
+                    value="%s mil" % i,
+                    project_id=project.pk,
+                    acc_id=project.account_id,
+                )
+                revenues.append(revenue)
+
+        return revenues
+
+    @fixture
     def project_managers(self):
         projects = self.projects
         managers = self.managers
