@@ -71,6 +71,22 @@ class TenantModelTest(BaseTestCase):
 
         unset_current_tenant()
 
+    def test_select_tenant_foreign_key_different_tenant_id(self):
+        from .models import Revenue, Account
+        self.revenues
+
+        revenue = Revenue.objects.first()
+        set_current_tenant(revenue.acc)
+
+        # Selecting revenue.project, project.account is tenant (revenue.acc is tenant)
+        # To push down, account_id should be in query (not acc_id)
+        with self.assertNumQueries(1) as captured_queries:
+            project = revenue.project
+            self.assertTrue('AND "tests_project"."account_id" = %d' % revenue.acc_id \
+                            in captured_queries.captured_queries[0]['sql'])
+
+        unset_current_tenant()
+
     def test_filter_select_related(self):
         from .models import Task
         task_id = self.tasks[0].pk
@@ -194,12 +210,15 @@ class TenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), 30)
 
         set_current_tenant(account)
-        with self.assertNumQueries(6) as captured_queries:
+        with self.assertNumQueries(7) as captured_queries:
             Project.objects.all().delete()
             unset_current_tenant()
 
             for query in captured_queries.captured_queries:
-                self.assertTrue('"account_id" = %d' % account.id in query['sql'])
+                if "tests_revenue" in query['sql']:
+                    self.assertTrue('"acc_id" = %d' % account.id in query['sql'])
+                else:
+                    self.assertTrue('"account_id" = %d' % account.id in query['sql'])
 
         self.assertEqual(Project.objects.count(), 20)
 
@@ -467,6 +486,23 @@ class MultipleTenantModelTest(BaseTestCase):
 
         unset_current_tenant()
 
+    def test_select_tenant_foreign_key_different_tenant_id(self):
+        from .models import Revenue, Account
+        unset_current_tenant()
+        self.revenues
+
+        revenue = Revenue.objects.first()
+        accounts = [revenue.acc, Account.objects.last()]
+        set_current_tenant(accounts)
+
+        # Selecting revenue.project, project.account is tenant (revenue.acc is tenant)
+        # To push down, account_id should be in query (not acc_id)
+        with self.assertNumQueries(1) as captured_queries:
+            project = revenue.project
+            self.assertTrue('AND "tests_project"."account_id" IN (%s)' % ', '.join([str(account.id) for account in accounts]) \
+                            in captured_queries.captured_queries[0]['sql'])
+
+        unset_current_tenant()
 
     def test_prefetch_related(self):
         from .models import Project, Account
@@ -495,11 +531,14 @@ class MultipleTenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), 30)
 
         set_current_tenant(accounts)
-        with self.assertNumQueries(7) as captured_queries:
+        with self.assertNumQueries(8) as captured_queries:
             Project.objects.all().delete()
 
             for query in captured_queries.captured_queries:
-                self.assertTrue('"account_id" IN (%s)' % ', '.join([str(account.id) for account in accounts]))
+                if "tests_revenue" in query['sql']:
+                    self.assertTrue('"acc_id" IN (%s)' % ', '.join([str(account.id) for account in accounts]))
+                else:
+                    self.assertTrue('"account_id" IN (%s)' % ', '.join([str(account.id) for account in accounts]))
 
         unset_current_tenant()
         self.assertEqual(Project.objects.count(), 10)

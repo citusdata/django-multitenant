@@ -91,7 +91,6 @@ class ProjectManager(TenantModel):
     tenant_id = 'account_id'
 
 
-
 class TaskQueryset(models.QuerySet):
     def opened(self):
         return self.filter(opened=True)
@@ -147,6 +146,17 @@ class AliasedTask(TenantModel):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
     tenant_id = 'account_id'
+
+
+class Revenue(TenantModel):
+    # To test for correct tenant_id push down in query
+    acc = models.ForeignKey(Account, on_delete=models.CASCADE,
+                            related_name='revenues')
+    project = TenantForeignKey(Project, on_delete=models.CASCADE,
+                               related_name='revenues')
+    value = models.CharField(max_length=30)
+
+    tenant_id = 'acc_id'
 
 
 # Models for UUID tests
