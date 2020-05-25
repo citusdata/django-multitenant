@@ -384,6 +384,34 @@ class TenantModelTest(BaseTestCase):
         excluded = Project.objects.exclude(projectmanagers__manager__name='Louise')
         self.assertEqual(excluded.count(), 29)
 
+    def test_delete_cascade_distributed(self):
+        from .models import Task, Project, SubTask
+        subtasks = self.subtasks
+        account = self.account_fr
+
+        unset_current_tenant()
+
+        self.assertEqual(Project.objects.count(), 30)
+        self.assertEqual(Task.objects.count(), 150)
+        self.assertEqual(SubTask.objects.count(), 750)
+
+        set_current_tenant(account)
+
+        self.assertEqual(Project.objects.count(), 10)
+        self.assertEqual(Task.objects.count(), 50)
+        self.assertEqual(SubTask.objects.count(), 250)
+
+        project = Project.objects.first()
+
+        with self.assertNumQueries(12) as captured_queries:
+            project.delete()
+
+            self.assertEqual(Project.objects.count(), 9)
+            self.assertEqual(Task.objects.count(), 45)
+            self.assertEqual(SubTask.objects.count(), 225)
+            self.assertFalse("SET LOCAL citus.multi_shard_modify_mode TO 'sequential';" in [query['sql'] for query in captured_queries.captured_queries])
+            self.assertFalse("SET LOCAL citus.multi_shard_modify_mode TO 'parallel';" in [query['sql'] for query in captured_queries.captured_queries])
+
     def test_delete_cascade_reference_to_distributed(self):
         from .models import Country, Account
         unset_current_tenant()
@@ -401,11 +429,13 @@ class TenantModelTest(BaseTestCase):
 
         self.assertEqual(Account.objects.count(), 2)
 
-        country.delete()
+        with self.assertNumQueries(16) as captured_queries:
+            country.delete()
 
-        self.assertEqual(Account.objects.count(), 0)
-        self.assertEqual(Country.objects.count(), 0)
-
+            self.assertEqual(Account.objects.count(), 0)
+            self.assertEqual(Country.objects.count(), 0)
+            self.assertTrue("SET LOCAL citus.multi_shard_modify_mode TO 'sequential';" in [query['sql'] for query in captured_queries.captured_queries])
+            self.assertTrue("SET LOCAL citus.multi_shard_modify_mode TO 'parallel';" in [query['sql'] for query in captured_queries.captured_queries])
 
     def test_delete_cascade_distributed_to_reference(self):
         from .models import Account, Employee, ModelConfig, Project
@@ -433,13 +463,16 @@ class TenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), 30)
 
         set_current_tenant(account)
-        account.delete()
+        with self.assertNumQueries(28) as captured_queries:
+            account.delete()
 
-        # Once deleted, we don't have a current tenant
-        self.assertEqual(Account.objects.count(), 2)
-        self.assertEqual(Employee.objects.count(), 0)
-        self.assertEqual(ModelConfig.objects.count(), 0)
-        self.assertEqual(Project.objects.count(), 20)
+            # Once deleted, we don't have a current tenant
+            self.assertEqual(Account.objects.count(), 2)
+            self.assertEqual(Employee.objects.count(), 0)
+            self.assertEqual(ModelConfig.objects.count(), 0)
+            self.assertEqual(Project.objects.count(), 20)
+            self.assertTrue("SET LOCAL citus.multi_shard_modify_mode TO 'sequential';" in [query['sql'] for query in captured_queries.captured_queries])
+            self.assertTrue("SET LOCAL citus.multi_shard_modify_mode TO 'parallel';" in [query['sql'] for query in captured_queries.captured_queries])
 
         unset_current_tenant()
 
