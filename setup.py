@@ -8,7 +8,7 @@ from io import open
 
 setup(
     name="django-multitenant",
-    version='2.2.1',  # Required
+    version='2.2.2',  # Required
     description='Django Library to Implement Multi-tenant databases',
     url="https://github.com/citusdata/django-multitenant",
     author='Louise Grandjonc',
