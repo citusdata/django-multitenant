@@ -1,12 +1,11 @@
 import re
 
+from django.conf import settings
 from django.db.utils import NotSupportedError
 
 from django_multitenant.utils import set_current_tenant, unset_current_tenant
 
 from .base import BaseTestCase
-# from .models import Project, Account
-
 
 
 class TenantModelTest(BaseTestCase):
@@ -72,6 +71,22 @@ class TenantModelTest(BaseTestCase):
 
         unset_current_tenant()
 
+    def test_select_tenant_foreign_key_different_tenant_id(self):
+        from .models import Revenue, Account
+        self.revenues
+
+        revenue = Revenue.objects.first()
+        set_current_tenant(revenue.acc)
+
+        # Selecting revenue.project, project.account is tenant (revenue.acc is tenant)
+        # To push down, account_id should be in query (not acc_id)
+        with self.assertNumQueries(1) as captured_queries:
+            project = revenue.project
+            self.assertTrue('AND "tests_project"."account_id" = %d' % revenue.acc_id \
+                            in captured_queries.captured_queries[0]['sql'])
+
+        unset_current_tenant()
+
     def test_filter_select_related(self):
         from .models import Task
         task_id = self.tasks[0].pk
@@ -81,9 +96,8 @@ class TenantModelTest(BaseTestCase):
             task = Task.objects.filter(pk=task_id).select_related('project').first()
 
             self.assertEqual(task.account_id, task.project.account_id)
-            self.assertTrue('INNER JOIN "tests_project" ON ("tests_task"."project_id" = "tests_project"."id" AND ("tests_task"."account_id" = ("tests_project"."account_id")))' \
-                            in captured_queries.captured_queries[0]['sql'])
-
+            pattern = 'INNER JOIN "tests_project" ON \("tests_task"."project_id" = "tests_project"."id" AND \("tests_task"."account_id" = .?"tests_project"."account_id"\)\)'
+            self.assertTrue(bool(re.search(pattern, captured_queries.captured_queries[0]['sql'])))
 
     def test_filter_select_related_not_id_field(self):
         from .models import SomeRelatedModel
@@ -113,8 +127,8 @@ class TenantModelTest(BaseTestCase):
 
             self.assertTrue('WHERE ("tests_manager"."account_id" = %d' % project.account_id \
                             in captured_queries.captured_queries[1]['sql'])
-            self.assertTrue('AND ("tests_projectmanager"."account_id" = ("tests_manager"."account_id"))' \
-                            in captured_queries.captured_queries[1]['sql'])
+            pattern = 'AND \("tests_projectmanager"."account_id" = .?"tests_manager"."account_id"\)'
+            self.assertTrue(bool(re.search(pattern, captured_queries.captured_queries[1]['sql'])))
 
     def test_create_project(self):
         # Using save()
@@ -147,6 +161,9 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_update_tenant_project(self):
+        if not settings.USE_CITUS:
+            return
+
         from .models import Project
         account = self.account_fr
 
@@ -193,12 +210,15 @@ class TenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), 30)
 
         set_current_tenant(account)
-        with self.assertNumQueries(6) as captured_queries:
+        with self.assertNumQueries(7) as captured_queries:
             Project.objects.all().delete()
             unset_current_tenant()
 
             for query in captured_queries.captured_queries:
-                self.assertTrue('"account_id" = %d' % account.id in query['sql'])
+                if "tests_revenue" in query['sql']:
+                    self.assertTrue('"acc_id" = %d' % account.id in query['sql'])
+                else:
+                    self.assertTrue('"account_id" = %d' % account.id in query['sql'])
 
         self.assertEqual(Project.objects.count(), 20)
 
@@ -277,7 +297,7 @@ class TenantModelTest(BaseTestCase):
             for query in captured_queries.captured_queries:
                 self.assertTrue('U0."account_id" = %d' % account.id in query['sql'])
 
-                pattern = '\(U0."task_id" = U\d."id" AND \(U0."account_id" = \(U\d."account_id"\)'
+                pattern = '\(U0."task_id" = U\d."id" AND \(U0."account_id" = .?U\d."account_id"\)'
                 self.assertTrue(bool(re.search(pattern, query['sql'])))
                 self.assertTrue('WHERE "tests_project"."account_id" = %d' % account.id in query['sql'])
 
@@ -329,6 +349,133 @@ class TenantModelTest(BaseTestCase):
 
         print(Task.objects.first())
 
+    def test_exclude_tenant_set(self):
+        from .models import Task
+        projects = self.projects
+        account_fr = self.account_fr
+        tasks = self.tasks
+
+        unset_current_tenant()
+        set_current_tenant(account_fr)
+
+        tasks = Task.objects.exclude(project__isnull=True)
+
+        self.assertEqual(tasks.count(), 50)
+
+        unset_current_tenant()
+
+    def test_exclude_tenant_not_set(self):
+        from .models import Task
+        projects = self.projects
+        account_fr = self.account_fr
+        tasks = self.tasks
+
+        tasks = Task.objects.exclude(project__isnull=True)
+        self.assertEqual(tasks.count(), 150)
+
+    def test_exclude_related(self):
+        from .models import Project, Manager, ProjectManager
+        project = self.projects[0]
+        project_managers = self.project_managers
+        account = project.account
+        manager = Manager.objects.create(name='Louise', account=account)
+        ProjectManager.objects.create(account=account, project=project, manager=manager)
+
+        excluded = Project.objects.exclude(projectmanagers__manager__name='Louise')
+        self.assertEqual(excluded.count(), 29)
+
+    def test_delete_cascade_distributed(self):
+        from .models import Task, Project, SubTask
+        subtasks = self.subtasks
+        account = self.account_fr
+
+        unset_current_tenant()
+
+        self.assertEqual(Project.objects.count(), 30)
+        self.assertEqual(Task.objects.count(), 150)
+        self.assertEqual(SubTask.objects.count(), 750)
+
+        set_current_tenant(account)
+
+        self.assertEqual(Project.objects.count(), 10)
+        self.assertEqual(Task.objects.count(), 50)
+        self.assertEqual(SubTask.objects.count(), 250)
+
+        project = Project.objects.first()
+
+        with self.assertNumQueries(12) as captured_queries:
+            project.delete()
+
+            self.assertEqual(Project.objects.count(), 9)
+            self.assertEqual(Task.objects.count(), 45)
+            self.assertEqual(SubTask.objects.count(), 225)
+            self.assertFalse("SET LOCAL citus.multi_shard_modify_mode TO 'sequential';" in [query['sql'] for query in captured_queries.captured_queries])
+            self.assertFalse("SET LOCAL citus.multi_shard_modify_mode TO 'parallel';" in [query['sql'] for query in captured_queries.captured_queries])
+
+    def test_delete_cascade_reference_to_distributed(self):
+        from .models import Country, Account
+        unset_current_tenant()
+
+        country = self.france
+        account1 = Account.objects.create(name='Account FR',
+                                          country=country,
+                                          subdomain='fr.',
+                                          domain='citusdata.com')
+
+        account2 = Account.objects.create(name='Account FR 2',
+                                          country=country,
+                                          subdomain='fr.',
+                                          domain='msft.com')
+
+        self.assertEqual(Account.objects.count(), 2)
+
+        with self.assertNumQueries(16) as captured_queries:
+            country.delete()
+
+            self.assertEqual(Account.objects.count(), 0)
+            self.assertEqual(Country.objects.count(), 0)
+            self.assertTrue("SET LOCAL citus.multi_shard_modify_mode TO 'sequential';" in [query['sql'] for query in captured_queries.captured_queries])
+            self.assertTrue("SET LOCAL citus.multi_shard_modify_mode TO 'parallel';" in [query['sql'] for query in captured_queries.captured_queries])
+
+    def test_delete_cascade_distributed_to_reference(self):
+        from .models import Account, Employee, ModelConfig, Project
+        unset_current_tenant()
+
+        account = self.account_fr
+        employee = Employee.objects.create(account=account, name='Louise')
+        modelconfig = ModelConfig.objects.create(account=account,
+                                                 employee=employee,
+                                                 name='test')
+        projects = self.projects
+
+
+        for project in projects:
+            if project.account == account:
+                project.employee = employee
+                project.save(update_fields=['employee'])
+
+        account.employee = employee
+        account.save()
+
+        self.assertEqual(Account.objects.count(), 3)
+        self.assertEqual(Employee.objects.count(), 1)
+        self.assertEqual(ModelConfig.objects.count(), 1)
+        self.assertEqual(Project.objects.count(), 30)
+
+        set_current_tenant(account)
+        with self.assertNumQueries(28) as captured_queries:
+            account.delete()
+
+            # Once deleted, we don't have a current tenant
+            self.assertEqual(Account.objects.count(), 2)
+            self.assertEqual(Employee.objects.count(), 0)
+            self.assertEqual(ModelConfig.objects.count(), 0)
+            self.assertEqual(Project.objects.count(), 20)
+            self.assertTrue("SET LOCAL citus.multi_shard_modify_mode TO 'sequential';" in [query['sql'] for query in captured_queries.captured_queries])
+            self.assertTrue("SET LOCAL citus.multi_shard_modify_mode TO 'parallel';" in [query['sql'] for query in captured_queries.captured_queries])
+
+        unset_current_tenant()
+
 
 class MultipleTenantModelTest(BaseTestCase):
     def test_filter_without_joins(self):
@@ -372,6 +519,23 @@ class MultipleTenantModelTest(BaseTestCase):
 
         unset_current_tenant()
 
+    def test_select_tenant_foreign_key_different_tenant_id(self):
+        from .models import Revenue, Account
+        unset_current_tenant()
+        self.revenues
+
+        revenue = Revenue.objects.first()
+        accounts = [revenue.acc, Account.objects.last()]
+        set_current_tenant(accounts)
+
+        # Selecting revenue.project, project.account is tenant (revenue.acc is tenant)
+        # To push down, account_id should be in query (not acc_id)
+        with self.assertNumQueries(1) as captured_queries:
+            project = revenue.project
+            self.assertTrue('AND "tests_project"."account_id" IN (%s)' % ', '.join([str(account.id) for account in accounts]) \
+                            in captured_queries.captured_queries[0]['sql'])
+
+        unset_current_tenant()
 
     def test_prefetch_related(self):
         from .models import Project, Account
@@ -386,8 +550,9 @@ class MultipleTenantModelTest(BaseTestCase):
 
             self.assertTrue('WHERE ("tests_manager"."account_id" IN (%s)' % ', '.join([str(account.id) for account in accounts]) \
                             in captured_queries.captured_queries[1]['sql'])
-            self.assertTrue('AND ("tests_projectmanager"."account_id" = ("tests_manager"."account_id"))' \
-                            in captured_queries.captured_queries[1]['sql'])
+
+            pattern = 'AND \("tests_projectmanager"."account_id" = .?"tests_manager"."account_id"\)'
+            self.assertTrue(bool(re.search(pattern, captured_queries.captured_queries[1]['sql'])))
 
         unset_current_tenant()
 
@@ -399,11 +564,14 @@ class MultipleTenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), 30)
 
         set_current_tenant(accounts)
-        with self.assertNumQueries(7) as captured_queries:
+        with self.assertNumQueries(8) as captured_queries:
             Project.objects.all().delete()
 
             for query in captured_queries.captured_queries:
-                self.assertTrue('"account_id" IN (%s)' % ', '.join([str(account.id) for account in accounts]))
+                if "tests_revenue" in query['sql']:
+                    self.assertTrue('"acc_id" IN (%s)' % ', '.join([str(account.id) for account in accounts]))
+                else:
+                    self.assertTrue('"account_id" IN (%s)' % ', '.join([str(account.id) for account in accounts]))
 
         unset_current_tenant()
         self.assertEqual(Project.objects.count(), 10)
@@ -413,3 +581,21 @@ class MultipleTenantModelTest(BaseTestCase):
         # subquery don't work for multi tenants
         # we want all the projects with the name of their first task
         pass
+
+
+    def test_uuid_create(self):
+        from .models import Record
+        organization = self.organization
+        set_current_tenant(organization)
+        record = Record.objects.create(name='record1')
+        self.assertEqual(record.organization_id, organization.id)
+
+    def test_uuid_save(self):
+        from .models import Record
+        organization = self.organization
+        set_current_tenant(organization)
+        record = Record(name='record1')
+        record.save()
+
+        record = Record.objects.first()
+        self.assertEqual(record.organization_id, organization.id)

@@ -3,7 +3,30 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+from django.conf import settings
 import django.db.models.deletion
+
+from django_multitenant.db import migrations as tenant_migrations
+
+
+def get_operations():
+    operations = [
+        migrations.RunSQL("ALTER TABLE tests_tenantnotidmodel DROP CONSTRAINT tests_tenantnotidmodel_pkey CASCADE;"),
+        migrations.RunSQL("ALTER TABLE tests_somerelatedmodel DROP CONSTRAINT tests_somerelatedmodel_pkey CASCADE;"),
+    ]
+
+    if settings.USE_CITUS:
+        operations += [
+            tenant_migrations.Distribute('TenantNotIdModel'),
+            tenant_migrations.Distribute('SomeRelatedModel'),
+        ]
+
+    operations += [
+        migrations.RunSQL("ALTER TABLE tests_somerelatedmodel ADD CONSTRAINT tests_somerelatedmodel_pkey PRIMARY KEY (related_tenant_id, id);"),
+        migrations.RunSQL("ALTER TABLE tests_tenantnotidmodel ADD CONSTRAINT tests_tenantnotidmodel_pkey PRIMARY KEY (tenant_column);")
+    ]
+
+    return operations
 
 
 class Migration(migrations.Migration):
@@ -12,13 +35,4 @@ class Migration(migrations.Migration):
         ('tests', '0002_distribute'),
     ]
 
-    operations = [
-        migrations.RunSQL("ALTER TABLE tests_tenantnotidmodel DROP CONSTRAINT tests_tenantnotidmodel_pkey CASCADE;"),
-        migrations.RunSQL("ALTER TABLE tests_somerelatedmodel DROP CONSTRAINT tests_somerelatedmodel_pkey CASCADE;"),
-
-        migrations.RunSQL("SELECT create_distributed_table('tests_tenantnotidmodel', 'tenant_column');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_somerelatedmodel', 'related_tenant_id');"),
-
-        migrations.RunSQL("ALTER TABLE tests_somerelatedmodel ADD CONSTRAINT tests_somerelatedmodel_pkey PRIMARY KEY (related_tenant_id, id);"),
-        migrations.RunSQL("ALTER TABLE tests_tenantnotidmodel ADD CONSTRAINT tests_tenantnotidmodel_pkey PRIMARY KEY (tenant_column);")
-    ]
+    operations = get_operations()

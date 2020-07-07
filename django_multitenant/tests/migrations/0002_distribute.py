@@ -3,21 +3,21 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+from django.conf import settings
+
+from django_multitenant.db import migrations as tenant_migrations
+
+def get_operations():
+    operations = []
+    if settings.USE_CITUS:
+        operations = [
+            # necessary for tests
+            migrations.RunSQL("CREATE EXTENSION IF NOT EXISTS citus;"),
+            migrations.RunSQL("SELECT * from master_add_node('django-multitenant_worker1_1', 5432);"),
+            migrations.RunSQL("SELECT * from master_add_node('django-multitenant_worker2_1', 5432);")]
 
 
-
-class Migration(migrations.Migration):
-
-    dependencies = [
-        ('tests', '0001_initial'),
-    ]
-
-    operations = [
-        # necessary for tests
-        migrations.RunSQL("CREATE EXTENSION IF NOT EXISTS citus;"),
-        migrations.RunSQL("SELECT * from master_add_node('django-multitenant_worker1_1', 5432);"),
-        migrations.RunSQL("SELECT * from master_add_node('django-multitenant_worker2_1', 5432);"),
-
+    operations += [
         # Drop constraints
         migrations.RunSQL("""
         ALTER TABLE tests_aliasedtask
@@ -33,20 +33,24 @@ class Migration(migrations.Migration):
         migrations.RunSQL("ALTER TABLE tests_record DROP CONSTRAINT tests_record_pkey CASCADE;"),
         migrations.RunSQL("ALTER TABLE tests_subtask DROP CONSTRAINT tests_subtask_pkey CASCADE;"),
         migrations.RunSQL("ALTER TABLE tests_task DROP CONSTRAINT tests_task_pkey CASCADE;"),
+    ]
 
+    if settings.USE_CITUS:
         # distribute
-        migrations.RunSQL("SELECT create_reference_table('tests_country');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_account', 'id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_aliasedtask', 'account_id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_manager', 'account_id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_organization', 'id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_project', 'account_id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_projectmanager', 'account_id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_record', 'organization_id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_subtask', 'account_id');"),
-        migrations.RunSQL("SELECT create_distributed_table('tests_task', 'account_id');"),
+        operations += [
+            tenant_migrations.Distribute('Country', reference=True),
+            tenant_migrations.Distribute('Account'),
+            tenant_migrations.Distribute('AliasedTask'),
+            tenant_migrations.Distribute('Manager'),
+            tenant_migrations.Distribute('Organization'),
+            tenant_migrations.Distribute('Project'),
+            tenant_migrations.Distribute('ProjectManager'),
+            tenant_migrations.Distribute('Record'),
+            tenant_migrations.Distribute('SubTask'),
+            tenant_migrations.Distribute('Task')]
 
-        # Add constraints
+    # Add constraints
+    operations += [
         migrations.RunSQL("ALTER TABLE tests_country ADD CONSTRAINT tests_country_pkey PRIMARY KEY (id);"),
         migrations.RunSQL("ALTER TABLE tests_project ADD CONSTRAINT tests_project_pkey PRIMARY KEY (account_id, id);"),
         migrations.RunSQL("ALTER TABLE tests_manager ADD CONSTRAINT tests_manager_pkey PRIMARY KEY (account_id, id);"),
@@ -55,3 +59,15 @@ class Migration(migrations.Migration):
         migrations.RunSQL("ALTER TABLE tests_subtask ADD CONSTRAINT tests_subtask_pkey PRIMARY KEY (account_id, id);"),
         migrations.RunSQL("ALTER TABLE tests_task ADD CONSTRAINT tests_task_pkey PRIMARY KEY (account_id, id);")
     ]
+
+    return operations
+
+
+class Migration(migrations.Migration):
+    atomic = False
+
+    dependencies = [
+        ('tests', '0001_initial'),
+    ]
+
+    operations = get_operations()

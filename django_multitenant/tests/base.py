@@ -87,14 +87,32 @@ class Fixtures(Exam):
         tasks = []
 
         for project in self.projects:
+            previous_task = None
             for i in range(5):
-                tasks.append(
-                    Task.objects.create(
-                        name='task project %s %i' %(project.name, i),
-                        project_id=project.pk,
-                        account_id=project.account_id))
+                previous_task = Task.objects.create(
+                    name='task project %s %i' %(project.name, i),
+                    project_id=project.pk,
+                    account_id=project.account_id,
+                    parent=previous_task)
+
+                tasks.append(previous_task)
 
         return tasks
+
+    @fixture
+    def revenues(self):
+        revenues = []
+
+        for project in self.projects:
+            for i in range(5):
+                revenue = Revenue.objects.create(
+                    value="%s mil" % i,
+                    project_id=project.pk,
+                    acc_id=project.account_id,
+                )
+                revenues.append(revenue)
+
+        return revenues
 
     @fixture
     def project_managers(self):
@@ -136,12 +154,8 @@ class Fixtures(Exam):
         pass
 
     @fixture
-    def organizations(self):
-        pass
-
-    @fixture
-    def records(self):
-        pass
+    def organization(self):
+        return Organization.objects.create(name='organization')
 
     @fixture
     def tenant_not_id(self):

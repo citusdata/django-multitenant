@@ -1,7 +1,8 @@
 psycopg2
-Django==1.11.23
+Django<3
 tox
 pytest
 pytest-cov
 pytest-django
 exam
+ipdb

@@ -15,16 +15,17 @@ https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-
 
 
 ## Installation:
-1. pip install  --no-cache-dir django_multitenant
+1. `pip install  --no-cache-dir django_multitenant`
 
 ## Supported Django versions/Pre-requisites.
 
 | Python        | Django        |
 | ------------- | -------------:|
-| 2.7           | 1.9           |
-| 2.7           | 1.10          |
 | 2.7           | 1.11          |
-| 3.6           | 2.0           |
+| 3.X           | 2.0           |
+| 3.X           | 2.1           |
+| 3.X           | 2.2           |
+| 3.X           | 3.0           |
 
 
 ## Usage:
@@ -46,6 +47,12 @@ In order to use this library you can either use Mixins or have your models inher
    models.ForeignKey
 1. A sample model implementing the above 2 steps:
   ```python
+    class Store(TenantModel):
+      tenant_id = 'id'
+      name =  models.CharField(max_length=50)
+      address = models.CharField(max_length=255)
+      email = models.CharField(max_length=50)
+
     class Product(TenantModel):
       store = models.ForeignKey(Store)
       tenant_id='store_id'

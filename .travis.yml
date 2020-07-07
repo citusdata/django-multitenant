@@ -1,11 +1,10 @@
 sudo: required
 language: python
-python: 3.6
+python: 3.7
 
 env:
   - PREPARED_STATEMENTS=0
   - PREPARED_STATEMENTS=1
-
 
 services:
   - docker
@@ -17,6 +16,7 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
   - docker-compose --version
   - docker-compose --project-name django-multitenant up -d
+  - docker-compose -f ./single-node-docker-compose.yml --project-name django-multitenant up -d
 
 
 install: pip install tox

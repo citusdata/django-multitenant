@@ -1,5 +1,6 @@
 import logging
 from django.db import models
+from django.db.models.expressions import Col
 
 from .utils import get_current_tenant, get_tenant_column, get_tenant_filters
 
@@ -35,7 +36,7 @@ class TenantForeignKey(models.ForeignKey):
 
         current_tenant = get_current_tenant()
         if current_tenant:
-            return get_tenant_filters(instance)
+            return get_tenant_filters(self.related_model)
         else:
             logger.warn('TenantForeignKey field %s.%s '
                         'accessed without a current tenant set. '
@@ -58,6 +59,9 @@ class TenantForeignKey(models.ForeignKey):
         A parallel method is get_extra_descriptor_filter() which is used in
         instance.fieldname related object fetching.
         """
+
+        if not (related_alias and alias):
+            return None
 
         # Fetch tenant column names for both sides of the relation
         lhs_model = self.model

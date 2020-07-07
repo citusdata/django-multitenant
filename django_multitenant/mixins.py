@@ -1,11 +1,11 @@
 import logging
 
 from django.db import models
-from django.db.models.sql import DeleteQuery
+from django.db.models.sql import DeleteQuery, UpdateQuery
 from django.db.models.deletion import Collector
 
 from .deletion import related_objects
-from .query import wrap_get_compiler
+from .query import wrap_get_compiler, wrap_update_batch, wrap_delete
 from .utils import (
     set_current_tenant,
     get_current_tenant,
@@ -40,6 +40,10 @@ class TenantModelMixin(object):
         if not hasattr(DeleteQuery.get_compiler, "_sign"):
             DeleteQuery.get_compiler = wrap_get_compiler(DeleteQuery.get_compiler)
             Collector.related_objects = related_objects
+            Collector.delete = wrap_delete(Collector.delete)
+
+        if not hasattr(UpdateQuery.get_compiler, "_sign"):
+            UpdateQuery.update_batch = wrap_update_batch(UpdateQuery.update_batch)
 
         super(TenantModelMixin, self).__init__(*args, **kwargs)
 
@@ -66,7 +70,7 @@ class TenantModelMixin(object):
 
     def save(self, *args, **kwargs):
         tenant_value = get_current_tenant_value()
-        if not self.pk and tenant_value and not isinstance(tenant_value, list):
+        if self.tenant_value is None and tenant_value and not isinstance(tenant_value, list):
             setattr(self, self.tenant_field, tenant_value)
 
         return super(TenantModelMixin, self).save(*args, **kwargs)
