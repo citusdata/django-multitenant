@@ -3,7 +3,9 @@ import re
 from django.conf import settings
 from django.db.utils import NotSupportedError
 
-from django_multitenant.utils import set_current_tenant, unset_current_tenant
+from django_multitenant.utils import (set_current_tenant,
+                                      unset_current_tenant,
+                                      get_current_tenant)
 
 from .base import BaseTestCase
 
@@ -599,3 +601,76 @@ class MultipleTenantModelTest(BaseTestCase):
 
         record = Record.objects.first()
         self.assertEqual(record.organization_id, organization.id)
+
+    def test_save_tenant_unset(self):
+        unset_current_tenant()
+        from .models import Project
+        account = self.account_fr
+
+        account_2 = self.account_us
+
+        project = Project(account=account, name='test save fr')
+        project.save()
+
+        project2 = Project(account=account_2, name='test save us')
+        project2.save()
+
+        self.assertEqual(Project.objects.count(), 2)
+
+        project.name = 'test update name'
+        project.save()
+
+        project = Project.objects.first()
+        self.assertEqual(project.name, 'test update name')
+
+    def test_save_tenant_set_different_than_object(self):
+        unset_current_tenant()
+        from .models import Project
+        account = self.account_fr
+        account_2 = self.account_us
+
+        project = Project(account=account, name='test save fr')
+        project.save()
+
+        project2 = Project(account=account_2, name='test save us')
+        project2.save()
+
+        self.assertEqual(Project.objects.count(), 2)
+
+        set_current_tenant(account_2)
+
+        project.name = 'test update name'
+        project.save()
+
+        current_tenant = get_current_tenant()
+        self.assertEqual(current_tenant, account_2)
+
+        unset_current_tenant()
+        project = Project.objects.filter(account=account).first()
+        self.assertEqual(project.name, 'test update name')
+
+    def test_save_tenant_set(self):
+        unset_current_tenant()
+        from .models import Project
+        account = self.account_fr
+        account_2 = self.account_us
+
+        project = Project(account=account, name='test save fr')
+        project.save()
+
+        project2 = Project(account=account_2, name='test save us')
+        project2.save()
+
+        self.assertEqual(Project.objects.count(), 2)
+
+        set_current_tenant(account)
+
+        project.name = 'test update name'
+        project.save()
+
+        current_tenant = get_current_tenant()
+        self.assertEqual(current_tenant, account)
+
+        unset_current_tenant()
+        project = Project.objects.filter(account=account).first()
+        self.assertEqual(project.name, 'test update name')
