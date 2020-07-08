@@ -11,15 +11,6 @@ except ImportError:
 _thread_locals = local()
 
 
-def get_current_user():
-    """
-    Despite arguments to the contrary, it is sometimes necessary to find out who is the current
-    logged in user, even if the request object is not in scope.  The best way to do this is
-    by storing the user object in middleware while processing the request.
-    """
-    return getattr(_thread_locals, 'user', None)
-
-
 def get_model_by_db_table(db_table):
     for model in apps.get_models():
         if model._meta.db_table == db_table:
@@ -32,11 +23,13 @@ def get_model_by_db_table(db_table):
 
 def get_current_tenant():
     """
-    To get the Tenant instance for the currently logged in tenant.
-    example:
-        tenant = get_current_tenant()
+    Utils to get the tenant that hass been set in the current thread using `set_current_tenant`.
+    Can be used by doing:
+    ```
+        my_class_object = get_current_tenant()
+    ```
+    Will return None if the tenant is not set
     """
-    # tenant may not be set yet, if request user is anonymous, or has no profile,
     return getattr(_thread_locals, 'tenant', None)
 
 
@@ -95,6 +88,16 @@ def get_tenant_filters(table, filters=None):
 
 
 def set_current_tenant(tenant):
+    """
+    Utils to set a tenant in the current thread.
+    Often used in a middleware once a user is logged in to make sure all db
+    calls are sharded to the current tenant.
+    Can be used by doing:
+    ```
+        get_current_tenant(my_class_object)
+    ```
+    """
+
     setattr(_thread_locals, 'tenant', tenant)
 
 

@@ -202,8 +202,3 @@ This library uses similar logic of setting/getting tenant object as in [django-s
 
 Copyright (C) 2018, Citus Data
 Licensed under the MIT license, see LICENSE file for details.
-
-This library contains portions of code from django-simple-multitenant:
-
-Copyright (C) 2011, Daniel Romaniuk
-Licensed under the AGPL 3.0 license, see LICENSE file for details.
