@@ -3,6 +3,7 @@ import logging
 from django.db import models
 from django.db.models.sql import DeleteQuery, UpdateQuery
 from django.db.models.deletion import Collector
+from django.db.utils import NotSupportedError
 
 from .deletion import related_objects
 from .query import wrap_get_compiler, wrap_update_batch, wrap_delete
@@ -10,10 +11,10 @@ from .utils import (
     set_current_tenant,
     get_current_tenant,
     get_current_tenant_value,
-    get_model_by_db_table,
-    get_tenant_column,
+    get_tenant_field,
     get_tenant_filters,
-    get_object_tenant
+    get_object_tenant,
+    set_object_tenant
 )
 
 
@@ -48,6 +49,18 @@ class TenantModelMixin(object):
 
         super(TenantModelMixin, self).__init__(*args, **kwargs)
 
+    def __setattr__(self, attrname, val):
+
+        if (attrname in (self.tenant_field, get_tenant_field(self).name)
+            and not self._state.adding
+            and val
+            and self.tenant_value
+            and val != self.tenant_value
+            and val != self.tenant_object):
+            self._try_update_tenant = True
+
+        return super(TenantModelMixin, self).__setattr__(attrname, val)
+
     def _do_update(self, base_qs, using, pk_val, values, update_fields, forced_update):
         #adding tenant filters for save
         #Citus requires tenant_id filters for update, hence doing this below change.
@@ -70,11 +83,13 @@ class TenantModelMixin(object):
                                                        forced_update)
 
     def save(self, *args, **kwargs):
+        if hasattr(self, '_try_update_tenant'):
+            raise NotSupportedError('Tenant column of a row cannot be updated.')
+
         current_tenant = get_current_tenant()
         tenant_value = get_current_tenant_value()
 
-        if self.tenant_value is None and tenant_value and not isinstance(tenant_value, list):
-            setattr(self, self.tenant_field, tenant_value)
+        set_object_tenant(self, tenant_value)
 
         if self.tenant_value and tenant_value != self.tenant_value:
             self_tenant = get_object_tenant(self)
@@ -93,3 +108,7 @@ class TenantModelMixin(object):
     @property
     def tenant_value(self):
         return getattr(self, self.tenant_field, None)
+
+    @property
+    def tenant_object(self):
+        return get_object_tenant(self)

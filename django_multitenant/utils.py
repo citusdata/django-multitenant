@@ -64,6 +64,11 @@ def get_object_tenant(instance):
     return getattr(instance, field.name, None)
 
 
+def set_object_tenant(instance, value):
+    if instance.tenant_value is None and value and not isinstance(value, list):
+        setattr(instance, instance.tenant_field, value)
+
+
 def get_current_tenant_value():
     current_tenant = get_current_tenant()
     if not current_tenant:
