@@ -12,7 +12,8 @@ from .utils import (
     get_current_tenant_value,
     get_model_by_db_table,
     get_tenant_column,
-    get_tenant_filters
+    get_tenant_filters,
+    get_object_tenant
 )
 
 
@@ -69,11 +70,21 @@ class TenantModelMixin(object):
                                                        forced_update)
 
     def save(self, *args, **kwargs):
+        current_tenant = get_current_tenant()
         tenant_value = get_current_tenant_value()
+
         if self.tenant_value is None and tenant_value and not isinstance(tenant_value, list):
             setattr(self, self.tenant_field, tenant_value)
 
-        return super(TenantModelMixin, self).save(*args, **kwargs)
+        if self.tenant_value and tenant_value != self.tenant_value:
+            self_tenant = get_object_tenant(self)
+            set_current_tenant(self_tenant)
+
+        obj = super(TenantModelMixin, self).save(*args, **kwargs)
+
+        set_current_tenant(current_tenant)
+
+        return obj
 
     @property
     def tenant_field(self):

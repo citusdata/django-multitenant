@@ -55,6 +55,15 @@ def get_tenant_field(model_class_or_instance):
                          model_class_or_instance, tenant_column))
 
 
+def get_object_tenant(instance):
+    field = get_tenant_field(instance)
+
+    if field.primary_key:
+        return instance
+
+    return getattr(instance, field.name, None)
+
+
 def get_current_tenant_value():
     current_tenant = get_current_tenant()
     if not current_tenant:
