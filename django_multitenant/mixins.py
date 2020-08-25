@@ -33,6 +33,14 @@ class TenantManagerMixin(object):
             return queryset.filter(**kwargs)
         return queryset
 
+    def bulk_create(self, objs, **kwargs):
+        if get_current_tenant():
+            tenant_value = get_current_tenant_value()
+            for obj in objs:
+                set_object_tenant(obj, tenant_value)
+
+        return super(TenantManagerMixin, self).bulk_create(objs, **kwargs)
+
 
 class TenantModelMixin(object):
     #Abstract model which all the models related to tenant inherit.

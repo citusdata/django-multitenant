@@ -1,7 +1,7 @@
 import re
 
 from django.conf import settings
-from django.db.utils import NotSupportedError
+from django.db.utils import NotSupportedError, DataError
 
 from django_multitenant.utils import (set_current_tenant,
                                       unset_current_tenant,
@@ -161,6 +161,46 @@ class TenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), 2)
 
         unset_current_tenant()
+
+    def test_bulk_create_tenant_set(self):
+        from .models import Project
+        account = self.account_fr
+
+        set_current_tenant(account)
+        projects = []
+        for i in range(10):
+            projects.append(Project(name='project %d' % i))
+
+        Project.objects.bulk_create(projects)
+
+        unset_current_tenant()
+        self.assertEqual(Project.objects.count(), 10)
+        for project in Project.objects.all():
+            self.assertEqual(project.account_id, account.id)
+
+    def test_bulk_create_tenant_not_set(self):
+        from .models import Project
+        account = self.account_fr
+
+        unset_current_tenant()
+        projects = []
+        for i in range(10):
+            projects.append(Project(name='project %d' % i,
+                                    account=account))
+
+        Project.objects.bulk_create(projects)
+
+        self.assertEqual(Project.objects.count(), 10)
+        for project in Project.objects.all():
+            self.assertEqual(project.account_id, account.id)
+
+        projects = []
+        for i in range(10):
+            projects.append(Project(name='project %d' % i))
+
+        with self.assertRaises(DataError):
+            Project.objects.bulk_create(projects)
+
 
     def test_update_tenant_project(self):
         if not settings.USE_CITUS:
