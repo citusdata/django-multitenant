@@ -33,13 +33,13 @@ class TenantManagerMixin(object):
             return queryset.filter(**kwargs)
         return queryset
 
-    def bulk_create(self, objs, batch_size=None, ignore_conflicts=False):
+    def bulk_create(self, objs, **kwargs):
         if get_current_tenant():
             tenant_value = get_current_tenant_value()
             for obj in objs:
                 set_object_tenant(obj, tenant_value)
 
-        return super(TenantManagerMixin, self).bulk_create(objs, batch_size=batch_size, ignore_conflicts=ignore_conflicts)
+        return super(TenantManagerMixin, self).bulk_create(objs, **kwargs)
 
 
 class TenantModelMixin(object):
