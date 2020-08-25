@@ -103,9 +103,10 @@ class TenantModelMixin(object):
             self_tenant = get_object_tenant(self)
             set_current_tenant(self_tenant)
 
-        obj = super(TenantModelMixin, self).save(*args, **kwargs)
-
-        set_current_tenant(current_tenant)
+        try:
+            obj = super(TenantModelMixin, self).save(*args, **kwargs)
+        finally:
+            set_current_tenant(current_tenant)
 
         return obj
 
