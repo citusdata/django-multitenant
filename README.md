@@ -121,33 +121,28 @@ In order to use this library you can either use Mixins or have your models inher
 ### Where to Set the Tenant?
 1. Write authentication logic using a middleware which also sets/unsets a tenant for each session/request. This way developers need not worry about setting a tenant on a per view basis. Just set it while authentication and the library would ensure the rest (adding tenant_id filters to the queries). A sample implementation of the above is as follows:
    ```python
-    class SetCurrentTenantFromUser(object):
-      def process_request(self, request):
-              if not hasattr(self, 'authenticator'):
-                from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-                self.authenticator = JSONWebTokenAuthentication()
-                try:
-                user, _ = self.authenticator.authenticate(request)
-                except:
-                # TODO: handle failure
-                return
-                try:
-                #Assuming your app has a function to get the tenant associated for a user
-                current_tenant = get_tenant_for_user(user)
-                except:
-                # TODO: handle failure
-                return
-                set_current_tenant(current_tenant)
-        def process_response(self, request, response):
-                set_current_tenant(None)
-                return response
+       from django_multitenant.utils import set_current_tenant
+       
+       class MultitenantMiddleware:
+           def __init__(self, get_response):
+               self.get_response = get_response
+
+           def __call__(self, request):
+               if request.user and not request.user.is_anonymous:
+                   set_current_tenant(request.user.employee.company)
+               return self.get_response(request)
    ```
+   
+   In your settings, you will need to update the `MIDDLEWARE` setting to include the one you created.
    ```python
-      MIDDLEWARE_CLASSES = (
-      'our_app.utils.multitenancy.SetCurrentTenantFromUser',
-      )
+      MIDDLEWARE = [
+          # ...
+          # existing items
+          # ...
+          'appname.middleware.MultitenantMiddleware'
+      ]
    ```
-1. Set the tenant using set_current_tenant(t) api in all the views which you want to be scoped based on tenant. This would scope all the django API calls automatically(without specifying explicit filters) to a single tenant. If the current_tenant is not set, then the default/native API  without tenant scoping is used.
+2. Set the tenant using set_current_tenant(t) api in all the views which you want to be scoped based on tenant. This would scope all the django API calls automatically(without specifying explicit filters) to a single tenant. If the current_tenant is not set, then the default/native API  without tenant scoping is used.
    ```python
     def application_function:
       # current_tenant can be stored as a SESSION variable when a user logs in.
