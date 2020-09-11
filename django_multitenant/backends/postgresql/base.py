@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 
 
 class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
+
+    sql_create_column_inline_fk = None
     # Override
     def __enter__(self):
         ret = super(DatabaseSchemaEditor, self).__enter__()
