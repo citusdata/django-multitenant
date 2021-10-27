@@ -1,6 +1,6 @@
-sudo: required
+dist: bionic # Not using focal yet, because Python 2.7 is not available there
 language: python
-python: 3.7
+python: 3.9
 
 env:
   - PREPARED_STATEMENTS=0
@@ -11,11 +11,11 @@ services:
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
   - docker-compose --version
-  - docker-compose --project-name django-multitenant up -d
+  - docker-compose --project-name django-multitenant up -d || { docker-compose logs && false ; }
   - docker-compose -f ./single-node-docker-compose.yml --project-name django-multitenant up -d
 
 

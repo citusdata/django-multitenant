@@ -1,5 +1,7 @@
 import re
 
+import django
+import pytest
 from django.conf import settings
 from django.db.utils import NotSupportedError, DataError
 
@@ -415,6 +417,8 @@ class TenantModelTest(BaseTestCase):
         tasks = Task.objects.exclude(project__isnull=True)
         self.assertEqual(tasks.count(), 150)
 
+    @pytest.mark.skipif(not django.VERSION < (3, 2),
+                        reason="Django 3.2 changed the generated query to one that's not supported by Citus")
     def test_exclude_related(self):
         from .models import Project, Manager, ProjectManager
         project = self.projects[0]
