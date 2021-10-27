@@ -25,12 +25,12 @@ def get_operations():
             bases=(django_multitenant.mixins.TenantModelMixin, models.Model),
         ),
 
-        migrations.RunSQL("ALTER TABLE tests_modelconfig DROP CONSTRAINT tests_modelconfig_pkey CASCADE;"),
-        migrations.RunSQL("ALTER TABLE tests_modelconfig ADD CONSTRAINT tests_modelconfig_pkey PRIMARY KEY (account_id, id);"),
+        migrations.RunSQL("ALTER TABLE tests_modelconfig DROP CONSTRAINT tests_modelconfig_pkey CASCADE;", reverse_sql=''),
+        migrations.RunSQL("ALTER TABLE tests_modelconfig ADD CONSTRAINT tests_modelconfig_pkey PRIMARY KEY (account_id, id);", reverse_sql=''),
     ]
 
     if settings.USE_CITUS:
-        operations += [tenant_migrations.Distribute('ModelConfig'),]
+        operations += [tenant_migrations.Distribute('ModelConfig', reverse_ignore=True),]
 
     return operations
 

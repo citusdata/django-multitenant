@@ -7,7 +7,8 @@ from django_multitenant.utils import get_tenant_column
 
 
 class Distribute(Operation):
-    def __init__(self, model_name, reference=False):
+    def __init__(self, model_name, reference=False, reverse_ignore=False):
+        self.reverse_ignore = reverse_ignore
         self.model_name = model_name
         self.reference = reference
 
@@ -21,7 +22,7 @@ class Distribute(Operation):
         # Distribute objects have no state effect.
         pass
 
-    def database_forwards(self, app_label, schema_editor, from_state, to_state):
+    def get_fake_model(self, app_label, from_state):
         # The following step is necessary because if we distribute a table from a different app
         # than the one in which the migrations/00XX_distribute.py is, we need to load the different
         # app to get the model
@@ -31,7 +32,19 @@ class Distribute(Operation):
         # Using the current state of the migration, it retrieves a class '__fake__.ModelName'
         # As it's using the state, if the model has been deleted since, it will still find the model
         # This will fail if it's trying to find a model that never existed
-        fake_model = from_state.apps.get_model(app_label, self.model_name)
+        return from_state.apps.get_model(app_label, self.model_name)
+
+    def database_backwards(self, app_label, schema_editor, from_state, to_state):
+        if self.reverse_ignore:
+            return
+        fake_model = self.get_fake_model(app_label, from_state)
+
+        self.args = [fake_model._meta.db_table]
+
+        schema_editor.execute("SELECT undistribute_table(%s)", params=self.args)
+
+    def database_forwards(self, app_label, schema_editor, from_state, to_state):
+        fake_model = self.get_fake_model(app_label, from_state)
 
         # We now need the real model, the problem is that the __fake__ model doesn't have access
         # to anything else (functions / properties) than the Fields
