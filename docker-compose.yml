@@ -8,6 +8,7 @@ services:
     labels: ['com.citusdata.role=Master']
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
+    command: -c fsync=off -c full_page_writes=off
   worker1:
     image: 'citusdata/citus:10.2.2'
     ports: ['5601:5432']
@@ -15,6 +16,7 @@ services:
     depends_on: { manager: { condition: service_healthy } }
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
+    command: -c fsync=off -c full_page_writes=off
   worker2:
     image: 'citusdata/citus:10.2.2'
     ports: ['5602:5432']
@@ -22,6 +24,7 @@ services:
     depends_on: { manager: { condition: service_healthy } }
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
+    command: -c fsync=off -c full_page_writes=off
   manager:
     container_name: "${COMPOSE_PROJECT_NAME:-citus}_manager"
     image: 'citusdata/membership-manager:0.2.0'
