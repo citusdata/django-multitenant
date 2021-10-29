@@ -721,7 +721,7 @@ class MultipleTenantModelTest(BaseTestCase):
         self.assertEqual(project.name, 'test update name')
 
     def test_aggregate(self):
-        from .models import *
+        from .models import ProjectManager
         projects = self.projects
         managers = self.project_managers
         unset_current_tenant()

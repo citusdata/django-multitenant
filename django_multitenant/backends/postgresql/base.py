@@ -1,4 +1,5 @@
 import logging
+import django
 from django.apps import apps
 from django.db.backends.postgresql.base import (
     DatabaseFeatures as PostgresqlDatabaseFeatures,
@@ -103,9 +104,20 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
                                                                     suffix=suffix)
 
 class DatabaseFeatures(PostgresqlDatabaseFeatures):
-    # The default Django behaviour is to collapse the fields to just the 'id' field
-    # This doesn't work because we're using a composite primary key.
-    allows_group_by_selected_pks = False
+    # The default Django behaviour is to collapse the fields to just the 'id'
+    # field. This doesn't work because we're using a composite primary key. In
+    # Django version 3.0 a function was added that we can override to specify
+    # for specific models that this behaviour should be disabled.
+    def allows_group_by_selected_pks_on_model(self, model):
+        from django_multitenant.models import TenantModel
+        if issubclass(model, TenantModel):
+            return False
+        return super().allows_group_by_selected_pks_on_model(model)
+    # For django versions before version 3.0 we set a flag that disables this
+    # behaviour for all models.
+    if django.VERSION[0] < 3:
+        allows_group_by_selected_pks = False
+
 
 
 class DatabaseWrapper(PostgresqlDatabaseWrapper):
