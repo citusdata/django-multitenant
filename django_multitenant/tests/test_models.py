@@ -3,6 +3,7 @@ import re
 import django
 import pytest
 from django.conf import settings
+from django.db.models import Count
 from django.db.utils import NotSupportedError, DataError
 
 from django_multitenant.utils import (set_current_tenant,
@@ -718,3 +719,11 @@ class MultipleTenantModelTest(BaseTestCase):
         unset_current_tenant()
         project = Project.objects.filter(account=account).first()
         self.assertEqual(project.name, 'test update name')
+
+    def test_aggregate(self):
+        from .models import ProjectManager
+        projects = self.projects
+        managers = self.project_managers
+        unset_current_tenant()
+        projects_per_manager = ProjectManager.objects.annotate(Count('project_id'))
+        list(projects_per_manager)
