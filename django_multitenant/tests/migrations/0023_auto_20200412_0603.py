@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
             },
             bases=(django_multitenant.mixins.TenantModelMixin, models.Model),
         ),
-        migrations.RunSQL("ALTER TABLE tests_revenue DROP CONSTRAINT tests_revenue_pkey CASCADE;"),
-        tenant_migrations.Distribute('Revenue'),
-        migrations.RunSQL("ALTER TABLE tests_revenue ADD CONSTRAINT tests_revenue_pkey PRIMARY KEY (acc_id, id);")
+        migrations.RunSQL("ALTER TABLE tests_revenue DROP CONSTRAINT tests_revenue_pkey CASCADE;", reverse_sql=''),
+        tenant_migrations.Distribute('Revenue', reverse_ignore=True),
+        migrations.RunSQL("ALTER TABLE tests_revenue ADD CONSTRAINT tests_revenue_pkey PRIMARY KEY (acc_id, id);", reverse_sql='')
     ]

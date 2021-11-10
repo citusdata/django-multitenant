@@ -22,7 +22,7 @@ def get_operations():
     ]
 
     if settings.USE_CITUS:
-        operations += [tenant_migrations.Distribute('Employee', reference=True),]
+        operations += [tenant_migrations.Distribute('Employee', reference=True, reverse_ignore=True),]
 
     return operations
 

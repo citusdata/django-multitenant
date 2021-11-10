@@ -11,8 +11,8 @@ from django_multitenant.db import migrations as tenant_migrations
 
 def get_operations():
     operations = [
-        migrations.RunSQL("ALTER TABLE tests_tenantnotidmodel DROP CONSTRAINT tests_tenantnotidmodel_pkey CASCADE;"),
-        migrations.RunSQL("ALTER TABLE tests_somerelatedmodel DROP CONSTRAINT tests_somerelatedmodel_pkey CASCADE;"),
+        migrations.RunSQL("ALTER TABLE tests_tenantnotidmodel DROP CONSTRAINT tests_tenantnotidmodel_pkey CASCADE;", reverse_sql='ALTER TABLE tests_tenantnotidmodel ADD CONSTRAINT tests_tenantnotidmodel_pkey PRIMARY KEY (tenant_column);'),
+        migrations.RunSQL("ALTER TABLE tests_somerelatedmodel DROP CONSTRAINT tests_somerelatedmodel_pkey CASCADE;", reverse_sql='ALTER TABLE tests_somerelatedmodel ADD CONSTRAINT tests_somerelatedmodel_pkey PRIMARY KEY (related_tenant_id, id);'),
     ]
 
     if settings.USE_CITUS:
@@ -22,8 +22,10 @@ def get_operations():
         ]
 
     operations += [
-        migrations.RunSQL("ALTER TABLE tests_somerelatedmodel ADD CONSTRAINT tests_somerelatedmodel_pkey PRIMARY KEY (related_tenant_id, id);"),
-        migrations.RunSQL("ALTER TABLE tests_tenantnotidmodel ADD CONSTRAINT tests_tenantnotidmodel_pkey PRIMARY KEY (tenant_column);")
+        migrations.RunSQL("ALTER TABLE tests_somerelatedmodel ADD CONSTRAINT tests_somerelatedmodel_pkey PRIMARY KEY (related_tenant_id, id);", 
+            reverse_sql='ALTER TABLE tests_somerelatedmodel DROP CONSTRAINT tests_somerelatedmodel_pkey CASCADE;'),
+        migrations.RunSQL("ALTER TABLE tests_tenantnotidmodel ADD CONSTRAINT tests_tenantnotidmodel_pkey PRIMARY KEY (tenant_column);", 
+            reverse_sql='ALTER TABLE tests_tenantnotidmodel DROP CONSTRAINT tests_tenantnotidmodel_pkey CASCADE;')
     ]
 
     return operations
