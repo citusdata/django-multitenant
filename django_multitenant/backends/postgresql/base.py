@@ -93,7 +93,9 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
             return self.sql_create_fk % {
                 "table": self.quote_name(model._meta.db_table),
                 "name": self.quote_name(
-                    self._create_index_name(model, from_columns, suffix=suffix)
+                    self._create_index_name(
+                        model._meta.db_table, from_columns, suffix=suffix
+                    )
                 ),
                 "column": ", ".join(
                     [self.quote_name(from_col) for from_col in from_columns]
@@ -116,17 +118,6 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
                     super(DatabaseSchemaEditor, self).execute(statement)
         elif sql:
             super(DatabaseSchemaEditor, self).execute(sql, params)
-
-    def _create_index_name(self, model, column_names, suffix=""):
-        # compat with django 2.X and django 1.X
-        import django
-
-        if not isinstance(model, str) and django.VERSION[0] > 1:
-            model = model._meta.db_table
-
-        return super(DatabaseSchemaEditor, self)._create_index_name(
-            model, column_names, suffix=suffix
-        )
 
 
 class DatabaseFeatures(PostgresqlDatabaseFeatures):

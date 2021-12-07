@@ -29,6 +29,7 @@ setup(
         "Topic :: Database",
         "License :: OSI Approved :: MIT License",
         "Intended Audience :: Developers",
+        "Programming Language :: Python :: 3 :: Only",
     ],
     keywords=("citus django multi tenant" "django postgres multi-tenant"),
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),

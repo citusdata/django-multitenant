@@ -1,6 +1,8 @@
 import logging
+import django
 from django.db import models
 from django.db.models.expressions import Col
+from django.db.models.sql.where import WhereNode
 
 from .utils import get_current_tenant, get_tenant_column, get_tenant_filters
 
@@ -50,7 +52,20 @@ class TenantForeignKey(models.ForeignKey):
             return super(TenantForeignKey, self).get_extra_descriptor_filter(instance)
 
     # Override
-    def get_extra_restriction(self, where_class, alias, related_alias):
+    # Django 4.0 removed the where_class argument from this method, so
+    # depending on the version we define the function with a different
+    # signature.
+    if django.VERSION >= (4, 0):
+
+        def get_extra_restriction(self, alias, related_alias):
+            return self.get_extra_restriction_citus(alias, related_alias)
+
+    else:
+
+        def get_extra_restriction(self, where_class, alias, related_alias):
+            return self.get_extra_restriction_citus(alias, related_alias)
+
+    def get_extra_restriction_citus(self, alias, related_alias):
         """
         Return a pair condition used for joining and subquery pushdown. The
         condition is something that responds to as_sql(compiler, connection)
@@ -82,7 +97,7 @@ class TenantForeignKey(models.ForeignKey):
 
         # Create "AND lhs.tenant_id = rhs.tenant_id" as a new condition
         lookup = lhs_tenant_field.get_lookup("exact")(lookup_lhs, lookup_rhs)
-        condition = where_class()
+        condition = WhereNode()
         condition.add(lookup, "AND")
         return condition
 

@@ -67,7 +67,7 @@ if settings.USE_CITUS:
             return self.assertTableIsReference(table_name, value=False)
 
         def test_distribute_table(self):
-            project_state = ProjectState(real_apps=["tests"])
+            project_state = ProjectState(real_apps={"tests"})
             operation = migrations.Distribute("MigrationTestModel")
 
             self.assertEqual(
@@ -85,7 +85,7 @@ if settings.USE_CITUS:
             self.undistribute_table("tests_migrationtestmodel")
 
         def test_reference_table(self):
-            project_state = ProjectState(real_apps=["tests"])
+            project_state = ProjectState(real_apps={"tests"})
             operation = migrations.Distribute(
                 "MigrationTestReferenceModel", reference=True
             )
@@ -104,7 +104,7 @@ if settings.USE_CITUS:
             self.undistribute_table("tests_migrationtestreferencemodel")
 
         def test_reference_different_app_table(self):
-            project_state = ProjectState(real_apps=["auth"])
+            project_state = ProjectState(real_apps={"auth"})
             operation = migrations.Distribute("auth.User", reference=True)
 
             self.assertEqual(
