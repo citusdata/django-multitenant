@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import include, url
+import django
+from django.conf.urls import include
+
+if django.VERSION >= (3, 1):
+    from django.urls import re_path as url
+else:
+    from django.conf.urls import url
+
 from django.contrib import admin
 
 

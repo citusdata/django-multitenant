@@ -22,7 +22,7 @@ DATABASES = {
 SITE_ID = 1
 DEBUG = True
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -32,8 +32,6 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 )
 
-
-MIDDLEWARE = MIDDLEWARE_CLASSES
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -70,3 +68,5 @@ TEMPLATES = [
 
 USE_CITUS = True
 CITUS_EXTENSION_INSTALLED = True
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
