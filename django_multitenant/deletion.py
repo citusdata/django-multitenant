@@ -4,7 +4,7 @@ from functools import reduce
 import django
 from django.db.models import Q
 
-from .utils import (get_current_tenant, get_tenant_filters)
+from .utils import get_current_tenant, get_tenant_filters
 
 
 def related_objects(obj, *args):
@@ -21,10 +21,13 @@ def related_objects(obj, *args):
         objs = args[2]
 
     filters = {}
-    predicate = reduce(operator.or_, (
-            Q(**{'%s__in' % related_field.name: objs})
+    predicate = reduce(
+        operator.or_,
+        (
+            Q(**{"%s__in" % related_field.name: objs})
             for related_field in related_fields
-        ))
+        ),
+    )
 
     if get_current_tenant():
         try:

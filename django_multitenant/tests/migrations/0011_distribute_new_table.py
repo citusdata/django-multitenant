@@ -13,12 +13,19 @@ from django_multitenant.db import migrations as tenant_migrations
 
 def get_operations():
     operations = [
-        migrations.RunSQL("ALTER TABLE tests_tempmodel DROP CONSTRAINT tests_tempmodel_pkey CASCADE;", reverse_sql=''),
-        migrations.RunSQL("ALTER TABLE tests_tempmodel ADD CONSTRAINT tests_tempmodel_pkey PRIMARY KEY (account_id, id);", reverse_sql='')]
+        migrations.RunSQL(
+            "ALTER TABLE tests_tempmodel DROP CONSTRAINT tests_tempmodel_pkey CASCADE;",
+            reverse_sql="",
+        ),
+        migrations.RunSQL(
+            "ALTER TABLE tests_tempmodel ADD CONSTRAINT tests_tempmodel_pkey PRIMARY KEY (account_id, id);",
+            reverse_sql="",
+        ),
+    ]
 
     if settings.USE_CITUS:
         operations += [
-            tenant_migrations.Distribute('TempModel', reverse_ignore=True),
+            tenant_migrations.Distribute("TempModel", reverse_ignore=True),
         ]
 
     return operations
@@ -27,6 +34,6 @@ def get_operations():
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tests', '0010_auto_20190517_1514'),
+        ("tests", "0010_auto_20190517_1514"),
     ]
     operations = get_operations()

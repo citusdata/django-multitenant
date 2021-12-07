@@ -8,13 +8,17 @@ import django_multitenant.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tests', '0005_auto_20190301_0842'),
+        ("tests", "0005_auto_20190301_0842"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='subtask',
-            name='project',
-            field=django_multitenant.fields.TenantForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='tests.Project'),
+            model_name="subtask",
+            name="project",
+            field=django_multitenant.fields.TenantForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="tests.Project",
+            ),
         ),
     ]

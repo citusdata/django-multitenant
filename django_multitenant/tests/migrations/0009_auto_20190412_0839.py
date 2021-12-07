@@ -10,17 +10,17 @@ import django_multitenant.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tests', '0008_auto_20190412_0831'),
+        ("tests", "0008_auto_20190412_0831"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='somerelatedmodel',
-            name='opened',
+            model_name="somerelatedmodel",
+            name="opened",
         ),
         migrations.AddField(
-            model_name='task',
-            name='opened',
+            model_name="task",
+            name="opened",
             field=models.BooleanField(default=True),
         ),
     ]

@@ -14,14 +14,13 @@ with open(path.join(this_directory, "README.md")) as f:
 
 setup(
     name="django-multitenant",
-    version='2.4.0',  # Required
-    description='Django Library to Implement Multi-tenant databases',
+    version="2.4.0",  # Required
+    description="Django Library to Implement Multi-tenant databases",
     long_description=long_description,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     url="https://github.com/citusdata/django-multitenant",
-    author='Louise Grandjonc',
-    author_email='louise.grandjonc@microsoft.com',
-
+    author="Louise Grandjonc",
+    author_email="louise.grandjonc@microsoft.com",
     # Classifiers help users find your project by categorizing it.
     #
     # For a list of valid classifiers, see https://pypi.org/classifiers/
@@ -29,10 +28,8 @@ setup(
         "Development Status :: 5 - Production/Stable ",
         "Topic :: Database",
         "License :: OSI Approved :: MIT License",
-        "Intended Audience :: Developers"
+        "Intended Audience :: Developers",
     ],
-
-    keywords=("citus django multi tenant"
-              "django postgres multi-tenant"),
+    keywords=("citus django multi tenant" "django postgres multi-tenant"),
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
 )

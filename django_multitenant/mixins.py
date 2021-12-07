@@ -14,7 +14,7 @@ from .utils import (
     get_tenant_field,
     get_tenant_filters,
     get_object_tenant,
-    set_object_tenant
+    set_object_tenant,
 )
 
 
@@ -22,10 +22,10 @@ logger = logging.getLogger(__name__)
 
 
 class TenantManagerMixin(object):
-    #Below is the manager related to the above class.
+    # Below is the manager related to the above class.
     def get_queryset(self):
-        #Injecting tenant_id filters in the get_queryset.
-        #Injects tenant_id filter on the current model for all the non-join/join queries. 
+        # Injecting tenant_id filters in the get_queryset.
+        # Injects tenant_id filter on the current model for all the non-join/join queries.
         queryset = self._queryset_class(self.model)
         current_tenant = get_current_tenant()
         if current_tenant:
@@ -43,8 +43,8 @@ class TenantManagerMixin(object):
 
 
 class TenantModelMixin(object):
-    #Abstract model which all the models related to tenant inherit.
-    tenant_id = ''
+    # Abstract model which all the models related to tenant inherit.
+    tenant_id = ""
 
     def __init__(self, *args, **kwargs):
         if not hasattr(DeleteQuery.get_compiler, "_sign"):
@@ -59,19 +59,21 @@ class TenantModelMixin(object):
 
     def __setattr__(self, attrname, val):
 
-        if (attrname in (self.tenant_field, get_tenant_field(self).name)
+        if (
+            attrname in (self.tenant_field, get_tenant_field(self).name)
             and not self._state.adding
             and val
             and self.tenant_value
             and val != self.tenant_value
-            and val != self.tenant_object):
+            and val != self.tenant_object
+        ):
             self._try_update_tenant = True
 
         return super(TenantModelMixin, self).__setattr__(attrname, val)
 
     def _do_update(self, base_qs, using, pk_val, values, update_fields, forced_update):
-        #adding tenant filters for save
-        #Citus requires tenant_id filters for update, hence doing this below change.
+        # adding tenant filters for save
+        # Citus requires tenant_id filters for update, hence doing this below change.
 
         current_tenant = get_current_tenant()
 
@@ -79,20 +81,22 @@ class TenantModelMixin(object):
             kwargs = get_tenant_filters(self.__class__)
             base_qs = base_qs.filter(**kwargs)
         else:
-            logger.warning('Attempting to update %s instance "%s" without a current tenant '
-                           'set. This may cause issues in a partitioned environment. '
-                           'Recommend calling set_current_tenant() before performing this '
-                           'operation.',
-                           self._meta.model.__name__, self)
+            logger.warning(
+                'Attempting to update %s instance "%s" without a current tenant '
+                "set. This may cause issues in a partitioned environment. "
+                "Recommend calling set_current_tenant() before performing this "
+                "operation.",
+                self._meta.model.__name__,
+                self,
+            )
 
-        return super(TenantModelMixin,self)._do_update(base_qs, using,
-                                                       pk_val, values,
-                                                       update_fields,
-                                                       forced_update)
+        return super(TenantModelMixin, self)._do_update(
+            base_qs, using, pk_val, values, update_fields, forced_update
+        )
 
     def save(self, *args, **kwargs):
-        if hasattr(self, '_try_update_tenant'):
-            raise NotSupportedError('Tenant column of a row cannot be updated.')
+        if hasattr(self, "_try_update_tenant"):
+            raise NotSupportedError("Tenant column of a row cannot be updated.")
 
         current_tenant = get_current_tenant()
         tenant_value = get_current_tenant_value()

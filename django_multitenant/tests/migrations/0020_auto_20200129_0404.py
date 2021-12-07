@@ -8,15 +8,21 @@ import django_multitenant.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tests', '0019_auto_20200129_0357'),
+        ("tests", "0019_auto_20200129_0357"),
     ]
 
     atomic = False
 
     operations = [
         migrations.AddField(
-            model_name='project',
-            name='employee',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='projects', to='tests.Employee'),
+            model_name="project",
+            name="employee",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="projects",
+                to="tests.Employee",
+            ),
         ),
     ]

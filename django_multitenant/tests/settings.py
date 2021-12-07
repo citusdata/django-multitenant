@@ -9,16 +9,13 @@ BASE_PATH = os.path.normpath(
 
 DATABASES = {
     "default": {
-        'ENGINE': 'django_multitenant.backends.postgresql',
+        "ENGINE": "django_multitenant.backends.postgresql",
         "NAME": "postgres",
         "USER": "postgres",
         "PASSWORD": "",
         "HOST": "localhost",
         "PORT": 5600,
-        "TEST": {
-            "NAME": "postgres",
-            "SERIALIZE": False
-        }
+        "TEST": {"NAME": "postgres", "SERIALIZE": False},
     }
 }
 
@@ -56,16 +53,16 @@ ROOT_URLCONF = "django_multitenant.tests.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.i18n',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.i18n",
             ],
         },
     },
