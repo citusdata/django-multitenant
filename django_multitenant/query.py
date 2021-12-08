@@ -5,6 +5,7 @@ from django.db.models.sql.constants import (
     NO_RESULTS,
 )
 from django.conf import settings
+from django.db.models.sql.where import WhereNode
 
 
 from .utils import (
@@ -39,7 +40,7 @@ def wrap_update_batch(base_update_batch):
     def update_batch(obj, pk_list, values, using):
         obj.add_update_values(values)
         for offset in range(0, len(pk_list), GET_ITERATOR_CHUNK_SIZE):
-            obj.where = obj.where_class()
+            obj.where = WhereNode()
             obj.add_q(Q(pk__in=pk_list[offset : offset + GET_ITERATOR_CHUNK_SIZE]))
             add_tenant_filters_on_query(obj)
             obj.get_compiler(using).execute_sql(NO_RESULTS)
