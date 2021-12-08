@@ -8,7 +8,7 @@ from .utils import get_current_tenant, get_tenant_filters
 
 
 def related_objects(obj, *args):
-    if django.VERSION[0] < 3 or len(args) == 2:
+    if django.VERSION < (3, 0) or len(args) == 2:
         related = args[0]
         related_model = related.related_model
         related_fields = [related.field]
