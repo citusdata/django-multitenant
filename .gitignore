@@ -2,3 +2,5 @@
 *~
 .env/*
 django_multitenant.egg-info/
+.venv
+.tox/

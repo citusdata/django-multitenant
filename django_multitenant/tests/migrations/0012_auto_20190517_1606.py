@@ -10,24 +10,33 @@ import django_multitenant.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tests', '0011_distribute_new_table'),
+        ("tests", "0011_distribute_new_table"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='projectmanager',
-            name='project',
-            field=django_multitenant.fields.TenantForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Project'),
+            model_name="projectmanager",
+            name="project",
+            field=django_multitenant.fields.TenantForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="tests.Project"
+            ),
         ),
-
         migrations.AddField(
-            model_name='tempmodel',
-            name='project',
-            field=django_multitenant.fields.TenantForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='tests.Project'),
+            model_name="tempmodel",
+            name="project",
+            field=django_multitenant.fields.TenantForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="tests.Project",
+            ),
         ),
         migrations.AlterField(
-            model_name='tempmodel',
-            name='account',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tests.Account', db_constraint=False),
+            model_name="tempmodel",
+            name="account",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="tests.Account",
+                db_constraint=False,
+            ),
         ),
     ]

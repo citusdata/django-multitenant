@@ -10,13 +10,17 @@ import django_multitenant.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tests', '0015_auto_20190829_1334'),
+        ("tests", "0015_auto_20190829_1334"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='projectmanager',
-            name='project',
-            field=django_multitenant.fields.TenantForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='projectmanagers', to='tests.Project'),
+            model_name="projectmanager",
+            name="project",
+            field=django_multitenant.fields.TenantForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="projectmanagers",
+                to="tests.Project",
+            ),
         ),
     ]

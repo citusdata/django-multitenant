@@ -8,8 +8,8 @@ from django.test import TransactionTestCase
 from django_multitenant.db import migrations
 
 
-
 if settings.USE_CITUS:
+
     class MigrationTest(TransactionTestCase):
         def undistribute_table(self, table_name):
             queries = [
@@ -17,12 +17,12 @@ if settings.USE_CITUS:
                 "CREATE TEMP TABLE %(table_name)s_temp AS SELECT * FROM %(table_name)s;"
                 "INSERT INTO %(table_name)s_bis SELECT * FROM %(table_name)s_temp;"
                 "DROP TABLE %(table_name)s CASCADE;"
-                "ALTER TABLE %(table_name)s_bis RENAME TO %(table_name)s;"]
+                "ALTER TABLE %(table_name)s_bis RENAME TO %(table_name)s;"
+            ]
 
             with connection.cursor() as cursor:
                 for query in queries:
-                    cursor.execute(query % {'table_name': table_name})
-
+                    cursor.execute(query % {"table_name": table_name})
 
         def assertTableIsDistributed(self, table_name, column_name, value=True):
             query = """
@@ -67,44 +67,55 @@ if settings.USE_CITUS:
             return self.assertTableIsReference(table_name, value=False)
 
         def test_distribute_table(self):
-            project_state = ProjectState(real_apps=['tests'])
-            operation = migrations.Distribute('MigrationTestModel')
+            project_state = ProjectState(real_apps=["tests"])
+            operation = migrations.Distribute("MigrationTestModel")
 
-            self.assertEqual(operation.describe(), "Run create_(distributed/reference)_table statement")
+            self.assertEqual(
+                operation.describe(),
+                "Run create_(distributed/reference)_table statement",
+            )
 
-            self.assertTableIsNotDistributed('tests_migrationtestmodel', 'id')
+            self.assertTableIsNotDistributed("tests_migrationtestmodel", "id")
             new_state = project_state.clone()
 
             with connection.schema_editor() as editor:
                 operation.database_forwards("tests", editor, project_state, new_state)
 
-            self.assertTableIsDistributed('tests_migrationtestmodel', 'id')
-            self.undistribute_table('tests_migrationtestmodel')
+            self.assertTableIsDistributed("tests_migrationtestmodel", "id")
+            self.undistribute_table("tests_migrationtestmodel")
 
         def test_reference_table(self):
-            project_state = ProjectState(real_apps=['tests'])
-            operation = migrations.Distribute('MigrationTestReferenceModel', reference=True)
+            project_state = ProjectState(real_apps=["tests"])
+            operation = migrations.Distribute(
+                "MigrationTestReferenceModel", reference=True
+            )
 
-            self.assertEqual(operation.describe(), "Run create_(distributed/reference)_table statement")
-            self.assertTableIsNotReference('tests_migrationtestreferencemodel')
+            self.assertEqual(
+                operation.describe(),
+                "Run create_(distributed/reference)_table statement",
+            )
+            self.assertTableIsNotReference("tests_migrationtestreferencemodel")
             new_state = project_state.clone()
 
             with connection.schema_editor() as editor:
                 operation.database_forwards("tests", editor, project_state, new_state)
 
-            self.assertTableIsReference('tests_migrationtestreferencemodel')
-            self.undistribute_table('tests_migrationtestreferencemodel')
+            self.assertTableIsReference("tests_migrationtestreferencemodel")
+            self.undistribute_table("tests_migrationtestreferencemodel")
 
         def test_reference_different_app_table(self):
-            project_state = ProjectState(real_apps=['auth'])
-            operation = migrations.Distribute('auth.User', reference=True)
+            project_state = ProjectState(real_apps=["auth"])
+            operation = migrations.Distribute("auth.User", reference=True)
 
-            self.assertEqual(operation.describe(), "Run create_(distributed/reference)_table statement")
-            self.assertTableIsNotReference('auth_user')
+            self.assertEqual(
+                operation.describe(),
+                "Run create_(distributed/reference)_table statement",
+            )
+            self.assertTableIsNotReference("auth_user")
             new_state = project_state.clone()
 
             with connection.schema_editor() as editor:
                 operation.database_forwards("tests", editor, project_state, new_state)
 
-            self.assertTableIsReference('auth_user')
-            self.undistribute_table('auth_user')
+            self.assertTableIsReference("auth_user")
+            self.undistribute_table("auth_user")

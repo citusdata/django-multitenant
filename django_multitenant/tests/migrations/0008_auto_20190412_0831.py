@@ -11,13 +11,13 @@ import django_multitenant.mixins
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tests', '0007_alter_foreignkey_field'),
+        ("tests", "0007_alter_foreignkey_field"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='somerelatedmodel',
-            name='opened',
+            model_name="somerelatedmodel",
+            name="opened",
             field=models.BooleanField(default=True),
         ),
     ]

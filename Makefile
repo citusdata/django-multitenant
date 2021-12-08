@@ -22,6 +22,12 @@ release-dependencies:
 	pip install -r requirements/release.txt
 
 
+format:
+	black .
+
+format-check:
+	black . --check
+
 release:
 	python -m build --sdist
 	twine check dist/*

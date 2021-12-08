@@ -7,57 +7,93 @@ from django.conf import settings
 
 from django_multitenant.db import migrations as tenant_migrations
 
+
 def get_operations():
     operations = []
     if settings.USE_CITUS:
         operations = [
             # necessary for tests
             migrations.RunSQL("CREATE EXTENSION IF NOT EXISTS citus;"),
-            migrations.RunSQL("SELECT * from master_add_node('django-multitenant_worker1_1', 5432);"),
-            migrations.RunSQL("SELECT * from master_add_node('django-multitenant_worker2_1', 5432);")]
-
+            migrations.RunSQL(
+                "SELECT * from master_add_node('django-multitenant_worker1_1', 5432);"
+            ),
+            migrations.RunSQL(
+                "SELECT * from master_add_node('django-multitenant_worker2_1', 5432);"
+            ),
+        ]
 
     operations += [
         # Drop constraints
-        migrations.RunSQL("""
+        migrations.RunSQL(
+            """
         ALTER TABLE tests_aliasedtask
         DROP CONSTRAINT tests_aliasedtask_pkey CASCADE;
 
         ALTER TABLE tests_aliasedtask ADD CONSTRAINT
         tests_aliasedtask_pkey PRIMARY KEY (account_id, id);
-        """),
-        migrations.RunSQL("ALTER TABLE tests_country DROP CONSTRAINT tests_country_pkey CASCADE;"),
-        migrations.RunSQL("ALTER TABLE tests_manager DROP CONSTRAINT tests_manager_pkey CASCADE;"),
-        migrations.RunSQL("ALTER TABLE tests_project DROP CONSTRAINT tests_project_pkey CASCADE;"),
-        migrations.RunSQL("ALTER TABLE tests_projectmanager DROP CONSTRAINT tests_projectmanager_pkey CASCADE;"),
-        migrations.RunSQL("ALTER TABLE tests_record DROP CONSTRAINT tests_record_pkey CASCADE;"),
-        migrations.RunSQL("ALTER TABLE tests_subtask DROP CONSTRAINT tests_subtask_pkey CASCADE;"),
-        migrations.RunSQL("ALTER TABLE tests_task DROP CONSTRAINT tests_task_pkey CASCADE;"),
+        """
+        ),
+        migrations.RunSQL(
+            "ALTER TABLE tests_country DROP CONSTRAINT tests_country_pkey CASCADE;"
+        ),
+        migrations.RunSQL(
+            "ALTER TABLE tests_manager DROP CONSTRAINT tests_manager_pkey CASCADE;"
+        ),
+        migrations.RunSQL(
+            "ALTER TABLE tests_project DROP CONSTRAINT tests_project_pkey CASCADE;"
+        ),
+        migrations.RunSQL(
+            "ALTER TABLE tests_projectmanager DROP CONSTRAINT tests_projectmanager_pkey CASCADE;"
+        ),
+        migrations.RunSQL(
+            "ALTER TABLE tests_record DROP CONSTRAINT tests_record_pkey CASCADE;"
+        ),
+        migrations.RunSQL(
+            "ALTER TABLE tests_subtask DROP CONSTRAINT tests_subtask_pkey CASCADE;"
+        ),
+        migrations.RunSQL(
+            "ALTER TABLE tests_task DROP CONSTRAINT tests_task_pkey CASCADE;"
+        ),
     ]
 
     if settings.USE_CITUS:
         # distribute
         operations += [
-            tenant_migrations.Distribute('Country', reference=True),
-            tenant_migrations.Distribute('Account'),
-            tenant_migrations.Distribute('AliasedTask'),
-            tenant_migrations.Distribute('Manager'),
-            tenant_migrations.Distribute('Organization'),
-            tenant_migrations.Distribute('Project'),
-            tenant_migrations.Distribute('ProjectManager'),
-            tenant_migrations.Distribute('Record'),
-            tenant_migrations.Distribute('SubTask'),
-            tenant_migrations.Distribute('Task')]
+            tenant_migrations.Distribute("Country", reference=True),
+            tenant_migrations.Distribute("Account"),
+            tenant_migrations.Distribute("AliasedTask"),
+            tenant_migrations.Distribute("Manager"),
+            tenant_migrations.Distribute("Organization"),
+            tenant_migrations.Distribute("Project"),
+            tenant_migrations.Distribute("ProjectManager"),
+            tenant_migrations.Distribute("Record"),
+            tenant_migrations.Distribute("SubTask"),
+            tenant_migrations.Distribute("Task"),
+        ]
 
     # Add constraints
     operations += [
-        migrations.RunSQL("ALTER TABLE tests_country ADD CONSTRAINT tests_country_pkey PRIMARY KEY (id);"),
-        migrations.RunSQL("ALTER TABLE tests_project ADD CONSTRAINT tests_project_pkey PRIMARY KEY (account_id, id);"),
-        migrations.RunSQL("ALTER TABLE tests_manager ADD CONSTRAINT tests_manager_pkey PRIMARY KEY (account_id, id);"),
-        migrations.RunSQL("ALTER TABLE tests_projectmanager ADD CONSTRAINT tests_projectmanager_pkey PRIMARY KEY (account_id, id);"),
-        migrations.RunSQL("ALTER TABLE tests_record ADD CONSTRAINT tests_record_pkey PRIMARY KEY (organization_id, id);"),
-        migrations.RunSQL("ALTER TABLE tests_subtask ADD CONSTRAINT tests_subtask_pkey PRIMARY KEY (account_id, id);"),
-        migrations.RunSQL("ALTER TABLE tests_task ADD CONSTRAINT tests_task_pkey PRIMARY KEY (account_id, id);")
+        migrations.RunSQL(
+            "ALTER TABLE tests_country ADD CONSTRAINT tests_country_pkey PRIMARY KEY (id);"
+        ),
+        migrations.RunSQL(
+            "ALTER TABLE tests_project ADD CONSTRAINT tests_project_pkey PRIMARY KEY (account_id, id);"
+        ),
+        migrations.RunSQL(
+            "ALTER TABLE tests_manager ADD CONSTRAINT tests_manager_pkey PRIMARY KEY (account_id, id);"
+        ),
+        migrations.RunSQL(
+            "ALTER TABLE tests_projectmanager ADD CONSTRAINT tests_projectmanager_pkey PRIMARY KEY (account_id, id);"
+        ),
+        migrations.RunSQL(
+            "ALTER TABLE tests_record ADD CONSTRAINT tests_record_pkey PRIMARY KEY (organization_id, id);"
+        ),
+        migrations.RunSQL(
+            "ALTER TABLE tests_subtask ADD CONSTRAINT tests_subtask_pkey PRIMARY KEY (account_id, id);"
+        ),
+        migrations.RunSQL(
+            "ALTER TABLE tests_task ADD CONSTRAINT tests_task_pkey PRIMARY KEY (account_id, id);"
+        ),
     ]
 
     return operations
@@ -67,7 +103,7 @@ class Migration(migrations.Migration):
     atomic = False
 
     dependencies = [
-        ('tests', '0001_initial'),
+        ("tests", "0001_initial"),
     ]
 
     operations = get_operations()

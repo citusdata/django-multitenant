@@ -17,7 +17,7 @@ def get_model_by_db_table(db_table):
             return model
     else:
         # here you can do fallback logic if no model with db_table found
-        raise ValueError('No model found with db_table {}!'.format(db_table))
+        raise ValueError("No model found with db_table {}!".format(db_table))
         # or return None
 
 
@@ -30,7 +30,7 @@ def get_current_tenant():
     ```
     Will return None if the tenant is not set
     """
-    return getattr(_thread_locals, 'tenant', None)
+    return getattr(_thread_locals, "tenant", None)
 
 
 def get_tenant_column(model_class_or_instance):
@@ -40,9 +40,11 @@ def get_tenant_column(model_class_or_instance):
     try:
         return model_class_or_instance.tenant_field
     except:
-        raise ValueError('''%s is not an instance or a subclass of TenantModel
-                         or does not inherit from TenantMixin'''
-                         % model_class_or_instance.__class__.__name__)
+        raise ValueError(
+            """%s is not an instance or a subclass of TenantModel
+                         or does not inherit from TenantMixin"""
+            % model_class_or_instance.__class__.__name__
+        )
 
 
 def get_tenant_field(model_class_or_instance):
@@ -51,8 +53,11 @@ def get_tenant_field(model_class_or_instance):
     try:
         return next(field for field in all_fields if field.column == tenant_column)
     except StopIteration:
-        raise ValueError('No field found in {} with column name "{}"'.format(
-                         model_class_or_instance, tenant_column))
+        raise ValueError(
+            'No field found in {} with column name "{}"'.format(
+                model_class_or_instance, tenant_column
+            )
+        )
 
 
 def get_object_tenant(instance):
@@ -94,7 +99,7 @@ def get_tenant_filters(table, filters=None):
         return filters
 
     if isinstance(current_tenant_value, list):
-        filters['%s__in' % get_tenant_column(table)] = current_tenant_value
+        filters["%s__in" % get_tenant_column(table)] = current_tenant_value
     else:
         filters[get_tenant_column(table)] = current_tenant_value
 
@@ -112,11 +117,11 @@ def set_current_tenant(tenant):
     ```
     """
 
-    setattr(_thread_locals, 'tenant', tenant)
+    setattr(_thread_locals, "tenant", tenant)
 
 
 def unset_current_tenant():
-    setattr(_thread_locals, 'tenant', None)
+    setattr(_thread_locals, "tenant", None)
 
 
 def is_distributed_model(model):

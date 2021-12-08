@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class TenantForeignKey(models.ForeignKey):
-    '''
+    """
     Should be used in place of models.ForeignKey for all foreign key relationships to
     subclasses of TenantModel.
 
@@ -17,7 +17,7 @@ class TenantForeignKey(models.ForeignKey):
 
     Adds clause to forward accesses through this field to include tenant_id in the
     TenantModel lookup.
-    '''
+    """
 
     # Override
     def get_extra_descriptor_filter(self, instance):
@@ -38,12 +38,15 @@ class TenantForeignKey(models.ForeignKey):
         if current_tenant:
             return get_tenant_filters(self.related_model)
         else:
-            logger.warn('TenantForeignKey field %s.%s '
-                        'accessed without a current tenant set. '
-                        'This may cause issues in a partitioned environment. '
-                        'Recommend calling set_current_tenant() before accessing '
-                        'this field.',
-                        self.model.__name__, self.name)
+            logger.warn(
+                "TenantForeignKey field %s.%s "
+                "accessed without a current tenant set. "
+                "This may cause issues in a partitioned environment. "
+                "Recommend calling set_current_tenant() before accessing "
+                "this field.",
+                self.model.__name__,
+                self.name,
+            )
             return super(TenantForeignKey, self).get_extra_descriptor_filter(instance)
 
     # Override
@@ -78,14 +81,14 @@ class TenantForeignKey(models.ForeignKey):
         lookup_rhs = rhs_tenant_field.get_col(alias)
 
         # Create "AND lhs.tenant_id = rhs.tenant_id" as a new condition
-        lookup = lhs_tenant_field.get_lookup('exact')(lookup_lhs, lookup_rhs)
+        lookup = lhs_tenant_field.get_lookup("exact")(lookup_lhs, lookup_rhs)
         condition = where_class()
-        condition.add(lookup, 'AND')
+        condition.add(lookup, "AND")
         return condition
 
 
 class TenantOneToOneField(models.OneToOneField, TenantForeignKey):
     # Override
     def __init__(self, *args, **kwargs):
-        kwargs['unique'] = False
+        kwargs["unique"] = False
         super(TenantOneToOneField, self).__init__(*args, **kwargs)

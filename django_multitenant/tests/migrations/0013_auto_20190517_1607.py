@@ -10,15 +10,15 @@ import django_multitenant.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tests', '0012_auto_20190517_1606'),
+        ("tests", "0012_auto_20190517_1606"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='tempmodel',
-            name='project',
+            model_name="tempmodel",
+            name="project",
         ),
         migrations.DeleteModel(
-            name='TempModel',
+            name="TempModel",
         ),
     ]
