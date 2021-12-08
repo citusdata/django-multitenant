@@ -134,7 +134,7 @@ class DatabaseFeatures(PostgresqlDatabaseFeatures):
 
     # For django versions before version 3.0 we set a flag that disables this
     # behaviour for all models.
-    if django.VERSION[0] < 3:
+    if django.VERSION < (3, 0):
         allows_group_by_selected_pks = False
 
 
