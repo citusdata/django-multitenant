@@ -3,7 +3,9 @@ import django
 from django.db import models
 from django.db.models.expressions import Col
 from django.db.models.sql.where import WhereNode
+from django.conf import settings
 
+from .exceptions import EmptyTenant
 from .utils import get_current_tenant, get_tenant_column, get_tenant_filters
 
 logger = logging.getLogger(__name__)
@@ -39,6 +41,8 @@ class TenantForeignKey(models.ForeignKey):
         current_tenant = get_current_tenant()
         if current_tenant:
             return get_tenant_filters(self.related_model)
+        elif getattr(settings, "STRICT_MODE", False):
+            raise EmptyTenant
         else:
             logger.warning(
                 "TenantForeignKey field %s.%s "

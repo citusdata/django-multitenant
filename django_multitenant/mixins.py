@@ -1,11 +1,13 @@
 import logging
 
-from django.db import models
 from django.db.models.sql import DeleteQuery, UpdateQuery
 from django.db.models.deletion import Collector
 from django.db.utils import NotSupportedError
+from django.conf import settings
+
 
 from .deletion import related_objects
+from .exceptions import EmptyTenant
 from .query import wrap_get_compiler, wrap_update_batch, wrap_delete
 from .utils import (
     set_current_tenant,
@@ -80,6 +82,8 @@ class TenantModelMixin(object):
         if current_tenant:
             kwargs = get_tenant_filters(self.__class__)
             base_qs = base_qs.filter(**kwargs)
+        elif getattr(settings, "STRICT_MODE", False):
+            raise EmptyTenant
         else:
             logger.warning(
                 'Attempting to update %s instance "%s" without a current tenant '
