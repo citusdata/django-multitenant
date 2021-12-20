@@ -41,7 +41,7 @@ class TenantForeignKey(models.ForeignKey):
         current_tenant = get_current_tenant()
         if current_tenant:
             return get_tenant_filters(self.related_model)
-        elif getattr(settings, "STRICT_MODE", False):
+        elif getattr(settings, "TENANT_STRICT_MODE", False):
             raise EmptyTenant
         else:
             logger.warning(

@@ -82,7 +82,7 @@ class TenantModelMixin(object):
         if current_tenant:
             kwargs = get_tenant_filters(self.__class__)
             base_qs = base_qs.filter(**kwargs)
-        elif getattr(settings, "STRICT_MODE", False):
+        elif getattr(settings, "TENANT_STRICT_MODE", False):
             raise EmptyTenant
         else:
             logger.warning(
