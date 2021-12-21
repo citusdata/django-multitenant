@@ -46,7 +46,8 @@ class TenantForeignKey(models.ForeignKey):
                 f"TenantForeignKey field {self.model.__name__}.{self.name} "
                 "accessed without a current tenant set. "
                 "This may cause issues in a partitioned environment. "
-                "Recommend calling set_current_tenant() before accessing this field."
+                "Recommend calling set_current_tenant() before accessing "
+                "this field."
             )
 
             if getattr(settings, "TENANT_STRICT_MODE", False):
