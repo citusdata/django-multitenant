@@ -41,19 +41,21 @@ class TenantForeignKey(models.ForeignKey):
         current_tenant = get_current_tenant()
         if current_tenant:
             return get_tenant_filters(self.related_model)
-        elif getattr(settings, "TENANT_STRICT_MODE", False):
-            raise EmptyTenant
         else:
-            logger.warning(
-                "TenantForeignKey field %s.%s "
+            empty_tenant_message = (
+                f"TenantForeignKey field {self.model.__name__}.{self.name} "
                 "accessed without a current tenant set. "
                 "This may cause issues in a partitioned environment. "
-                "Recommend calling set_current_tenant() before accessing "
-                "this field.",
-                self.model.__name__,
-                self.name,
+                "Recommend calling set_current_tenant() before accessing this field."
             )
-            return super(TenantForeignKey, self).get_extra_descriptor_filter(instance)
+
+            if getattr(settings, "TENANT_STRICT_MODE", False):
+                raise EmptyTenant(empty_tenant_message)
+
+            logger.warning(empty_tenant_message)
+            return super(TenantForeignKey, self).get_extra_descriptor_filter(
+                instance
+            )
 
     # Override
     # Django 4.0 removed the where_class argument from this method, so
