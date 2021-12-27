@@ -90,10 +90,10 @@ class TenantModelMixin(object):
                 "Recommend calling set_current_tenant() before performing this "
                 "operation.",
             )
-        if getattr(settings, "TENANT_STRICT_MODE", False):
-            raise EmptyTenant(empty_tenant_message)
-        else:
-            logger.warning(empty_tenant_message)
+            if getattr(settings, "TENANT_STRICT_MODE", False):
+                raise EmptyTenant(empty_tenant_message)
+            else:
+                logger.warning(empty_tenant_message)
 
         return super(TenantModelMixin, self)._do_update(
             base_qs, using, pk_val, values, update_fields, forced_update
