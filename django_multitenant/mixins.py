@@ -84,7 +84,7 @@ class TenantModelMixin(object):
             base_qs = base_qs.filter(**kwargs)
         else:
             empty_tenant_message = (
-                f'Attempting to update {self._meta.model.__name__} instance {self} '
+                f"Attempting to update {self._meta.model.__name__} instance {self} "
                 "without a current tenant set. "
                 "This may cause issues in a partitioned environment. "
                 "Recommend calling set_current_tenant() before performing this "

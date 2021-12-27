@@ -54,9 +54,7 @@ class TenantForeignKey(models.ForeignKey):
                 raise EmptyTenant(empty_tenant_message)
 
             logger.warning(empty_tenant_message)
-            return super(TenantForeignKey, self).get_extra_descriptor_filter(
-                instance
-            )
+            return super(TenantForeignKey, self).get_extra_descriptor_filter(instance)
 
     # Override
     # Django 4.0 removed the where_class argument from this method, so
