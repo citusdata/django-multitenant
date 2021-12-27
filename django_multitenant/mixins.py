@@ -82,17 +82,18 @@ class TenantModelMixin(object):
         if current_tenant:
             kwargs = get_tenant_filters(self.__class__)
             base_qs = base_qs.filter(**kwargs)
-        elif getattr(settings, "TENANT_STRICT_MODE", False):
-            raise EmptyTenant
         else:
-            logger.warning(
-                'Attempting to update %s instance "%s" without a current tenant '
-                "set. This may cause issues in a partitioned environment. "
+            empty_tenant_message = (
+                f'Attempting to update {self._meta.model.__name__} instance {self} '
+                "without a current tenant set. "
+                "This may cause issues in a partitioned environment. "
                 "Recommend calling set_current_tenant() before performing this "
                 "operation.",
-                self._meta.model.__name__,
-                self,
             )
+        if getattr(settings, "TENANT_STRICT_MODE", False):
+            raise EmptyTenant(empty_tenant_message)
+        else:
+            logger.warning(empty_tenant_message)
 
         return super(TenantModelMixin, self)._do_update(
             base_qs, using, pk_val, values, update_fields, forced_update
