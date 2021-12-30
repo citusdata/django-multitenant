@@ -3,7 +3,9 @@ import django
 from django.db import models
 from django.db.models.expressions import Col
 from django.db.models.sql.where import WhereNode
+from django.conf import settings
 
+from .exceptions import EmptyTenant
 from .utils import get_current_tenant, get_tenant_column, get_tenant_filters
 
 logger = logging.getLogger(__name__)
@@ -40,15 +42,18 @@ class TenantForeignKey(models.ForeignKey):
         if current_tenant:
             return get_tenant_filters(self.related_model)
         else:
-            logger.warning(
-                "TenantForeignKey field %s.%s "
+            empty_tenant_message = (
+                f"TenantForeignKey field {self.model.__name__}.{self.name} "
                 "accessed without a current tenant set. "
                 "This may cause issues in a partitioned environment. "
                 "Recommend calling set_current_tenant() before accessing "
-                "this field.",
-                self.model.__name__,
-                self.name,
+                "this field."
             )
+
+            if getattr(settings, "TENANT_STRICT_MODE", False):
+                raise EmptyTenant(empty_tenant_message)
+
+            logger.warning(empty_tenant_message)
             return super(TenantForeignKey, self).get_extra_descriptor_filter(instance)
 
     # Override

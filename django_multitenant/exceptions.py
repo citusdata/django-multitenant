@@ -1,0 +1,2 @@
+class EmptyTenant(Exception):
+    pass
