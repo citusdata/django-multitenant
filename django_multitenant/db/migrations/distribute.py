@@ -49,7 +49,9 @@ class Distribute(Operation):
         # We now need the real model, the problem is that the __fake__ model doesn't have access
         # to anything else (functions / properties) than the Fields
         # So to access the model.tenant_id, we need this.
-        app = global_apps.get_app_config(app_label)
+        app = global_apps.get_app_config(
+            fake_model._meta.app_label if fake_model else app_label
+        )
         self.model = None
 
         for model in app.get_models():
