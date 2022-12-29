@@ -6,3 +6,5 @@ services:
     container_name: "${COMPOSE_PROJECT_NAME:-single}_node_postgres"
     ports:
       - "5604:5432"
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
