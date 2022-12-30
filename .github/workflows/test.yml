@@ -21,9 +21,9 @@ jobs:
         python-version: 3.9
     - name: Run tests
       run: |
-        docker compose version
+        docker-compose version
 
-        docker compose --project-name django-multitenant up -d || { docker compose logs && false ; }
-        docker compose -f ./single-node-docker-compose.yml --project-name django-multitenant up -d
+        docker-compose --project-name django-multitenant up -d || { docker-compose logs && false ; }
+        docker-compose -f ./single-node-docker-compose.yml --project-name django-multitenant up -d
         pip install tox
         tox
