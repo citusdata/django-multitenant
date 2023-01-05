@@ -8,6 +8,11 @@ from .utils import get_current_tenant, get_tenant_filters
 
 
 def related_objects(obj, *args):
+    """
+    Override of Collector.related_objects. Returns the filter for the related objects
+    Different from the original method, this method adds the tenant filters to the query.
+    CAUTION: When Collector.related_objects is changed, this method should be updated accordingly.
+    """
     if django.VERSION < (3, 0) or len(args) == 2:
         related = args[0]
         related_model = related.related_model
