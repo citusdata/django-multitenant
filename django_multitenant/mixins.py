@@ -38,7 +38,6 @@ class TenantManagerMixin(object):
             return queryset.filter(**kwargs)
         return queryset
 
-
     def bulk_create(self, objs, **kwargs):
         # Helper method to set tenant_id in the current thread for the results returned from query_set.
         # For example, if we have a query_set of all the users in the current tenant, we can set the tenant_id by calling
@@ -57,9 +56,9 @@ class TenantModelMixin(object):
 
     def __init__(self, *args, **kwargs):
         # Adds tenant_id filters in the delete and update queries.
-        
+
         # Below block decorates Delete operations related activities and adds tenant_id filters.
-        
+
         if not hasattr(DeleteQuery.get_compiler, "_sign"):
             # Decorates the the compiler of DeleteQuery to add tenant_id filters.
             DeleteQuery.get_compiler = wrap_get_compiler(DeleteQuery.get_compiler)
@@ -67,7 +66,7 @@ class TenantModelMixin(object):
             # related_objects is being used to define additional records for deletion defined with relations
             Collector.related_objects = related_objects
             # Decorates the delete method of Collector to execute citus shard_modify_mode commands
-            # if distributed tables are being related to the model. 
+            # if distributed tables are being related to the model.
             Collector.delete = wrap_delete(Collector.delete)
 
         # Decorates the update_batch method of UpdateQuery to add tenant_id filters.
@@ -75,7 +74,6 @@ class TenantModelMixin(object):
             UpdateQuery.update_batch = wrap_update_batch(UpdateQuery.update_batch)
 
         super(TenantModelMixin, self).__init__(*args, **kwargs)
-    
 
     def __setattr__(self, attrname, val):
         # Provides failing of the save operation if the tenant_id is changed.
@@ -92,7 +90,6 @@ class TenantModelMixin(object):
 
         return super(TenantModelMixin, self).__setattr__(attrname, val)
 
-    
     def _do_update(self, base_qs, using, pk_val, values, update_fields, forced_update):
         # adding tenant filters for save
         # Citus requires tenant_id filters for update, hence doing this below change.
@@ -120,7 +117,7 @@ class TenantModelMixin(object):
         )
 
     def save(self, *args, **kwargs):
-        # Performs tenant related operations before and after save. 
+        # Performs tenant related operations before and after save.
         # Synchrnizes object tenant with the tenant set in the application in case of a mismatch
         # In normal cases _try_update_tenant should prevent tenant_id from being updated.
         # However, if the tenant_id is updated in the database directly, this will catch it.

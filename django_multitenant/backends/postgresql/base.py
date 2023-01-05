@@ -26,10 +26,11 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
         return ret
 
     # Override
-    '''
+    """
     If there is a change in the field, this method assures that if the field is type of TenantForeignKey
     and db_constraint does not exist, adds the foreign key constraint.
-    '''
+    """
+
     def _alter_field(
         self,
         model,
@@ -77,6 +78,7 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
     """
     This method overrides the additions foreign key constraint sql and adds the tenant column to the constraint 
     """
+
     def _create_fk_sql(self, model, field, suffix):
         if isinstance(field, TenantForeignKey):
             try:

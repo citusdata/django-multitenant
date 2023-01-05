@@ -109,7 +109,7 @@ def get_current_tenant_value():
 
 def get_tenant_filters(table, filters=None):
     """
-    Returns filter with tenant column added to it if exists. 
+    Returns filter with tenant column added to it if exists.
     If there is more than one tenant column, it will return fiter with in statement.
     """
     filters = filters or {}
