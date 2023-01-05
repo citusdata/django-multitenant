@@ -1,0 +1,16 @@
+test-warnings: true
+doc-warnings: false
+member-warnings: false
+
+uses:
+  -django
+
+ignore-paths:
+  - docs
+
+autodetect: true
+
+pylint:
+  disable:
+  options:
+    max-args: 6
