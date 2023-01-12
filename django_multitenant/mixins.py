@@ -50,7 +50,7 @@ class TenantManagerMixin:
         return super().bulk_create(objs, **kwargs)
 
 
-class TenantModelMixin(object):
+class TenantModelMixin:
     # Abstract model which all the models related to tenant inherit.
     tenant_id = ""
 
@@ -76,20 +76,29 @@ class TenantModelMixin(object):
         super().__init__(*args, **kwargs)
 
     def __setattr__(self, attrname, val):
+<<<<<<< HEAD
         # Provides failing of the save operation if the tenant_id is changed.
         # try_update_tenant is being checked inside save method and if it is true, it will raise an exception.
+=======
+        def is_val_equal_to_tenant(val):
+            return (
+                val
+                and self.tenant_value
+                and val != self.tenant_value
+                and val != self.tenant_object
+            )
+
+>>>>>>> Fixes prospector issues
         if (
             attrname in (self.tenant_field, get_tenant_field(self).name)
             and not self._state.adding
-            and val
-            and self.tenant_value
-            and val != self.tenant_value
-            and val != self.tenant_object
+            and is_val_equal_to_tenant(val)
         ):
             self._try_update_tenant = True
 
         return super().__setattr__(attrname, val)
 
+    # pylint: disable=too-many-arguments
     def _do_update(self, base_qs, using, pk_val, values, update_fields, forced_update):
         # adding tenant filters for save
         # Citus requires tenant_id filters for update, hence doing this below change.
@@ -109,8 +118,7 @@ class TenantModelMixin(object):
             )
             if getattr(settings, "TENANT_STRICT_MODE", False):
                 raise EmptyTenant(empty_tenant_message)
-            else:
-                logger.warning(empty_tenant_message)
+            logger.warning(empty_tenant_message)
 
         return super()._do_update(
             base_qs, using, pk_val, values, update_fields, forced_update

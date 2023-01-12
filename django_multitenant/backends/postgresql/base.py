@@ -22,7 +22,7 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
     sql_create_column_inline_fk = None
     # Override
     def __enter__(self):
-        ret = super(DatabaseSchemaEditor, self).__enter__()
+        ret = super().__enter__()
         return ret
 
     # Override
@@ -44,7 +44,7 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
         strict=False,
     ):
 
-        super(DatabaseSchemaEditor, self)._alter_field(
+        super()._alter_field(
             model,
             old_field,
             new_field,
@@ -116,7 +116,7 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
                 ),
                 "deferrable": self.connection.ops.deferrable_sql(),
             }
-        return super(DatabaseSchemaEditor, self)._create_fk_sql(model, field, suffix)
+        return super()._create_fk_sql(model, field, suffix)
 
     # Override
     def execute(self, sql, params=()):
@@ -125,9 +125,9 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
         if sql and not params:
             for statement in str(sql).split(";"):
                 if statement and not statement.isspace():
-                    super(DatabaseSchemaEditor, self).execute(statement)
+                    super().execute(statement)
         elif sql:
-            super(DatabaseSchemaEditor, self).execute(sql, params)
+            super().execute(sql, params)
 
 
 class DatabaseFeatures(PostgresqlDatabaseFeatures):
