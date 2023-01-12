@@ -90,7 +90,7 @@ def get_current_tenant_value():
     """
     Returns current set tenant value if exists
     If tenant is a list, it will return a list of tenant values
-    If there is note tenant set, it will return None
+    If there is not any tenant set, it will return None
     """
     current_tenant = get_current_tenant()
     if not current_tenant:

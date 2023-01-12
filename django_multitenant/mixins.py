@@ -118,7 +118,7 @@ class TenantModelMixin(object):
 
     def save(self, *args, **kwargs):
         # Performs tenant related operations before and after save.
-        # Synchrnizes object tenant with the tenant set in the application in case of a mismatch
+        # Synchronizes object tenant with the tenant set in the application in case of a mismatch
         # In normal cases _try_update_tenant should prevent tenant_id from being updated.
         # However, if the tenant_id is updated in the database directly, this will catch it.
         if hasattr(self, "_try_update_tenant"):
