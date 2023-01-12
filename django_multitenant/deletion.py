@@ -36,5 +36,5 @@ def related_objects(obj, *args):
             filters = get_tenant_filters(related_model)
         except ValueError:
             pass
-
+    # pylint: disable=protected-access
     return related_model._base_manager.using(obj.using).filter(predicate, **filters)

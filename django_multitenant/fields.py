@@ -65,7 +65,7 @@ class TenantForeignKey(models.ForeignKey):
             return self.get_extra_restriction_citus(alias, related_alias)
 
     else:
-
+        # pylint: disable=unused-argument
         def get_extra_restriction(self, where_class, alias, related_alias):
             return self.get_extra_restriction_citus(alias, related_alias)
 

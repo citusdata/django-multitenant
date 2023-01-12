@@ -4,11 +4,6 @@ from django.db import models
 
 from .mixins import TenantManagerMixin, TenantModelMixin
 
-from .utils import (
-    get_current_tenant,
-    get_model_by_db_table,
-    get_tenant_column,
-)
 
 logger = logging.getLogger(__name__)
 

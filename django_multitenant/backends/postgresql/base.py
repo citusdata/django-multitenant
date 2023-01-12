@@ -4,11 +4,7 @@ from django.db.backends.postgresql.base import (
     DatabaseFeatures as PostgresqlDatabaseFeatures,
     DatabaseWrapper as PostgresqlDatabaseWrapper,
     DatabaseSchemaEditor as PostgresqlDatabaseSchemaEditor,
-    DatabaseCreation,
     DatabaseFeatures,
-    DatabaseOperations,
-    DatabaseClient,
-    DatabaseIntrospection,
 )
 from django_multitenant.fields import TenantForeignKey
 from django_multitenant.utils import get_model_by_db_table, get_tenant_column
@@ -115,7 +111,7 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
                 ),
                 "deferrable": self.connection.ops.deferrable_sql(),
             }
-        return super(DatabaseSchemaEditor, self)._create_fk_sql(model, field, suffix)
+        return super()._create_fk_sql(model, field, suffix)
 
     # Override
     def execute(self, sql, params=()):
@@ -129,6 +125,7 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
             super().execute(sql, params)
 
 
+# noqa
 class DatabaseFeatures(PostgresqlDatabaseFeatures):
     # The default Django behaviour is to collapse the fields to just the 'id'
     # field. This doesn't work because we're using a composite primary key. In

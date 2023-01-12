@@ -14,3 +14,4 @@ pylint:
   disable:
   options:
     max-args: 6
+    django-settings-module: django_multitenant.settings

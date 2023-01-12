@@ -45,10 +45,10 @@ def get_tenant_column(model_class_or_instance):
 
     try:
         return model_class_or_instance.tenant_field
-    except:
+    except Exception as not_a_tenant_model:
         raise ValueError(
             f"{model_class_or_instance.__class__.__name__} is not an instance or a subclass of TenantModel or does not inherit from TenantMixin"
-        )
+        ) from not_a_tenant_model
 
 
 def get_tenant_field(model_class_or_instance):
@@ -59,10 +59,10 @@ def get_tenant_field(model_class_or_instance):
     all_fields = model_class_or_instance._meta.fields
     try:
         return next(field for field in all_fields if field.column == tenant_column)
-    except StopIteration:
+    except StopIteration as no_field_found:
         raise ValueError(
             f'No field found in {model_class_or_instance} with column name "{tenant_column}"'
-        )
+        ) from no_field_found
 
 
 def get_object_tenant(instance):
