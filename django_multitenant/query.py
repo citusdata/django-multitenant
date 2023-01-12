@@ -10,7 +10,6 @@ from django.db.models.sql.where import WhereNode
 
 from .utils import (
     get_current_tenant,
-    get_tenant_column,
     get_tenant_filters,
     is_distributed_model,
 )

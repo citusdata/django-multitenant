@@ -1,7 +1,6 @@
 import logging
 import django
 from django.db import models
-from django.db.models.expressions import Col
 from django.db.models.sql.where import WhereNode
 from django.conf import settings
 

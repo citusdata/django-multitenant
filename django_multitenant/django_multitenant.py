@@ -7,7 +7,6 @@ try:
 except ImportError:
     from django.utils._threading_local import local
 
-from collections import OrderedDict
 
 # file kept for compatibility with old version of the library
 

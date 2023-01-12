@@ -1,6 +1,5 @@
 import logging
 import django
-from django.apps import apps
 from django.db.backends.postgresql.base import (
     DatabaseFeatures as PostgresqlDatabaseFeatures,
     DatabaseWrapper as PostgresqlDatabaseWrapper,
@@ -116,7 +115,7 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
                 ),
                 "deferrable": self.connection.ops.deferrable_sql(),
             }
-        return super()._create_fk_sql(model, field, suffix)
+        return super(DatabaseSchemaEditor, self)._create_fk_sql(model, field, suffix)
 
     # Override
     def execute(self, sql, params=()):
