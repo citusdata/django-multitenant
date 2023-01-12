@@ -1,0 +1,7 @@
+Django>=3.2.9
+psycopg2
+exam
+pytest
+pytest-cov
+pytest-django
+prospector[with_everything]

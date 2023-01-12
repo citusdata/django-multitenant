@@ -1,7 +1,6 @@
 from django.db import connection
-from django.db.migrations.migration import Migration
-from django.db.migrations.recorder import MigrationRecorder
-from django.db.migrations.state import ModelState, ProjectState
+
+from django.db.migrations.state import ProjectState
 from django.conf import settings
 from django.test import TransactionTestCase
 
@@ -43,7 +42,7 @@ if settings.USE_CITUS:
 
                 self.assertEqual(distributed, value)
 
-        def assertTableIsNotDistributed(self, table_name, column_name, value=True):
+        def assertTableIsNotDistributed(self, table_name, column_name):
             return self.assertTableIsDistributed(table_name, column_name, value=False)
 
         def assertTableIsReference(self, table_name, value=False):
@@ -59,11 +58,11 @@ if settings.USE_CITUS:
                 cursor.execute(query, [table_name])
                 row = cursor.fetchone()
 
-                distributed = True if row else False
+                distributed = bool(row)
 
             self.assertEqual(distributed, value)
 
-        def assertTableIsNotReference(self, table_name, value=False):
+        def assertTableIsNotReference(self, table_name):
             return self.assertTableIsReference(table_name, value=False)
 
         def test_distribute_table(self):
@@ -105,6 +104,7 @@ if settings.USE_CITUS:
 
         def test_reference_different_app_table(self):
             project_state = ProjectState(real_apps={"auth"})
+            # pylint: disable=hard-coded-auth-user
             operation = migrations.Distribute("auth.User", reference=True)
 
             self.assertEqual(
