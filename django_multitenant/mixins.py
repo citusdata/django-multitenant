@@ -76,10 +76,8 @@ class TenantModelMixin:
         super().__init__(*args, **kwargs)
 
     def __setattr__(self, attrname, val):
-<<<<<<< HEAD
         # Provides failing of the save operation if the tenant_id is changed.
         # try_update_tenant is being checked inside save method and if it is true, it will raise an exception.
-=======
         def is_val_equal_to_tenant(val):
             return (
                 val
@@ -88,7 +86,6 @@ class TenantModelMixin:
                 and val != self.tenant_object
             )
 
->>>>>>> Fixes prospector issues
         if (
             attrname in (self.tenant_field, get_tenant_field(self).name)
             and not self._state.adding

@@ -19,11 +19,8 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
         ret = super().__enter__()
         return ret
 
-    # Override
-    """
-    If there is a change in the field, this method assures that if the field is type of TenantForeignKey
-    and db_constraint does not exist, adds the foreign key constraint.
-    """
+    
+    
 
     # pylint: disable=too-many-arguments
     def _alter_field(
@@ -37,6 +34,10 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
         new_db_params,
         strict=False,
     ):
+        """
+        If there is a change in the field, this method assures that if the field is type of TenantForeignKey
+        and db_constraint does not exist, adds the foreign key constraint.
+        """
 
         super()._alter_field(
             model,
@@ -70,11 +71,10 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
                 )
 
     # Override
-    """
-    This method overrides the additions foreign key constraint sql and adds the tenant column to the constraint 
-    """
-
     def _create_fk_sql(self, model, field, suffix):
+        """
+        This method overrides the additions foreign key constraint sql and adds the tenant column to the constraint 
+        """
         if isinstance(field, TenantForeignKey):
             try:
                 # test if both models exists
