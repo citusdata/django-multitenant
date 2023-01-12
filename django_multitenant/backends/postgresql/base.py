@@ -19,9 +19,6 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
         ret = super().__enter__()
         return ret
 
-    
-    
-
     # pylint: disable=too-many-arguments
     def _alter_field(
         self,
@@ -73,7 +70,7 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
     # Override
     def _create_fk_sql(self, model, field, suffix):
         """
-        This method overrides the additions foreign key constraint sql and adds the tenant column to the constraint 
+        This method overrides the additions foreign key constraint sql and adds the tenant column to the constraint
         """
         if isinstance(field, TenantForeignKey):
             try:
