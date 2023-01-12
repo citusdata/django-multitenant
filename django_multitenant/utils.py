@@ -20,7 +20,7 @@ def get_model_by_db_table(db_table):
             return model
     else:
         # here you can do fallback logic if no model with db_table found
-        raise ValueError("No model found with db_table {}!".format(db_table))
+        raise ValueError(f"No model found with db_table {db_table}!")
         # or return None
 
 
@@ -47,9 +47,7 @@ def get_tenant_column(model_class_or_instance):
         return model_class_or_instance.tenant_field
     except:
         raise ValueError(
-            """%s is not an instance or a subclass of TenantModel
-                         or does not inherit from TenantMixin"""
-            % model_class_or_instance.__class__.__name__
+            f"{model_class_or_instance.__class__.__name__} is not an instance or a subclass of TenantModel or does not inherit from TenantMixin"
         )
 
 

@@ -31,6 +31,7 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
     and db_constraint does not exist, adds the foreign key constraint.
     """
 
+    # pylint: disable=too-many-arguments
     def _alter_field(
         self,
         model,

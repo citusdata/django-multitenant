@@ -1,5 +1,7 @@
 {
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.envFile":   "${workspaceFolder}/.envs",
+    "python.envFile": "${workspaceFolder}/.envs",
+    "python.linting.prospectorEnabled": true,
+    "python.linting.enabled": true,
 }

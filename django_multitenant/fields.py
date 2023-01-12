@@ -54,7 +54,7 @@ class TenantForeignKey(models.ForeignKey):
                 raise EmptyTenant(empty_tenant_message)
 
             logger.warning(empty_tenant_message)
-            return super(TenantForeignKey, self).get_extra_descriptor_filter(instance)
+            return super().get_extra_descriptor_filter(instance)
 
     # Override
     # Django 4.0 removed the where_class argument from this method, so
@@ -111,4 +111,4 @@ class TenantOneToOneField(models.OneToOneField, TenantForeignKey):
     # Override
     def __init__(self, *args, **kwargs):
         kwargs["unique"] = False
-        super(TenantOneToOneField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
