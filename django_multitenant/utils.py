@@ -12,6 +12,9 @@ _thread_locals = local()
 
 
 def get_model_by_db_table(db_table):
+    """
+    Gets django model using db_table name
+    """
     for model in apps.get_models():
         if model._meta.db_table == db_table:
             return model
@@ -34,6 +37,9 @@ def get_current_tenant():
 
 
 def get_tenant_column(model_class_or_instance):
+    """
+    Get the tenant field from the model object or class
+    """
     if inspect.isclass(model_class_or_instance):
         model_class_or_instance = model_class_or_instance()
 
@@ -48,6 +54,9 @@ def get_tenant_column(model_class_or_instance):
 
 
 def get_tenant_field(model_class_or_instance):
+    """
+    Gets the tenant field object from the model
+    """
     tenant_column = get_tenant_column(model_class_or_instance)
     all_fields = model_class_or_instance._meta.fields
     try:
@@ -61,6 +70,9 @@ def get_tenant_field(model_class_or_instance):
 
 
 def get_object_tenant(instance):
+    """
+    Gets the tenant value from the object. If the object itself is a tenant, it will return the same object
+    """
     field = get_tenant_field(instance)
 
     if field.primary_key:
@@ -75,6 +87,11 @@ def set_object_tenant(instance, value):
 
 
 def get_current_tenant_value():
+    """
+    Returns current set tenant value if exists
+    If tenant is a list, it will return a list of tenant values
+    If there is no tenant set, it will return None
+    """
     current_tenant = get_current_tenant()
     if not current_tenant:
         return None
@@ -91,6 +108,10 @@ def get_current_tenant_value():
 
 
 def get_tenant_filters(table, filters=None):
+    """
+    Returns filter with tenant column added to it if exists.
+    If there is more than one tenant column, it will return fiter with in statement.
+    """
     filters = filters or {}
 
     current_tenant_value = get_current_tenant_value()
@@ -125,6 +146,9 @@ def unset_current_tenant():
 
 
 def is_distributed_model(model):
+    """
+    If model has tenant_field, it is distributed model and returns True
+    """
     try:
         get_tenant_field(model)
         return True

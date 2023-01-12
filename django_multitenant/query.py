@@ -28,6 +28,7 @@ def add_tenant_filters_on_query(obj):
 
 
 def wrap_get_compiler(base_get_compiler):
+    # Adds tenant filters to the query object
     def get_compiler(obj, *args, **kwargs):
         add_tenant_filters_on_query(obj)
         return base_get_compiler(obj, *args, **kwargs)
@@ -37,6 +38,10 @@ def wrap_get_compiler(base_get_compiler):
 
 
 def wrap_update_batch(base_update_batch):
+    # Written to decorate the update_batch method of the UpdateQuery class to add tenant_id filters.
+    # Since add tenant_filters method must be executed before the execute_sql method, we have to
+    # copy and rewrite the update_batch method.
+    # CAUTION: Since source is copied, UpdateQuery.update_batch method should be tracked
     def update_batch(obj, pk_list, values, using):
         obj.add_update_values(values)
         for offset in range(0, len(pk_list), GET_ITERATOR_CHUNK_SIZE):
