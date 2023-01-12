@@ -83,7 +83,7 @@ class UtilsTest(BaseTestCase):
 
         unset_current_tenant()
 
-    def test_current_tenant_value_queryset(self):
+    def test_current_tenant_value_queryset_value(self):
         from .models import Account
 
         projects = self.projects
@@ -97,7 +97,7 @@ class UtilsTest(BaseTestCase):
 
         unset_current_tenant()
 
-    def test_current_tenant_value_queryset2(self):
+    def test_current_tenant_value_queryset_filter(self):
         from .models import Project, Account
 
         projects = self.projects
