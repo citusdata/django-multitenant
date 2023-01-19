@@ -61,7 +61,7 @@ def get_tenant_field(model_class_or_instance):
         return next(field for field in all_fields if field.column == tenant_column)
     except StopIteration as no_field_found:
         raise ValueError(
-            f'No field found in {model_class_or_instance} with column name "{tenant_column}"'
+            f'No field found in {type(model_class_or_instance).name} with column name "{tenant_column}"'
         ) from no_field_found
 
 
