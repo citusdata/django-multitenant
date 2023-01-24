@@ -77,9 +77,11 @@ In order to use this library you can either use Mixins or have your models inher
 1. All foreign keys to TenantModel subclasses should use TenantForeignKey in place of
    models.ForeignKey
 1. Referenced table in TenenatForeignKey should include a Unique key including tenant_id and primary key
-   `Ex:       
+   ```
+   Ex:       
    class Meta(object):
-        unique_together = ["id", "store"]`
+        unique_together = ["id", "store"]
+   ```
 1. A sample model implementing the above 3 steps:
   ```python
 
