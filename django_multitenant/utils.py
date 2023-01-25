@@ -18,10 +18,10 @@ def get_model_by_db_table(db_table):
     for model in apps.get_models():
         if model._meta.db_table == db_table:
             return model
-    else:
-        # here you can do fallback logic if no model with db_table found
-        raise ValueError("No model found with db_table {}!".format(db_table))
-        # or return None
+
+    # here you can do fallback logic if no model with db_table found
+    raise ValueError(f"No model found with db_table {db_table}!")
+    # or return None
 
 
 def get_current_tenant():
@@ -45,12 +45,10 @@ def get_tenant_column(model_class_or_instance):
 
     try:
         return model_class_or_instance.tenant_field
-    except:
+    except Exception as not_a_tenant_model:
         raise ValueError(
-            """%s is not an instance or a subclass of TenantModel
-                         or does not inherit from TenantMixin"""
-            % model_class_or_instance.__class__.__name__
-        )
+            f"{model_class_or_instance.__class__.__name__} is not an instance or a subclass of TenantModel or does not inherit from TenantMixin"
+        ) from not_a_tenant_model
 
 
 def get_tenant_field(model_class_or_instance):
@@ -61,12 +59,10 @@ def get_tenant_field(model_class_or_instance):
     all_fields = model_class_or_instance._meta.fields
     try:
         return next(field for field in all_fields if field.column == tenant_column)
-    except StopIteration:
+    except StopIteration as no_field_found:
         raise ValueError(
-            'No field found in {} with column name "{}"'.format(
-                model_class_or_instance, tenant_column
-            )
-        )
+            f'No field found in {type(model_class_or_instance).name} with column name "{tenant_column}"'
+        ) from no_field_found
 
 
 def get_object_tenant(instance):
@@ -120,7 +116,7 @@ def get_tenant_filters(table, filters=None):
         return filters
 
     if isinstance(current_tenant_value, list):
-        filters["%s__in" % get_tenant_column(table)] = current_tenant_value
+        filters[f"{get_tenant_column(table)}__in"] = current_tenant_value
     else:
         filters[get_tenant_column(table)] = current_tenant_value
 

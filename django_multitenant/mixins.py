@@ -23,7 +23,7 @@ from .utils import (
 logger = logging.getLogger(__name__)
 
 
-class TenantManagerMixin(object):
+class TenantManagerMixin:
     # Below is the manager related to the above class.
     # Overrides the get_queryset method of to inject tenant_id filters in the get_queryset.
     # With this method, models extended from TenantManagerMixin will have tenant_id filters by default
@@ -47,10 +47,10 @@ class TenantManagerMixin(object):
             for obj in objs:
                 set_object_tenant(obj, tenant_value)
 
-        return super(TenantManagerMixin, self).bulk_create(objs, **kwargs)
+        return super().bulk_create(objs, **kwargs)
 
 
-class TenantModelMixin(object):
+class TenantModelMixin:
     # Abstract model which all the models related to tenant inherit.
     tenant_id = ""
 
@@ -73,23 +73,29 @@ class TenantModelMixin(object):
         if not hasattr(UpdateQuery.get_compiler, "_sign"):
             UpdateQuery.update_batch = wrap_update_batch(UpdateQuery.update_batch)
 
-        super(TenantModelMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def __setattr__(self, attrname, val):
         # Provides failing of the save operation if the tenant_id is changed.
         # try_update_tenant is being checked inside save method and if it is true, it will raise an exception.
+        def is_val_equal_to_tenant(val):
+            return (
+                val
+                and self.tenant_value
+                and val != self.tenant_value
+                and val != self.tenant_object
+            )
+
         if (
             attrname in (self.tenant_field, get_tenant_field(self).name)
             and not self._state.adding
-            and val
-            and self.tenant_value
-            and val != self.tenant_value
-            and val != self.tenant_object
+            and is_val_equal_to_tenant(val)
         ):
             self._try_update_tenant = True
 
-        return super(TenantModelMixin, self).__setattr__(attrname, val)
+        return super().__setattr__(attrname, val)
 
+    # pylint: disable=too-many-arguments
     def _do_update(self, base_qs, using, pk_val, values, update_fields, forced_update):
         # adding tenant filters for save
         # Citus requires tenant_id filters for update, hence doing this below change.
@@ -109,10 +115,9 @@ class TenantModelMixin(object):
             )
             if getattr(settings, "TENANT_STRICT_MODE", False):
                 raise EmptyTenant(empty_tenant_message)
-            else:
-                logger.warning(empty_tenant_message)
+            logger.warning(empty_tenant_message)
 
-        return super(TenantModelMixin, self)._do_update(
+        return super()._do_update(
             base_qs, using, pk_val, values, update_fields, forced_update
         )
 
@@ -134,7 +139,7 @@ class TenantModelMixin(object):
             set_current_tenant(self_tenant)
 
         try:
-            obj = super(TenantModelMixin, self).save(*args, **kwargs)
+            obj = super().save(*args, **kwargs)
         finally:
             set_current_tenant(current_tenant)
 

@@ -28,10 +28,7 @@ def related_objects(obj, *args):
     filters = {}
     predicate = reduce(
         operator.or_,
-        (
-            Q(**{"%s__in" % related_field.name: objs})
-            for related_field in related_fields
-        ),
+        (Q(**{f"{related_field.name}__in": objs}) for related_field in related_fields),
     )
 
     if get_current_tenant():
@@ -39,5 +36,5 @@ def related_objects(obj, *args):
             filters = get_tenant_filters(related_model)
         except ValueError:
             pass
-
+    # pylint: disable=protected-access
     return related_model._base_manager.using(obj.using).filter(predicate, **filters)

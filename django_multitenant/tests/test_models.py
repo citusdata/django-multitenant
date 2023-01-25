@@ -17,6 +17,7 @@ from .base import BaseTestCase
 
 class TenantModelTest(BaseTestCase):
     def test_filter_without_joins(self):
+
         from .models import Project
 
         projects = self.projects
@@ -28,7 +29,8 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_filter_without_joins_on_tenant_id_not_pk(self):
-        from .models import TenantNotIdModel, SomeRelatedModel
+
+        from .models import SomeRelatedModel
 
         tenants = self.tenant_not_id
 
@@ -38,8 +40,10 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_select_tenant(self):
+
         from .models import Project
 
+        # pylint: disable=pointless-statement
         self.projects
         project = Project.objects.first()
 
@@ -47,12 +51,13 @@ class TenantModelTest(BaseTestCase):
         with self.assertNumQueries(1) as captured_queries:
             account = project.account
             self.assertTrue(
-                '"tests_account"."id" = %d' % project.account_id
+                f'"tests_account"."id" = {project.account_id}'
                 in captured_queries.captured_queries[0]["sql"]
             )
 
     def test_select_tenant_not_id(self):
         # Test with tenant_id not id field
+
         from .models import SomeRelatedModel
 
         tenants = self.tenant_not_id
@@ -62,14 +67,14 @@ class TenantModelTest(BaseTestCase):
         with self.assertNumQueries(1) as captured_queries:
             tenant = some_related.related_tenant
             self.assertTrue(
-                '"tests_tenantnotidmodel"."tenant_column" = %d'
-                % some_related.related_tenant_id
+                f'"tests_tenantnotidmodel"."tenant_column" = {some_related.related_tenant_id}'
                 in captured_queries.captured_queries[0]["sql"]
             )
 
     def test_select_tenant_foreign_key(self):
         from .models import Task
 
+        # pylint: disable=pointless-statement
         self.tasks
 
         task = Task.objects.first()
@@ -80,15 +85,17 @@ class TenantModelTest(BaseTestCase):
         with self.assertNumQueries(1) as captured_queries:
             project = task.project
             self.assertTrue(
-                'AND "tests_project"."account_id" = %d' % task.account_id
+                f'AND "tests_project"."account_id" = {task.account_id}'
                 in captured_queries.captured_queries[0]["sql"]
             )
 
         unset_current_tenant()
 
     def test_select_tenant_foreign_key_different_tenant_id(self):
-        from .models import Revenue, Account
 
+        from .models import Revenue
+
+        # pylint: disable=pointless-statement
         self.revenues
 
         revenue = Revenue.objects.first()
@@ -99,13 +106,14 @@ class TenantModelTest(BaseTestCase):
         with self.assertNumQueries(1) as captured_queries:
             project = revenue.project
             self.assertTrue(
-                'AND "tests_project"."account_id" = %d' % revenue.acc_id
+                f'AND "tests_project"."account_id" = {revenue.acc_id}'
                 in captured_queries.captured_queries[0]["sql"]
             )
 
         unset_current_tenant()
 
     def test_filter_select_related(self):
+
         from .models import Task
 
         task_id = self.tasks[0].pk
@@ -115,12 +123,16 @@ class TenantModelTest(BaseTestCase):
             task = Task.objects.filter(pk=task_id).select_related("project").first()
 
             self.assertEqual(task.account_id, task.project.account_id)
-            pattern = 'INNER JOIN "tests_project" ON \\("tests_task"."project_id" = "tests_project"."id" AND \\("tests_task"."account_id" = .?"tests_project"."account_id"\\)\\)'
+            pattern = (
+                'INNER JOIN "tests_project" ON \\("tests_task"."project_id" = "tests_project"."id" AND'
+                ' \\("tests_task"."account_id" = .?"tests_project"."account_id"\\)\\)'
+            )
             self.assertTrue(
                 bool(re.search(pattern, captured_queries.captured_queries[0]["sql"]))
             )
 
     def test_filter_select_related_not_id_field(self):
+
         from .models import SomeRelatedModel
 
         tenants = self.tenant_not_id
@@ -142,6 +154,7 @@ class TenantModelTest(BaseTestCase):
             )
 
     def test_prefetch_related(self):
+
         from .models import Project
 
         project_managers = self.project_managers
@@ -157,7 +170,7 @@ class TenantModelTest(BaseTestCase):
             )
 
             self.assertTrue(
-                'WHERE ("tests_manager"."account_id" = %d' % project.account_id
+                f'WHERE ("tests_manager"."account_id" = {project.account_id}'
                 in captured_queries.captured_queries[1]["sql"]
             )
             pattern = 'AND \\("tests_projectmanager"."account_id" = .?"tests_manager"."account_id"\\)'
@@ -167,6 +180,7 @@ class TenantModelTest(BaseTestCase):
 
     def test_create_project(self):
         # Using save()
+
         from .models import Project
 
         account = self.account_fr
@@ -181,6 +195,7 @@ class TenantModelTest(BaseTestCase):
 
     def test_create_project_tenant_set(self):
         # Using save()
+
         from .models import Project
 
         account = self.account_fr
@@ -198,6 +213,7 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_bulk_create_tenant_set(self):
+
         from .models import Project
 
         account = self.account_fr
@@ -205,7 +221,7 @@ class TenantModelTest(BaseTestCase):
         set_current_tenant(account)
         projects = []
         for i in range(10):
-            projects.append(Project(name="project %d" % i))
+            projects.append(Project(name=f"project {i}"))
 
         Project.objects.bulk_create(projects)
 
@@ -215,6 +231,7 @@ class TenantModelTest(BaseTestCase):
             self.assertEqual(project.account_id, account.id)
 
     def test_bulk_create_tenant_not_set(self):
+
         from .models import Project
 
         account = self.account_fr
@@ -222,7 +239,7 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
         projects = []
         for i in range(10):
-            projects.append(Project(name="project %d" % i, account=account))
+            projects.append(Project(name=f"project {i}", account=account))
 
         Project.objects.bulk_create(projects)
 
@@ -232,7 +249,7 @@ class TenantModelTest(BaseTestCase):
 
         projects = []
         for i in range(10):
-            projects.append(Project(name="project %d" % i))
+            projects.append(Project(name=f"project {i}"))
 
         with self.assertRaises(DataError):
             Project.objects.bulk_create(projects)
@@ -296,9 +313,9 @@ class TenantModelTest(BaseTestCase):
 
             for query in captured_queries.captured_queries:
                 if "tests_revenue" in query["sql"]:
-                    self.assertTrue('"acc_id" = %d' % account.id in query["sql"])
+                    self.assertTrue(f'"acc_id" = {account.id}' in query["sql"])
                 else:
-                    self.assertTrue('"account_id" = %d' % account.id in query["sql"])
+                    self.assertTrue(f'"account_id" = {account.id}' in query["sql"])
 
         self.assertEqual(Project.objects.count(), 20)
 
@@ -313,7 +330,6 @@ class TenantModelTest(BaseTestCase):
 
     def test_subquery(self):
         # we want all the projects with the name of their first task
-        import django
 
         from django.db.models import OuterRef, Subquery
         from .models import Project, Task
@@ -335,17 +351,15 @@ class TenantModelTest(BaseTestCase):
 
             # check that tenant in subquery
             for query in captured_queries.captured_queries:
-                self.assertTrue('U0."account_id" = %d' % account.id in query["sql"])
+                self.assertTrue(f'U0."account_id" = {account.id}' in query["sql"])
                 self.assertTrue(
-                    'WHERE "tests_project"."account_id" = %d' % account.id
-                    in query["sql"]
+                    f'WHERE "tests_project"."account_id" = {account.id}' in query["sql"]
                 )
 
         unset_current_tenant()
 
     def test_subquery_joins(self):
         # we want all the projects with the name of their first task
-        import django
 
         from django.db.models import OuterRef, Subquery
         from .models import Project, SubTask
@@ -369,13 +383,12 @@ class TenantModelTest(BaseTestCase):
 
             # check that tenant in subquery
             for query in captured_queries.captured_queries:
-                self.assertTrue('U0."account_id" = %d' % account.id in query["sql"])
+                self.assertTrue(f'U0."account_id" = {account.id}' in query["sql"])
 
                 pattern = '\\(U0."task_id" = U\\d."id" AND \\(U0."account_id" = .?U\\d."account_id"\\)'
                 self.assertTrue(bool(re.search(pattern, query["sql"])))
                 self.assertTrue(
-                    'WHERE "tests_project"."account_id" = %d' % account.id
-                    in query["sql"]
+                    f'WHERE "tests_project"."account_id" = {account.id}' in query["sql"]
                 )
 
         unset_current_tenant()
@@ -543,6 +556,7 @@ class TenantModelTest(BaseTestCase):
         projects = self.projects
 
         for project in projects:
+            # pylint: disable=comparison-with-callable
             if project.account == account:
                 project.employee = employee
                 project.save(update_fields=["employee"])
@@ -591,7 +605,7 @@ class MultipleTenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_filter_without_joins_on_tenant_id_not_pk(self):
-        from .models import TenantNotIdModel, SomeRelatedModel
+        from .models import SomeRelatedModel
 
         unset_current_tenant()
         tenants = self.tenant_not_id
@@ -606,6 +620,7 @@ class MultipleTenantModelTest(BaseTestCase):
         from .models import Task, Account
 
         unset_current_tenant()
+        # pylint: disable=pointless-statement
         self.tasks
 
         task = Task.objects.first()
@@ -617,8 +632,7 @@ class MultipleTenantModelTest(BaseTestCase):
         with self.assertNumQueries(1) as captured_queries:
             project = task.project
             self.assertTrue(
-                'AND "tests_project"."account_id" IN (%s)'
-                % ", ".join([str(account.id) for account in accounts])
+                f'AND "tests_project"."account_id" IN ({", ".join([str(account.id) for account in accounts])})'
                 in captured_queries.captured_queries[0]["sql"]
             )
 
@@ -628,6 +642,7 @@ class MultipleTenantModelTest(BaseTestCase):
         from .models import Revenue, Account
 
         unset_current_tenant()
+        # pylint: disable=pointless-statement
         self.revenues
 
         revenue = Revenue.objects.first()
@@ -639,8 +654,7 @@ class MultipleTenantModelTest(BaseTestCase):
         with self.assertNumQueries(1) as captured_queries:
             project = revenue.project
             self.assertTrue(
-                'AND "tests_project"."account_id" IN (%s)'
-                % ", ".join([str(account.id) for account in accounts])
+                f'AND "tests_project"."account_id" IN ({", ".join([str(account.id) for account in accounts])})'
                 in captured_queries.captured_queries[0]["sql"]
             )
 
@@ -663,8 +677,7 @@ class MultipleTenantModelTest(BaseTestCase):
             )
 
             self.assertTrue(
-                'WHERE ("tests_manager"."account_id" IN (%s)'
-                % ", ".join([str(account.id) for account in accounts])
+                f'WHERE ("tests_manager"."account_id" IN ({", ".join([str(account.id) for account in accounts])})'
                 in captured_queries.captured_queries[1]["sql"]
             )
 
@@ -690,13 +703,11 @@ class MultipleTenantModelTest(BaseTestCase):
             for query in captured_queries.captured_queries:
                 if "tests_revenue" in query["sql"]:
                     self.assertTrue(
-                        '"acc_id" IN (%s)'
-                        % ", ".join([str(account.id) for account in accounts])
+                        f'"acc_id" IN ({", ".join([str(account.id) for account in accounts])})'
                     )
                 else:
                     self.assertTrue(
-                        '"account_id" IN (%s)'
-                        % ", ".join([str(account.id) for account in accounts])
+                        f'"account_id" IN ({", ".join([str(account.id) for account in accounts])})'
                     )
 
         unset_current_tenant()

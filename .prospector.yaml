@@ -1,0 +1,24 @@
+test-warnings: true
+doc-warnings: false
+member-warnings: false
+
+uses:
+  -django
+
+pylint:
+  disable:
+    - import-outside-toplevel
+    - unused-variable
+    - not-an-iterable
+    - unsubscriptable-object
+  options:
+    max-args: 6
+    django-settings-module: django_multitenant.settings
+
+pyflakes:
+  disable:
+    - F401
+    - F841
+
+dodgy:
+  run: false

@@ -3,7 +3,6 @@
 from django.db import migrations, models
 import django.db.models.deletion
 from django.conf import settings
-import django_multitenant.fields
 
 from django_multitenant.db import migrations as tenant_migrations
 

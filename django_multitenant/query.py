@@ -10,7 +10,6 @@ from django.db.models.sql.where import WhereNode
 
 from .utils import (
     get_current_tenant,
-    get_tenant_column,
     get_tenant_filters,
     is_distributed_model,
 )
@@ -33,10 +32,12 @@ def wrap_get_compiler(base_get_compiler):
         add_tenant_filters_on_query(obj)
         return base_get_compiler(obj, *args, **kwargs)
 
+    # pylint: disable=protected-access
     get_compiler._sign = "get_compiler django-multitenant"
     return get_compiler
 
 
+# pylint: disable=unused-argument
 def wrap_update_batch(base_update_batch):
     # Written to decorate the update_batch method of the UpdateQuery class to add tenant_id filters.
     # Since add tenant_filters method must be executed before the execute_sql method, we have to
@@ -50,6 +51,7 @@ def wrap_update_batch(base_update_batch):
             add_tenant_filters_on_query(obj)
             obj.get_compiler(using).execute_sql(NO_RESULTS)
 
+    # pylint: disable=protected-access
     update_batch._sign = "update_batch django-multitenant"
     return update_batch
 
