@@ -28,7 +28,7 @@ coverage[toml]==7.0.5
     # via pytest-cov
 dill==0.3.6
     # via pylint
-django==4.1.5
+django==4.1.6
     # via -r requirements/tox-static-code-analysis.in
 docutils==0.19
     # via pyroma
