@@ -1,9 +1,7 @@
-psycopg2
-Django>=3.2.9
+black
+psycopg2-binary
 tox
 pytest
 pytest-cov
 pytest-django
 exam
-ipdb
-black
