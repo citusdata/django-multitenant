@@ -26,6 +26,7 @@ format:
 	black .
 
 format-check:
+	black --version
 	black . --check
 
 lint:
