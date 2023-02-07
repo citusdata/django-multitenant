@@ -12,7 +12,6 @@ from .base import BaseTestCase
 
 class UtilsTest(BaseTestCase):
     def test_set_current_tenant(self):
-        from .models import Project
 
         projects = self.projects
         account = projects[0].account
@@ -37,7 +36,6 @@ class UtilsTest(BaseTestCase):
         self.assertEqual(column, "account_id")
 
     def test_current_tenant_value_single(self):
-        from .models import Project, Account
 
         projects = self.projects
         account = projects[0].account
@@ -48,7 +46,6 @@ class UtilsTest(BaseTestCase):
         unset_current_tenant()
 
     def test_current_tenant_value_list(self):
-        from .models import Project, Account
 
         projects = self.projects
         accounts = [projects[0].account, projects[1].account]
@@ -61,22 +58,8 @@ class UtilsTest(BaseTestCase):
 
         unset_current_tenant()
 
-    def test_current_tenant_value_queryset(self):
-        from .models import Project, Account
-
-        projects = self.projects
-        accounts = Account.objects.all().order_by("id")
-        set_current_tenant(accounts)
-
-        value = get_current_tenant_value()
-
-        self.assertTrue(isinstance(value, list))
-        self.assertEqual(value, accounts.values_list("id", flat=True))
-
-        unset_current_tenant()
-
     def test_tenant_filters_single_tenant(self):
-        from .models import Project, Account
+        from .models import Project
 
         projects = self.projects
         account = projects[0].account
@@ -87,7 +70,7 @@ class UtilsTest(BaseTestCase):
         unset_current_tenant()
 
     def test_tenant_filters_multi_tenant(self):
-        from .models import Project, Account
+        from .models import Project
 
         projects = self.projects
         accounts = [projects[0].account, projects[1].account]
@@ -100,7 +83,21 @@ class UtilsTest(BaseTestCase):
 
         unset_current_tenant()
 
-    def test_current_tenant_value_queryset(self):
+    def test_current_tenant_value_queryset_value(self):
+        from .models import Account
+
+        projects = self.projects
+        accounts = Account.objects.all().order_by("id")
+        set_current_tenant(accounts)
+
+        value = get_current_tenant_value()
+
+        self.assertTrue(isinstance(value, list))
+        self.assertEqual(value, list(accounts.values_list("id", flat=True)))
+
+        unset_current_tenant()
+
+    def test_current_tenant_value_queryset_filter(self):
         from .models import Project, Account
 
         projects = self.projects

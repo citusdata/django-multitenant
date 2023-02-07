@@ -1,8 +1,6 @@
 import uuid
 
 from django.db import models
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 
 
 from django_multitenant.mixins import TenantModelMixin, TenantManagerMixin
@@ -31,7 +29,7 @@ class Account(TenantModel):
     tenant_id = "id"
 
     def __str__(self):
-        return "{}".format(self.name)
+        return f"{self.name}"
 
 
 class Employee(models.Model):
@@ -94,7 +92,7 @@ class Project(TenantModel):
     tenant_id = "account_id"
 
     def __str__(self):
-        return "{} ({})".format(self.name, self.account)
+        return f"{self.name} ({self.account})"
 
 
 class ProjectManager(TenantModel):
@@ -140,7 +138,7 @@ class Task(TenantModelMixin, models.Model):
     tenant_id = "account_id"
 
     def __str__(self):
-        return "{} ({})".format(self.name, self.project)
+        return f"{self.name} ({self.project})"
 
 
 class SubTask(TenantModel):

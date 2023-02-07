@@ -28,6 +28,9 @@ format:
 format-check:
 	black . --check
 
+lint:
+	python3 -m prospector -X  --profile-path .prospector.yaml
+
 release:
 	python -m build --sdist
 	twine check dist/*

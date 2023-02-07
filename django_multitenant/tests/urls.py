@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import django
-from django.conf.urls import include
+from django.contrib import admin
 
 # django.conf.urls.url is deprecated since Django 3.1, re_path is the
 # replacement:
@@ -9,8 +9,6 @@ if django.VERSION >= (3, 1):
     from django.urls import re_path as url
 else:
     from django.conf.urls import url
-
-from django.contrib import admin
 
 
 # TODO

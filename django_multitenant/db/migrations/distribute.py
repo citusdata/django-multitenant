@@ -1,5 +1,4 @@
 from django.apps.registry import apps as global_apps
-from django.db import connection
 from django.db.migrations.operations.base import Operation
 from django.db.migrations.state import _get_app_label_and_model_name
 

@@ -1,10 +1,21 @@
-from django.db import connection
-from django.test import TestCase, TransactionTestCase
+from django.test import TransactionTestCase
 
 from exam.cases import Exam
-from exam.decorators import fixture, before, after
+from exam.decorators import fixture
 
-from .models import *
+from .models import (
+    Country,
+    Account,
+    Project,
+    Task,
+    Revenue,
+    ProjectManager,
+    SubTask,
+    Manager,
+    SomeRelatedModel,
+    TenantNotIdModel,
+    Organization,
+)
 
 
 class Fixtures(Exam):
@@ -66,7 +77,7 @@ class Fixtures(Exam):
         for account in self.accounts:
             for i in range(10):
                 projects.append(
-                    Project.objects.create(account_id=account.pk, name="project %d" % i)
+                    Project.objects.create(account_id=account.pk, name=f"project {i}")
                 )
 
         return projects
@@ -78,7 +89,7 @@ class Fixtures(Exam):
         for account in self.accounts:
             for i in range(5):
                 managers.append(
-                    Manager.objects.create(name="manager %d" % i, account=account)
+                    Manager.objects.create(name=f"manager {i}", account=account)
                 )
 
         return managers
@@ -91,7 +102,7 @@ class Fixtures(Exam):
             previous_task = None
             for i in range(5):
                 previous_task = Task.objects.create(
-                    name="task project %s %i" % (project.name, i),
+                    name=f"task project {project.name} {i}",
                     project_id=project.pk,
                     account_id=project.account_id,
                     parent=previous_task,
@@ -108,7 +119,7 @@ class Fixtures(Exam):
         for project in self.projects:
             for i in range(5):
                 revenue = Revenue.objects.create(
-                    value="%s mil" % i,
+                    value=f"{i} mil",
                     project_id=project.pk,
                     acc_id=project.account_id,
                 )
@@ -139,7 +150,7 @@ class Fixtures(Exam):
             for i in range(5):
                 subtasks.append(
                     SubTask.objects.create(
-                        name="subtask project %i, task %i",
+                        name=f"subtask project {i}, task {i}",
                         type="test",
                         account_id=task.account_id,
                         project_id=task.project_id,
@@ -165,14 +176,14 @@ class Fixtures(Exam):
     def tenant_not_id(self):
         tenants = []
         for i in range(3):
-            tenant = TenantNotIdModel(tenant_column=i + 1, name="test %d" % i)
+            tenant = TenantNotIdModel(tenant_column=i + 1, name=f"test {i}")
             tenant.save()
 
             tenants.append(tenant)
 
             for j in range(10):
                 SomeRelatedModel.objects.create(
-                    related_tenant=tenant, name="related %d" % j
+                    related_tenant=tenant, name=f"related {j}"
                 )
         return tenants
 
