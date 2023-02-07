@@ -30,7 +30,6 @@ def get_operations():
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tests", "0010_auto_20190517_1514"),
     ]

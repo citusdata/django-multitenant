@@ -8,7 +8,6 @@ import django_multitenant.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tests", "0011_distribute_new_table"),
     ]

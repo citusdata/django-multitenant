@@ -17,7 +17,6 @@ from .base import BaseTestCase
 
 class TenantModelTest(BaseTestCase):
     def test_filter_without_joins(self):
-
         from .models import Project
 
         projects = self.projects
@@ -29,7 +28,6 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_filter_without_joins_on_tenant_id_not_pk(self):
-
         from .models import SomeRelatedModel
 
         tenants = self.tenant_not_id
@@ -40,7 +38,6 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_select_tenant(self):
-
         from .models import Project
 
         # pylint: disable=pointless-statement
@@ -92,7 +89,6 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_select_tenant_foreign_key_different_tenant_id(self):
-
         from .models import Revenue
 
         # pylint: disable=pointless-statement
@@ -113,7 +109,6 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_filter_select_related(self):
-
         from .models import Task
 
         task_id = self.tasks[0].pk
@@ -132,7 +127,6 @@ class TenantModelTest(BaseTestCase):
             )
 
     def test_filter_select_related_not_id_field(self):
-
         from .models import SomeRelatedModel
 
         tenants = self.tenant_not_id
@@ -154,7 +148,6 @@ class TenantModelTest(BaseTestCase):
             )
 
     def test_prefetch_related(self):
-
         from .models import Project
 
         project_managers = self.project_managers
@@ -213,7 +206,6 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_bulk_create_tenant_set(self):
-
         from .models import Project
 
         account = self.account_fr
@@ -231,7 +223,6 @@ class TenantModelTest(BaseTestCase):
             self.assertEqual(project.account_id, account.id)
 
     def test_bulk_create_tenant_not_set(self):
-
         from .models import Project
 
         account = self.account_fr

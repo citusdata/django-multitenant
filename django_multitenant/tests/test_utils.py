@@ -12,7 +12,6 @@ from .base import BaseTestCase
 
 class UtilsTest(BaseTestCase):
     def test_set_current_tenant(self):
-
         projects = self.projects
         account = projects[0].account
 
@@ -36,7 +35,6 @@ class UtilsTest(BaseTestCase):
         self.assertEqual(column, "account_id")
 
     def test_current_tenant_value_single(self):
-
         projects = self.projects
         account = projects[0].account
         set_current_tenant(account)
@@ -46,7 +44,6 @@ class UtilsTest(BaseTestCase):
         unset_current_tenant()
 
     def test_current_tenant_value_list(self):
-
         projects = self.projects
         accounts = [projects[0].account, projects[1].account]
         set_current_tenant(accounts)

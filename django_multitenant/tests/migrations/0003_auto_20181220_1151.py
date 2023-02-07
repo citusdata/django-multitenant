@@ -41,7 +41,6 @@ def get_operations():
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tests", "0002_distribute"),
     ]

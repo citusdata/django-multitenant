@@ -11,7 +11,6 @@ from django_multitenant.db import migrations as tenant_migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tests", "0022_merge_20200211_1000"),
     ]

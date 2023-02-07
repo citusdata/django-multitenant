@@ -8,7 +8,6 @@ import django_multitenant.mixins
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tests", "0013_auto_20190517_1607"),
     ]

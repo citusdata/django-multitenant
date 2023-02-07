@@ -65,7 +65,6 @@ def get_operations():
 
 
 class Migration(migrations.Migration):
-
     atomic = False
 
     dependencies = [

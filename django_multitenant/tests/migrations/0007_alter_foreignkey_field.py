@@ -6,7 +6,6 @@ import django_multitenant.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tests", "0006_subtask_project"),
     ]

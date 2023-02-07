@@ -8,7 +8,6 @@ import django_multitenant.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tests", "0015_auto_20190829_1334"),
     ]
