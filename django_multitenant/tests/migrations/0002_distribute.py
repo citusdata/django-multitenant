@@ -18,6 +18,7 @@ def get_operations():
                 "SELECT * from master_add_node('django-multitenant_worker1_1', 5432);"
             ),
             migrations.RunSQL(
+              
                 "SELECT * from master_add_node('django-multitenant_worker2_1', 5432);"
             ),
         ]
