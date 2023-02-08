@@ -1,3 +1,4 @@
+black
 psycopg2
 tox
 pytest
