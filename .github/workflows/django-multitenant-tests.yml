@@ -39,6 +39,9 @@ jobs:
           - python_version: "3.7"
             django_version: "3.2"
             citus_version: "10"
+          - python_version: "3.7"
+            django_version: "3.2"
+            citus_version: "11"
     env:
       PYTHON_VERSION: ${{ matrix.python_version }}
       CITUS_VERSION: ${{ matrix.citus_version }}
