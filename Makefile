@@ -1,7 +1,7 @@
 export DJANGO_SETTINGS_MODULE=django_multitenant.tests.settings
 
 test:
-	py.test -s django_multitenant/tests/ -k 'not concurrency'
+	 py.test  --cov-report xml --cov=django_multitenant/tests/. -s django_multitenant/tests/ -k 'not concurrency'
 
 test-migrations:
 	./manage.py migrate tests
