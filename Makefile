@@ -5,7 +5,7 @@ test-dependencies:
 	pip install Django=="${DJANGO_VERSION}"
 
 test:
-	py.test -s django_multitenant/tests/ -k 'not concurrency'
+	 py.test  --cov-report xml --cov=django_multitenant/tests/. -s django_multitenant/tests/ -k 'not concurrency'
 
 test-migrations:
 	./manage.py migrate tests
