@@ -14,7 +14,6 @@ revert-test-migrations:
 	./manage.py migrate --fake tests 0001_initial
 	./manage.py migrate tests zero
 
-
 dev-dependencies:
 	pip install -r /build/requirements/test-requirements.txt 
 	pip install Django=="${DJANGO_VERSION}"
