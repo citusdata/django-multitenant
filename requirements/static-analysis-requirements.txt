@@ -99,7 +99,7 @@ poetry-semver==0.1.0
     # via requirements-detector
 prospector[with_everything]==1.8.4
     # via -r requirements/static-analysis.in
-psycopg2==2.9.5
+psycopg2-binary==2.9.5
     # via -r requirements/static-analysis.in
 pycodestyle==2.9.1
     # via
