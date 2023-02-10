@@ -1,5 +1,9 @@
 export DJANGO_SETTINGS_MODULE=django_multitenant.tests.settings
 
+test-dependencies:
+	pip install -r /build/requirements/test-requirements.txt 
+	pip install Django=="${DJANGO_VERSION}"
+
 test:
 	 py.test  --cov-report xml --cov=django_multitenant/tests/. -s django_multitenant/tests/ -k 'not concurrency'
 
@@ -32,6 +36,3 @@ release:
 	twine check dist/*
 	twine upload --skip-existing dist/*
 
-test-dependencies:
-	pip install -r /build/requirements/test-requirements.txt 
-	pip install Django=="${DJANGO_VERSION}"
