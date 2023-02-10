@@ -19,11 +19,12 @@ https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-
 
 ## Supported Django versions/Pre-requisites.
 
-| Python        | Django        |
-| ------------- | -------------:|
-| 3.X           | 2.2           |
-| 3.X           | 3.2           |
-| 3.X           | 4.0           |
+| Python             | Django        |Citus         |
+| -------------------| --------------|--------------|
+| 3.7                | 3.2           | 10,11        |
+| 3.8,3.9,3.10,3.11  | 4.0           | 10,11        |
+| 3.8,3.9,3.10,3.11  | 4.0           | 11           |
+
 
 
 ## Usage:
