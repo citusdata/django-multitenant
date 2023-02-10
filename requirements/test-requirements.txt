@@ -6,55 +6,22 @@
 #
 attrs==22.2.0
     # via pytest
-black==23.1.0
-    # via -r requirements/test.in
-cachetools==5.2.1
-    # via tox
-chardet==5.1.0
-    # via tox
-click==8.1.3
-    # via black
-colorama==0.4.6
-    # via tox
 coverage[toml]==7.0.5
     # via pytest-cov
-distlib==0.3.6
-    # via virtualenv
 exam==0.10.6
     # via -r requirements/test.in
 exceptiongroup==1.1.0
     # via pytest
-filelock==3.9.0
-    # via
-    #   tox
-    #   virtualenv
 iniconfig==2.0.0
     # via pytest
 mock==5.0.1
     # via exam
-mypy-extensions==0.4.3
-    # via black
 packaging==23.0
-    # via
-    #   black
-    #   pyproject-api
-    #   pytest
-    #   tox
-pathspec==0.11.0
-    # via black
-platformdirs==2.6.2
-    # via
-    #   black
-    #   tox
-    #   virtualenv
+    # via pytest
 pluggy==1.0.0
-    # via
-    #   pytest
-    #   tox
+    # via pytest
 psycopg2-binary==2.9.5
     # via -r requirements/test.in
-pyproject-api==1.4.0
-    # via tox
 pytest==7.2.0
     # via
     #   -r requirements/test.in
@@ -66,14 +33,5 @@ pytest-django==4.5.2
     # via -r requirements/test.in
 tomli==2.0.1
     # via
-    #   black
     #   coverage
-    #   pyproject-api
     #   pytest
-    #   tox
-tox==4.2.8
-    # via -r requirements/test.in
-typing-extensions==4.4.0
-    # via black
-virtualenv==20.17.1
-    # via tox

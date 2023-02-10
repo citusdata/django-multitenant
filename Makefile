@@ -16,7 +16,8 @@ revert-test-migrations:
 
 
 dev-dependencies:
-	pip install -r requirements/test-requirements.txt
+	pip install -r /build/requirements/test-requirements.txt 
+	pip install Django=="${DJANGO_VERSION}"
 
 release-dependencies:
 	pip install -r requirements/release-requirements.txt

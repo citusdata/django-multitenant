@@ -1,6 +1,4 @@
-black
 psycopg2-binary
-tox
 pytest
 pytest-cov
 pytest-django

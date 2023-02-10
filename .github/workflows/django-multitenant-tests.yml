@@ -16,7 +16,7 @@ jobs:
         pip install -r requirements/static-analysis-requirements.txt
     - name: Format Checks 
       run: |
-        black --check --diff .
+        make format-check
     - name: Prospector checks 
       run: |
         make lint

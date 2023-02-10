@@ -1,6 +1,6 @@
 Django>=3.2.9
 black
-psycopg2
+psycopg2-binary
 exam
 pytest
 pytest-cov
