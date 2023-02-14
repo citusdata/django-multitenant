@@ -46,5 +46,8 @@ docker-compose --project-name django-multitenant up
 Then in another shell run the tests:
 
 ```bash
+DJANGO_VERSION=4.0
+CITUS_VERSION=11.2
+make test-dependencies 
 make test
 ```
