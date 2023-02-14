@@ -12,7 +12,7 @@ Welcome to Django Multi-tenant's documentation!
    :target: https://django-multi-tenant.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
-.. |Build Status| image::https://github.com/citusdata/django-multitenant/actions/workflows/django-multitenant-tests.yml/badge.svg
+.. |Build Status| image:: https://github.com/citusdata/django-multitenant/actions/workflows/django-multitenant-tests.yml/badge.svg
    :target: https://github.com/citusdata/django-multitenant/actions/workflows/django-multitenant-tests.yml
    :alt: Build Status
 
