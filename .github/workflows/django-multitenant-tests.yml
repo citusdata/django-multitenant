@@ -1,0 +1,95 @@
+name: "Django Multitenant Tests"
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+    - uses: actions/checkout@v3
+    - name: Install python dependencies
+      run: |
+        pip install -r requirements/static-analysis-requirements.txt
+    - name: Format Checks 
+      run: |
+        make format-check
+    - name: Prospector checks 
+      run: |
+        make lint
+        
+
+        
+  tests-django-mt-lt-4_1:
+    runs-on: ubuntu-latest
+    name: "Python: ${{matrix.python_version}} | Django: ${{matrix.django_version}} | Citus: ${{matrix.citus_version}}"
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        python_version: ["3.8","3.9","3.10","3.11"]
+        django_version: ["3.2","4.0"]
+        citus_version: ["10","11"]
+        include:
+          - python_version: "3.7"
+            django_version: "3.2"
+            citus_version: "10"
+          - python_version: "3.7"
+            django_version: "3.2"
+            citus_version: "11"
+    env:
+      PYTHON_VERSION: ${{ matrix.python_version }}
+      CITUS_VERSION: ${{ matrix.citus_version }}
+      DJANGO_VERSION: ${{ matrix.django_version }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Test Django MT
+      run: |
+        docker-compose --project-name django-multitenant up -d || { docker-compose logs && false ; }
+        echo "Running tests for python $PYTHON_VERSION, django $DJANGO_VERSION, citus $CITUS_VERSION"
+        docker run \
+        --entrypoint /build/scripts/test-django-mt.sh \
+        -v $(pwd):/build \
+        --network=host \
+        -e PYTHON_VERSION -e DJANGO_VERSION \
+        citusdata/python-all-versions
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+
+  tests-django-mt-4_1:
+    runs-on: ubuntu-latest
+    name: "Python: ${{matrix.python_version}} | Django: ${{matrix.django_version}} | Citus: ${{matrix.citus_version}}"
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        python_version: ["3.8","3.9","3.10","3.11"]
+        django_version: ["4.1"]
+        citus_version:  ["11"]
+
+    env:
+      PYTHON_VERSION: ${{ matrix.python_version }}
+      CITUS_VERSION: ${{ matrix.citus_version }}
+      DJANGO_VERSION: ${{ matrix.django_version }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Test Django MT
+      run: |
+        docker-compose --project-name django-multitenant up -d || { docker-compose logs && false ; }
+        echo "Running tests for python $PYTHON_VERSION, django $DJANGO_VERSION, citus $CITUS_VERSION"
+        docker run \
+        --entrypoint /build/scripts/test-django-mt.sh \
+        -v $(pwd):/build \
+        --network=host \
+        -e PYTHON_VERSION -e DJANGO_VERSION \
+        citusdata/python-all-versions
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3

@@ -1,5 +1,9 @@
 export DJANGO_SETTINGS_MODULE=django_multitenant.tests.settings
 
+test-dependencies:
+	pip install -r /build/requirements/test-requirements.txt 
+	pip install Django=="${DJANGO_VERSION}"
+
 test:
 	 py.test  --cov-report xml --cov=django_multitenant/tests/. -s django_multitenant/tests/ -k 'not concurrency'
 
@@ -14,13 +18,8 @@ revert-test-migrations:
 	./manage.py migrate --fake tests 0001_initial
 	./manage.py migrate tests zero
 
-
-dev-dependencies:
-	pip install -r requirements/test-requirements.txt
-
 release-dependencies:
 	pip install -r requirements/release-requirements.txt
-
 
 format:
 	black .
@@ -30,9 +29,10 @@ format-check:
 	black . --check
 
 lint:
-	python3 -m prospector -X  --profile-path .prospector.yaml
+	prospector -X  --profile-path .prospector.yaml
 
 release:
 	python -m build --sdist
 	twine check dist/*
 	twine upload --skip-existing dist/*
+
