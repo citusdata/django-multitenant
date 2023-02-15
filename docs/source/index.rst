@@ -8,9 +8,9 @@ Welcome to Django Multi-tenant's documentation!
 
 |Latest Documentation Status| |Build Status| |Coverage Status| |PyPI Version|
 
-.. |Latest Documentation Status| image:: https://readthedocs.org/projects/django-multi-tenant/badge/?version=latest
-   :target: https://django-multi-tenant.readthedocs.io/en/latest/?badge=latest
-   :alt: Documentation Status
+.. |Latest Documentation Status| image:: https://readthedocs.org/projects/django-multitenant/badge/?version=latest
+    :target: https://django-multitenant.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 .. |Build Status| image:: https://github.com/citusdata/django-multitenant/actions/workflows/django-multitenant-tests.yml/badge.svg
    :target: https://github.com/citusdata/django-multitenant/actions/workflows/django-multitenant-tests.yml
@@ -46,7 +46,6 @@ https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-
 .. toctree::
    :maxdepth: 2
    :caption: Table Of Contents
-
    general
    usage
    migration_mt_django
