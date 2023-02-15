@@ -217,9 +217,3 @@ Credits
 This library uses similar logic of setting/getting tenant object as in
 `django-simple-multitenant <https://github.com/pombredanne/django-simple-multitenant>`__.
 We thank the authors for their efforts.
-
-License
-=================================
-
-Copyright (C) .. |date| date:: %YYYY Citus Data Licensed under the MIT license, see
-LICENSE file for details.
