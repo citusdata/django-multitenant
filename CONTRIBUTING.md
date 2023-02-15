@@ -40,13 +40,13 @@ chmod +x .git/hooks/pre-commit
 
 In one shell start a docker compose citus cluster:
 ```bash
-docker-compose --project-name django-multitenant up
+docker-compose --project-name django-multitenant up -d || { docker-compose logs && false ; }
 ```
 
 Then in another shell run the tests:
 
 ```bash
-DJANGO_VERSION=4.0
+DJANGO_VERSION=4.1
 CITUS_VERSION=11.2
 make test-dependencies 
 make test
