@@ -1,4 +1,3 @@
-:orphan:
 
 .. _django_migration:
 

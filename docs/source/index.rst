@@ -23,7 +23,7 @@ Welcome to Django Multi-tenant's documentation!
 .. |PyPI Version| image:: https://badge.fury.io/py/django-multitenant.svg
    :target: https://badge.fury.io/py/django-multitenant
 
-.. include:: migration_mt_django.rst
+.. include:: README.rst
 
 
 
