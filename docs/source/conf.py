@@ -1,3 +1,4 @@
+from datetime import date
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -7,7 +8,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "Django Multi-tenant"
-copyright = "2023, Citus Data"
+copyright = f"{date.today.year} .Citus Data Licensed under the MIT license, see License for details. "
 author = "Citus Data"
 release = "3.0.0"
 
