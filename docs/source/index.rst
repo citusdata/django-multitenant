@@ -23,13 +23,32 @@ Welcome to Django Multi-tenant's documentation!
 .. |PyPI Version| image:: https://badge.fury.io/py/django-multitenant.svg
    :target: https://badge.fury.io/py/django-multitenant
 
-.. include:: README.rst
 
+Python/Django support for distributed multi-tenant databases like
+Postgres+Citus
 
+Enables easy scale-out by adding the tenant context to your queries,
+enabling the database (e.g. Citus) to efficiently route queries to the
+right database node.
+
+There are architecures for building multi-tenant databases viz. **Create
+one database per tenant**, **Create one schema per tenant** and **Have
+all tenants share the same table(s)**. This library is based on the 3rd
+design i.e **Have all tenants share the same table(s)**, it assumes that
+all the tenant relates models/tables have a tenant_id column for
+representing a tenant.
+
+The following link talks more about the trade-offs on when and how to
+choose the right architecture for your multi-tenat database:
+
+https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-scalability/
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+   installation
+   usage
 
 
 
