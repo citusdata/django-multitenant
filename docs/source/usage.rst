@@ -1,11 +1,11 @@
-Usage:
+Usage
 =================================
 
 In order to use this library you can either use Mixins or have your
 models inherit from our custom model class.
 
 Changes in Models:
--------------
+------------------
 
 1. In whichever files you want to use the library import it:
 
@@ -45,7 +45,7 @@ Changes in Models:
        tenant_id='store_id'
        product_purchased = TenantForeignKey(Product)
 
-Changes in Models using mixins:
+Changes in Models using mixins
 -------------------------------
 
 1. In whichever files you want to use the library import it by just
@@ -103,7 +103,7 @@ Changes in Models using mixins:
 
        objects = PurchaseManager()
 
-Automating composite foreign keys at db layer:
+Automating composite foreign keys at db layer
 ----------------------------------------------
 
 1. Creating foreign keys between tenant related models using
@@ -134,15 +134,15 @@ Where to Set the Tenant?
 
    .. code:: python
 
-          from django_multitenant.utils import set_current_tenant
+    from django_multitenant.utils import set_current_tenant
 
-          class MultitenantMiddleware:
-              def __init__(self, get_response):
-                  self.get_response = get_response
+    class MultitenantMiddleware:
+        def __init__(self, get_response):
+            self.get_response = get_response
 
-              def __call__(self, request):
-                  if request.user and not request.user.is_anonymous:
-                      set_current_tenant(request.user.employee.company)
+        def __call__(self, request):
+            if request.user and not request.user.is_anonymous:
+                set_current_tenant(request.user.employee.company)
                   return self.get_response(request)
 
    In your settings, you will need to update the ``MIDDLEWARE`` setting
@@ -150,12 +150,12 @@ Where to Set the Tenant?
 
    .. code:: python
 
-         MIDDLEWARE = [
-             # ...
-             # existing items
-             # ...
-             'appname.middleware.MultitenantMiddleware'
-         ]
+        MIDDLEWARE = [
+            # ...
+            # existing items
+            # ...
+            'appname.middleware.MultitenantMiddleware'
+        ]
 
 2. Set the tenant using set_current_tenant(t) api in all the views which
    you want to be scoped based on tenant. This would scope all the
@@ -178,7 +178,7 @@ Where to Set the Tenant?
          #Command 4;
          #Command 5;
 
-Supported APIs:
+Supported APIs
 =================================
 
 1. Most of the APIs under Model.objects.*.
@@ -186,7 +186,7 @@ Supported APIs:
 
 .. code:: python
 
-    s=Store.objects.all()[0]
+   s=Store.objects.all()[0]
    set_current_tenant(s)
 
    #All the below API calls would add suitable tenant filters.
@@ -221,5 +221,5 @@ We thank the authors for their efforts.
 License
 =================================
 
-Copyright (C) 2018, Citus Data Licensed under the MIT license, see
+Copyright (C) .. |year| date:: %YYYY Citus Data Licensed under the MIT license, see
 LICENSE file for details.
