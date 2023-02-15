@@ -1,8 +1,8 @@
 
 .. _django_migration:
 
-Django
-------
+Migrating a multi-tenant Django application to Citus
+=================================
 
 In :ref:`mt_schema_migration` we discussed the framework-agnostic database changes required for using Citus in the multi-tenant use case. Here we investigate specifically how to migrate multi-tenant Django applications to a Citus storage backend with the help of the `django-multitenant <https://github.com/citusdata/django-multitenant>`_ library.
 
@@ -15,7 +15,7 @@ This process will be in 5 steps:
 - Updating the Django Application to scope queries
 
 Preparing to scale-out a multi-tenant application
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------------------------
 
 Initially you’ll start with all tenants placed on a single database node. To be able to scale out django, some simple changes will have to be made to your models.
 
@@ -54,9 +54,10 @@ Let's consider this simplified model:
 The tricky thing with this pattern is that in order to find all tasks for an account, you'll have to query for all of an account's project first. This becomes a problem once you start sharding data, and in particular when you run UPDATE or DELETE queries on nested models like task in this example.
 
 1. Introducing the tenant column to models belonging to an account
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------------------------------
 
 **1.1 Introducing the column to models belonging to an account**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In order to scale out a multi-tenant model, it’s essential for queries to quickly
 locate all records that belong to an account. Consider an ORM call such as:
@@ -104,6 +105,7 @@ In our case:
 Create a migration to reflect the change: :code:`python manage.py makemigrations`.
 
 **1.2. Introduce a column for the account\_id on every ManyToMany model that belongs to an account**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The goal is the same as previously. We want to be able to have ORM calls and queries routed to one account. We also want to be able to distribute the ManyToMany relationship related to an account on the account_id.
 
@@ -146,7 +148,7 @@ For that we need to introduce :code:`through` models. In our case:
 Create a migration to reflect the change: :code:`python manage.py makemigrations`.
 
 2. Include the account\_id in all primary keys and unique constraints
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------------------------------------
 
 Primary-key and unique constraints on values other than the tenant\_id
 will present a problem in any distributed system, since it’s difficult
@@ -161,6 +163,7 @@ account. This helps add the concept of tenancy to your models, thereby
 making the multi-tenant system more robust.
 
 **2.1 Including the account\_id to primary keys**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Django automatically creates a simple "id" primary key on models, so we will need to circumvent that behavior with a custom migration of our own. Run :code:`python manage.py makemigrations appname --empty --name remove_simple_pk`, and edit the result to look like this:
 
@@ -214,6 +217,7 @@ Django automatically creates a simple "id" primary key on models, so we will nee
     ]
 
 **2.2 Including the account\_id to unique constraints**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The same thing needs to be done for ``UNIQUE`` constraints. You can have explicit constraints that you might have set in your model with ``unique=True`` or ``unique_together`` like:
 
@@ -316,7 +320,7 @@ And finally apply the changes by creating a new migration to generate these cons
   python manage.py makemigrations
 
 3. Updating the models to use TenantModelMixin and TenantForeignKey
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------------------------------
 
 Next, we'll use the `django-multitenant <https://github.com/citusdata/django-multitenant>`_ library to add account_id to foreign keys, and make application queries easier later on.
 
@@ -335,6 +339,7 @@ In settings.py, change the database engine to the customized engine provided by 
   'ENGINE': 'django_multitenant.backends.postgresql'
 
 **3.1 Introducing the TenantModelMixin and TenantManager**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The models will now not only inherit from ``models.Model`` but also from the ``TenantModelMixin``.
 
@@ -383,6 +388,7 @@ the distribution column.
       objects = TenantManager()
 
 **3.2 Handling ForeignKey constraints**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For ``ForeignKey`` and ``OneToOneField`` constraint, we have a few different cases:
 
@@ -445,6 +451,7 @@ Finally your models should look like this:
       objects = TenantManager()
 
 **3.3 Handling ManyToMany constraints**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In the second section of this article, we introduced the fact that with citus, ``ManyToMany`` relationships require a ``through`` model with the tenant column. Which is why we have the model:
 
@@ -462,7 +469,7 @@ After installing the library, changing the engine, and updating the models, run
 :code:`python manage.py makemigrations`. This will produce a migration to make the foreign keys composite when necessary.
 
 4. Distribute data in Citus
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------
 
 We need one final migration to tell Citus to mark tables for distribution. Create a new migration :code:`python manage.py makemigrations appname --empty --name distribute_tables`. Edit the result to look like this:
 
@@ -490,7 +497,7 @@ With all the migrations created from the steps so far, apply them to the databas
 At this point the Django application models are ready to work with a Citus backend. You can continue by importing data to the new system and modifying views as necessary to deal with the model changes.
 
 Updating the Django Application to scope queries
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------------
 
 The django-multitenant library discussed in the previous section is not only useful for migrations, but also for simplifying application queries. The library allows application code to easily scope queries to a single tenant. It automatically adds the correct SQL filters to all statements, including fetching objects through relations.
 
@@ -519,7 +526,7 @@ The ``set_current_tenant`` function can also take an array of objects, like
 which updates the internal SQL query with a filter like ``tenant_id IN (a,b,c)``.
 
 Automating with middleware
-##########################
+--------------------------
 
 Rather than calling ``set_current_tenant()`` in each view, you can create and install a new `middleware <https://docs.djangoproject.com/en/3.0/topics/http/middleware/>`_ class in your Django application to do it automatically.
 
