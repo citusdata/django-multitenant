@@ -8,7 +8,7 @@ from datetime import date
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "Django Multi-tenant"
-copyright = f"{date.today.year} .Citus Data Licensed under the MIT license, see License for details. "
+copyright = f"{date.today().year} .Citus Data Licensed under the MIT license, see License for details. "
 author = "Citus Data"
 release = "3.0.0"
 
