@@ -221,5 +221,5 @@ We thank the authors for their efforts.
 License
 =================================
 
-Copyright (C) .. |year| date:: %YYYY Citus Data Licensed under the MIT license, see
+Copyright (C) .. |date| date:: %YYYY Citus Data Licensed under the MIT license, see
 LICENSE file for details.
