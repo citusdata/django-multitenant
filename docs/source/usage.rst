@@ -48,7 +48,7 @@ Changes in Models:
        tenant_id='store_id'
        product_purchased = TenantForeignKey(Product)
 
-..note::
+.. note::
    tenant_id column name should not be 'tenant_id'. 'tenant_id' is a reserved keyword across the library.
 .. code:: python
 
