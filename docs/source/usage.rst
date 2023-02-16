@@ -54,7 +54,7 @@ Changes in Models:
 
       class Business(TenantModel):
          ten = models.ForeignKey(Tenant, blank=True, null=True, on_delete=models.SET_NULL)
-         :strike:`tenant_id = 'tenant_id'`
+         tenant_id = 'tenant_id'
          tenant_id = 'ten_id'
 
 
