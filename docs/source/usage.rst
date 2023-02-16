@@ -46,21 +46,21 @@ Changes in Models:
        product_purchased = TenantForeignKey(Product)
 
 
-.. note::
-   tenant_id column name should not be 'tenant_id'. 'tenant_id' is a reserved keyword across the library.
-
-   .. code:: python
-   
-      class Tenant
-         tenant_id = 'id'
-
-      class Business(TenantModel):
-         ten = models.ForeignKey(Tenant, blank=True, null=True, on_delete=models.SET_NULL)
-         tenant_id = 'tenant_id'` # This is wrong
-         tenant_id = 'ten_id' # This is correct
+Reserved tenant_id keyword
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+tenant_id column name should not be 'tenant_id'. 'tenant_id' is a reserved keyword across the library.
 
 Example model with correct tenant_id column name:
 
+.. code:: python
+
+   class Tenant
+      tenant_id = 'id'
+
+   class Business(TenantModel):
+      ten = models.ForeignKey(Tenant, blank=True, null=True, on_delete=models.SET_NULL)
+      tenant_id = 'tenant_id'` # This is wrong
+      tenant_id = 'ten_id' # This is correct
 
 
 Changes in Models using mixins
