@@ -59,7 +59,7 @@ Example model with correct tenant_id column name:
 
    class Business(TenantModel):
       ten = models.ForeignKey(Tenant, blank=True, null=True, on_delete=models.SET_NULL)
-      tenant_id = 'tenant_id'` # This is wrong
+      tenant_id = 'tenant_id' # This is wrong
       tenant_id = 'ten_id' # This is correct
 
 
