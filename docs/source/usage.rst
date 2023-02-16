@@ -1,3 +1,6 @@
+.. role:: strike
+    :class: strike
+
 Usage
 =================================
 
@@ -45,19 +48,17 @@ Changes in Models:
        tenant_id='store_id'
        product_purchased = TenantForeignKey(Product)
 
-```{note}
-tenant_id column name should not be 'tenant_id'. 'tenant_id' is a reserved keyword across the library.
+..note::
+   tenant_id column name should not be 'tenant_id'. 'tenant_id' is a reserved keyword across the library.
 .. code:: python
 
-class Tenant
-   tenant_id = 'id'
+   class Tenant
+      tenant_id = 'id'
 
-class Business(TenantModel):
-   ten = models.ForeignKey(Tenant, blank=True, null=True, on_delete=models.SET_NULL)
-   :strike:tenant_id = 'tenant_id'
-   tenant_id = 'ten_id'
-
-```
+   class Business(TenantModel):
+      ten = models.ForeignKey(Tenant, blank=True, null=True, on_delete=models.SET_NULL)
+      :strike:tenant_id = 'tenant_id'
+      tenant_id = 'ten_id'
 
 
 Changes in Models using mixins
