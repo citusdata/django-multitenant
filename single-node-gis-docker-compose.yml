@@ -1,0 +1,10 @@
+version: '2.1'
+
+services:
+  db:
+    image: "postgis/postgis:14-3.3"
+    container_name: "${COMPOSE_PROJECT_NAME:-single}_node_postgis"
+    ports:
+      - "5605:5432"
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust

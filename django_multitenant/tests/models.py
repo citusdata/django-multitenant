@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.db import models
 
 
@@ -209,3 +210,18 @@ class MigrationTestModel(TenantModel):
 
 class MigrationTestReferenceModel(models.Model):
     name = models.CharField(max_length=255)
+
+
+if settings.USE_GIS:
+    from django_multitenant.models import GisTenantModel
+
+    class OrganizationLocation(GisTenantModel):
+        from django.contrib.gis.db import models as gis_models
+
+        id = gis_models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+        organization = gis_models.ForeignKey(
+            Organization, on_delete=models.CASCADE, related_name="locations"
+        )
+        tenant_id = "organization_id"
+
+        location = gis_models.PointField()

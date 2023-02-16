@@ -76,3 +76,5 @@ CITUS_EXTENSION_INSTALLED = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 USE_TZ = True
+
+USE_GIS = False

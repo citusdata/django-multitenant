@@ -48,3 +48,22 @@ Then in another shell run the tests:
 ```bash
 make test
 ```
+
+#### Running GIS Tests
+
+You can bring up a PostGIS instance using docker compose:
+```shell
+docker compose --project-name django-multitenant-gis -f single-node-gis-docker-compose.yml up
+```
+
+In order to run the tests with Make you'll need to update the Makefile to use the appropriate settings:
+
+```
+export DJANGO_SETTINGS_MODULE=django_multitenant.tests.single_node_gis_settings
+```
+
+Alternatively you can run the tests through the command line like so:
+
+```bash
+DJANGO_SETTINGS_MODULE=django_multitenant.tests.single_node_gis_settings py.test -s django_multitenant/tests/ -k 'not concurrency'
+```

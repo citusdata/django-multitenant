@@ -16,6 +16,10 @@ from .base import BaseTestCase
 
 
 class TenantModelTest(BaseTestCase):
+    @pytest.fixture(autouse=True)
+    def run_before_and_after_tests(tmpdir):
+        unset_current_tenant()
+
     def test_filter_without_joins(self):
         from .models import Project
 
@@ -591,6 +595,66 @@ class TenantModelTest(BaseTestCase):
             )
 
         unset_current_tenant()
+
+    @pytest.mark.skipif(
+        not settings.USE_GIS,
+        reason="GIS tests require PostGIS to be installed.",
+    )
+    def test_gis_query(self):
+        from django.contrib.gis.geos import Point
+        from .models import Organization, OrganizationLocation
+
+        organization = self.organization
+        set_current_tenant(organization)
+
+        location_point = Point(-122.4168, 37.7752, srid=4326)
+        record = OrganizationLocation.objects.create(
+            organization=organization, location=location_point
+        )
+
+        self.assertEqual(record.location, location_point)
+        self.assertEqual(record.organization, organization)
+
+        second_organization = Organization.objects.create(name="organization2")
+        OrganizationLocation.objects.create(
+            organization=second_organization, location=location_point
+        )
+
+        locations = OrganizationLocation.objects.filter(
+            location__dwithin=(location_point, 0)
+        )
+        self.assertEqual(len(locations), 1)
+        self.assertEqual(locations[0], record)
+
+    @pytest.mark.skipif(
+        not settings.USE_GIS,
+        reason="GIS tests require PostGIS to be installed.",
+    )
+    def test_gis_aggregate(self):
+        from django.contrib.gis.db.models import Extent
+        from django.contrib.gis.geos import Point
+        from .models import Organization, OrganizationLocation
+
+        organization = self.organization
+        set_current_tenant(organization)
+
+        location_point = Point(-122.4168, 37.7752, srid=4326)
+        OrganizationLocation.objects.create(
+            organization=organization, location=location_point
+        )
+
+        second_organization = Organization.objects.create(name="organization2")
+        location_point_2 = Point(-122.1283, 47.6396, srid=4326)
+        OrganizationLocation.objects.create(
+            organization=second_organization, location=location_point_2
+        )
+
+        extent = OrganizationLocation.objects.aggregate(Extent("location"))
+        location__extent = extent["location__extent"]
+        self.assertEqual(location__extent[0], location_point.x)
+        self.assertEqual(location__extent[1], location_point.y)
+        self.assertEqual(location__extent[2], location_point.x)
+        self.assertEqual(location__extent[3], location_point.y)
 
 
 class MultipleTenantModelTest(BaseTestCase):
