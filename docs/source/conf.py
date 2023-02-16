@@ -16,6 +16,7 @@ release = "3.0.0"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
+root_doc = "docs/index"
 extensions = ['sphinxnotes.strike']
 
 templates_path = ["_templates"]
