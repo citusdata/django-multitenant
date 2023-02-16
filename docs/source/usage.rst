@@ -52,6 +52,7 @@ Changes in Models:
 Example model with correct tenant_id column name:
 
 .. code:: python
+   
    class Tenant
       tenant_id = 'id'
 
