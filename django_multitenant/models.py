@@ -24,12 +24,12 @@ class TenantModel(TenantModelMixin, models.Model):
         abstract = True
 
 
-class GisTenantManager(TenantManager, gis_models.Manager):
+class GisTenantManager(TenantManagerMixin, gis_models.Manager):
     # Below is the manager related to the above class.
     pass
 
 
-class GisTenantModel(TenantModel, gis_models.Model):
+class GisTenantModel(TenantModelMixin, gis_models.Model):
     # Abstract model which all the models related to tenant inherit.
 
     objects = GisTenantManager()
