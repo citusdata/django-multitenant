@@ -49,19 +49,18 @@ Changes in Models:
 .. note::
    tenant_id column name should not be 'tenant_id'. 'tenant_id' is a reserved keyword across the library.
 
+   .. code:: python
+   
+      class Tenant
+         tenant_id = 'id'
+
+      class Business(TenantModel):
+         ten = models.ForeignKey(Tenant, blank=True, null=True, on_delete=models.SET_NULL)
+         tenant_id = 'tenant_id'` # This is wrong
+         tenant_id = 'ten_id' # This is correct
+
 Example model with correct tenant_id column name:
 
-:strike:`tenant_id = 'tenant_id'`
-
-.. code:: python
-   
-   class Tenant
-      tenant_id = 'id'
-
-   class Business(TenantModel):
-      ten = models.ForeignKey(Tenant, blank=True, null=True, on_delete=models.SET_NULL)
-      :strike: `tenant_id = 'tenant_id'`
-      tenant_id = 'ten_id'
 
 
 Changes in Models using mixins
