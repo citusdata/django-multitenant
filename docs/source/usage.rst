@@ -56,11 +56,7 @@ Example model with correct tenant_id column name:
    class Tenant
       tenant_id = 'id'
 
-   class Business(TenantModel):
-      ten = models.ForeignKey(Tenant, blank=True, null=True, on_delete=models.SET_NULL)
-      :strike:`tenant_id = 'tenant_id'`
-      
-      tenant_id = 'ten_id'
+
 
 
 Changes in Models using mixins
