@@ -205,10 +205,10 @@ class TenantModelMixin:
             )
         if hasattr(self, "tenant_id"):
             return self.tenant_id
-        else:
-            raise AttributeError(
-                "tenant_id field not found. Please add tenant_id field to the model."
-            )
+        
+        raise AttributeError(
+            "tenant_id field not found. Please add tenant_id field to the model."
+        )
 
     @property
     def tenant_value(self):
