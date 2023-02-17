@@ -195,16 +195,20 @@ class TenantModelMixin:
 
     @property
     def tenant_field(self):
-        if hasattr(self,'TenantMeta') and "tenant_field_name" in dir(self.TenantMeta) :
+        if hasattr(self, "TenantMeta") and "tenant_field_name" in dir(self.TenantMeta):
             return self.TenantMeta.tenant_field_name
-        elif  hasattr(self,'TenantMeta') and "tenant_id" in dir(self.TenantMeta):
+        elif hasattr(self, "TenantMeta") and "tenant_id" in dir(self.TenantMeta):
             return self.TenantMeta.tenant_id
-        elif hasattr(self,"tenant") :
-            raise AttributeError("Tenant field exists which may cause collusion with tenant_id field. Please rename the tenant field. ")
-        elif hasattr(self,"tenant_id"):
+        elif hasattr(self, "tenant"):
+            raise AttributeError(
+                "Tenant field exists which may cause collusion with tenant_id field. Please rename the tenant field. "
+            )
+        elif hasattr(self, "tenant_id"):
             return self.tenant_id
         else:
-            raise AttributeError("tenant_id field not found. Please add tenant_id field to the model.")
+            raise AttributeError(
+                "tenant_id field not found. Please add tenant_id field to the model."
+            )
 
     @property
     def tenant_value(self):

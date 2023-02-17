@@ -177,15 +177,19 @@ class Revenue(TenantModel):
 class Organization(TenantModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
+
     class TenantMeta:
-        tenant_field_name="id"
+        tenant_field_name = "id"
+
 
 class Record(TenantModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     organization = TenantForeignKey(Organization, on_delete=models.CASCADE)
+
     class TenantMeta:
-        tenant_id="organization_id"
+        tenant_id = "organization_id"
+
 
 class TenantNotIdModel(TenantModel):
     tenant_column = models.IntegerField(primary_key=True, editable=False)
@@ -208,29 +212,36 @@ class MigrationTestModel(TenantModel):
 
 class MigrationTestReferenceModel(models.Model):
     name = models.CharField(max_length=255)
-    
+
+
 class Tenant(TenantModel):
     tenant_id = "id"
     name = models.CharField("tenant name", max_length=100)
+
 
 class Business(TenantModel):
     tenant = models.ForeignKey(Tenant, blank=True, null=True, on_delete=models.SET_NULL)
     bk_biz_id = models.IntegerField("business ID")
     bk_biz_name = models.CharField("business name", max_length=100)
-    
+
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['id', 'tenant_id'], name='unique_business_tenant')
+            models.UniqueConstraint(
+                fields=["id", "tenant_id"], name="unique_business_tenant"
+            )
         ]
-    
+
     class TenantMeta:
         tenant_field_name = "tenant_id"
 
 
 class Template(TenantModel):
     tenant = models.ForeignKey(Tenant, blank=True, null=True, on_delete=models.SET_NULL)
-    business = TenantForeignKey(Business, blank=True, null=True, on_delete=models.SET_NULL)
+    business = TenantForeignKey(
+        Business, blank=True, null=True, on_delete=models.SET_NULL
+    )
     name = models.CharField("name", max_length=100)
+
     class TenantMeta:
         tenant_field_name = "tenant_id"
 

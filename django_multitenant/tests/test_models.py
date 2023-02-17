@@ -832,13 +832,15 @@ class MultipleTenantModelTest(BaseTestCase):
         purchase.product_purchased.add(product, through_defaults={"date": date.today()})
 
     def test_tenant_id_columns(self):
-        from .models import Template,Tenant,Business
-        
+        from .models import Template, Tenant, Business
+
         tenant = Tenant.objects.create(name="tenant")
         tenant.save()
-        business = Business.objects.create(bk_biz_name="business", bk_biz_id=1, tenant=tenant)
+        business = Business.objects.create(
+            bk_biz_name="business", bk_biz_id=1, tenant=tenant
+        )
         business.save()
         template = Template.objects.create(name="template", business=business)
         template.save()
-        
+
         Template.objects.filter(business__tenant=tenant).first()

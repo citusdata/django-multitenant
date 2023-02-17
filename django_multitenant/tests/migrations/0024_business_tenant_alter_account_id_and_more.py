@@ -52,7 +52,6 @@ class Migration(migrations.Migration):
             },
             bases=(django_multitenant.mixins.TenantModelMixin, models.Model),
         ),
- 
         migrations.CreateModel(
             name="Template",
             fields=[
