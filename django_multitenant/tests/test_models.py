@@ -815,6 +815,7 @@ class MultipleTenantModelTest(BaseTestCase):
         unset_current_tenant()
         projects_per_manager = ProjectManager.objects.annotate(Count("project_id"))
         list(projects_per_manager)
+    
 
     def test_many_to_many_through_saves(self):
 
@@ -829,3 +830,15 @@ class MultipleTenantModelTest(BaseTestCase):
         purchase = Purchase.objects.create(store=store)
         purchase.save()
         purchase.product_purchased.add(product, through_defaults={"date": date.today()})
+
+    def test_tenant_id_columns(self):
+        from .models import Template,Tenant,Business
+        
+        tenant = Tenant.objects.create(name="tenant")
+        tenant.save()
+        business = Business.objects.create(bk_biz_name="business", bk_biz_id=1, tenant=tenant)
+        business.save()
+        template = Template.objects.create(name="template", business=business)
+        template.save()
+        
+        Template.objects.filter(business__tenant=tenant).first()

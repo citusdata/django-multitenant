@@ -14,7 +14,7 @@ from .models import (
     Manager,
     SomeRelatedModel,
     TenantNotIdModel,
-    Organization,
+    Organization
 )
 
 
@@ -186,6 +186,7 @@ class Fixtures(Exam):
                     related_tenant=tenant, name=f"related {j}"
                 )
         return tenants
+    
 
 
 class BaseTestCase(Fixtures, TransactionTestCase):
