@@ -64,8 +64,8 @@ class Migration(migrations.Migration):
         )
         country = Country.objects.get(name="USA")
         accounts = Account.objects.all()
-        
-        assert len(accounts) == 6 
+
+        assert len(accounts) == 6
 
     def reverse_func(apps, schema_editor):
         Country = apps.get_model("tests", "Country")
