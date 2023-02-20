@@ -66,6 +66,7 @@ class Migration(migrations.Migration):
         accounts = Account.objects.all()
 
         assert len(accounts) == 6
+        assert country is not None
 
     def reverse_func(apps):
         Country = apps.get_model("tests", "Country")
