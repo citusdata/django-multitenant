@@ -41,29 +41,36 @@ In order to use this library you can either use Mixins or have your models inher
    ```
 1. All models should inherit the TenantModel class.
    `Ex: class Product(TenantModel):`
-1. Define a static variable named tenant_id and specify the tenant column using this variable.
-   `Ex: tenant_id='store_id'`
+1. Define a static variable named tenant_id and specify the tenant column using this variable.You can define tenant_id in three ways. Any of them is acceptavle 
+   * Using TenantMeta.tenant_field_name variable
+   * Using TenantMeta.tenant_id variable
+   * Using template_id field
+   > **Warning**
+   > Using  template_id field directly in the class is not suggested since it may cause collision if class has a field named with 'tenant'
 1. All foreign keys to TenantModel subclasses should use TenantForeignKey in place of
    models.ForeignKey
 1. A sample model implementing the above 2 steps:
   ```python
     class Store(TenantModel):
-      tenant_id = 'id'
       name =  models.CharField(max_length=50)
       address = models.CharField(max_length=255)
       email = models.CharField(max_length=50)
+      class TenantMeta:
+        tenant_field_name = "id"
 
     class Product(TenantModel):
       store = models.ForeignKey(Store)
-      tenant_id='store_id'
       name = models.CharField(max_length=255)
       description = models.TextField()
       class Meta(object):
         unique_together = ["id", "store"]
+      class TenantMeta:
+        tenant_field_name = "store_id"
     class Purchase(TenantModel):
       store = models.ForeignKey(Store)
-      tenant_id='store_id'
       product_purchased = TenantForeignKey(Product)
+      class TenantMeta:
+        tenant_field_name = "store_id"
   ```
 
 

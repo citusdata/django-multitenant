@@ -201,7 +201,7 @@ class TenantModelMixin:
             return self.TenantMeta.tenant_id
         if hasattr(self, "tenant"):
             raise AttributeError(
-                "Tenant field exists which may cause collusion with tenant_id field. Please rename the tenant field. "
+                "Tenant field exists which may cause collision with tenant_id field. Please rename the tenant field. "
             )
         if hasattr(self, "tenant_id"):
             return self.tenant_id
