@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
 
         assert len(accounts) == 6
 
-    def reverse_func(apps, schema_editor):
+    def reverse_func(apps):
         Country = apps.get_model("tests", "Country")
         Account = apps.get_model("tests", "Account")
         Country.objects.all().delete()
