@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to Django Multi-tenant's documentation!
-===============================================
+=================================================
 
 |Latest Documentation Status| |Build Status| |Coverage Status| |PyPI Version|
 

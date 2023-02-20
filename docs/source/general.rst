@@ -6,7 +6,7 @@ Installation
 1. ``pip install  --no-cache-dir django_multitenant``
 
 Supported Django and Citus versions/Pre-requisites
-=================================
+===================================================
 
 ================= ====== =====
 Python            Django Citus

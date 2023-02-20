@@ -2,9 +2,9 @@
 .. _django_migration:
 
 Migrating a multi-tenant Django application to Citus
-=================================
+=====================================================
 
-In :ref:`mt_schema_migration` we discussed the framework-agnostic database changes required for using Citus in the multi-tenant use case. Here we investigate specifically how to migrate multi-tenant Django applications to a Citus storage backend with the help of the `django-multitenant <https://github.com/citusdata/django-multitenant>`_ library.
+Here we investigate specifically how to migrate multi-tenant Django applications to a Citus storage backend with the help of the `django-multitenant <https://github.com/citusdata/django-multitenant>`_ library.
 
 This process will be in 5 steps:
 
@@ -15,7 +15,7 @@ This process will be in 5 steps:
 - Updating the Django Application to scope queries
 
 Preparing to scale-out a multi-tenant application
--------------------------------------------------
+--------------------------------------------------
 
 Initially you’ll start with all tenants placed on a single database node. To be able to scale out django, some simple changes will have to be made to your models.
 
@@ -105,7 +105,7 @@ In our case:
 Create a migration to reflect the change: :code:`python manage.py makemigrations`.
 
 **1.2. Introduce a column for the account\_id on every ManyToMany model that belongs to an account**
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The goal is the same as previously. We want to be able to have ORM calls and queries routed to one account. We also want to be able to distribute the ManyToMany relationship related to an account on the account_id.
 
@@ -217,7 +217,7 @@ Django automatically creates a simple "id" primary key on models, so we will nee
     ]
 
 **2.2 Including the account\_id to unique constraints**
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The same thing needs to be done for ``UNIQUE`` constraints. You can have explicit constraints that you might have set in your model with ``unique=True`` or ``unique_together`` like:
 
@@ -320,7 +320,7 @@ And finally apply the changes by creating a new migration to generate these cons
   python manage.py makemigrations
 
 3. Updating the models to use TenantModelMixin and TenantForeignKey
-------------------------------------------------------------------
+--------------------------------------------------------------------
 
 Next, we'll use the `django-multitenant <https://github.com/citusdata/django-multitenant>`_ library to add account_id to foreign keys, and make application queries easier later on.
 
@@ -339,7 +339,7 @@ In settings.py, change the database engine to the customized engine provided by 
   'ENGINE': 'django_multitenant.backends.postgresql'
 
 **3.1 Introducing the TenantModelMixin and TenantManager**
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The models will now not only inherit from ``models.Model`` but also from the ``TenantModelMixin``.
 
@@ -388,7 +388,7 @@ the distribution column.
       objects = TenantManager()
 
 **3.2 Handling ForeignKey constraints**
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For ``ForeignKey`` and ``OneToOneField`` constraint, we have a few different cases:
 
