@@ -49,7 +49,7 @@ In order to use this library you can either use Mixins or have your models inher
 > Using  template_id field directly in the class is not suggested since it may cause collision if class has a field named with 'tenant'
 3. All foreign keys to TenantModel subclasses should use TenantForeignKey in place of
    models.ForeignKey
-4  . A sample model implementing the above 2 steps:
+4. A sample model implementing the above 2 steps:
   ```python
     class Store(TenantModel):
       name =  models.CharField(max_length=50)
