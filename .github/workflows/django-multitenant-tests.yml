@@ -72,7 +72,7 @@ jobs:
       fail-fast: false
       matrix:
         python_version: ["3.8","3.9","3.10","3.11"]
-        django_version: ["4.1","4.2b1"]
+        django_version: ["4.1"]
         citus_version:  ["11"]
 
     env:
