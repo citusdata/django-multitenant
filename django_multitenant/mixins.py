@@ -47,11 +47,12 @@ def wrap_many_related_manager_add(many_related_manager_add):
 
 
 def wrap_forward_many_to_many_manager(create_forward_many_to_many_manager_method):
-    
+
     """
     Wraps the create_forward_many_to_many_manager method of the related_descriptors module
     and changes the add method of the ManyRelatedManagerClass to set tenant_id in through_defaults
     """
+
     def create_forward_many_to_many_manager_wrapper(superclass, rel, reverse):
         ManyRelatedManagerClass = create_forward_many_to_many_manager_method(
             superclass, rel, reverse
