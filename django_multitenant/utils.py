@@ -1,6 +1,7 @@
 import inspect
 
 from django.apps import apps
+from django_multitenant.many_to_many_post_save import register_post_save_signal
 
 try:
     from threading import local
@@ -80,6 +81,7 @@ def get_object_tenant(instance):
 def set_object_tenant(instance, value):
     if instance.tenant_value is None and value and not isinstance(value, list):
         setattr(instance, instance.tenant_field, value)
+        register_post_save_signal()
 
 
 def get_current_tenant_value():
@@ -135,6 +137,7 @@ def set_current_tenant(tenant):
     """
 
     setattr(_thread_locals, "tenant", tenant)
+    register_post_save_signal()
 
 
 def unset_current_tenant():
