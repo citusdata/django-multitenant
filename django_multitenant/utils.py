@@ -1,7 +1,8 @@
 import inspect
+import importlib
 
 from django.apps import apps
-from django_multitenant.many_to_many_post_save import register_post_save_signal
+from django.db.models.signals import post_save
 
 try:
     from threading import local
@@ -126,6 +127,8 @@ def get_tenant_filters(table, filters=None):
 
 
 def set_current_tenant(tenant):
+
+    
     """
     Utils to set a tenant in the current thread.
     Often used in a middleware once a user is logged in to make sure all db
@@ -135,7 +138,6 @@ def set_current_tenant(tenant):
         get_current_tenant(my_class_object)
     ```
     """
-
     setattr(_thread_locals, "tenant", tenant)
     register_post_save_signal()
 
@@ -152,4 +154,66 @@ def is_distributed_model(model):
         get_tenant_field(model)
         return True
     except ValueError:
+        return False
+
+def wrap_many_related_manager_add(many_related_manager_add):
+
+    """
+    Wraps the add method of many to many field to set tenant_id in through_defaults
+    parameter of the add method.
+    """
+
+    def add(obj, *objs, through_defaults=None):
+
+        if get_current_tenant():
+            through_defaults[get_tenant_column(obj)] = get_current_tenant_value()
+        return many_related_manager_add(obj, *objs, through_defaults=through_defaults)
+
+    # pylint: disable=protected-access
+    add._sign = "add django-multitenant"
+
+    return add
+
+def post_save_signal( **kwargs):
+
+    """
+    Gets all many to many fields for the object being saved
+    and wraps the add method to set tenant_id for the related objects
+    """
+
+    instance = kwargs["instance"]
+    many_to_many_fields = [
+        field
+        for field in instance._meta.get_fields()
+        if field.many_to_many and not field.auto_created
+    ]
+
+    for field in many_to_many_fields:
+        field_value = getattr(instance, field.name)
+        if not hasattr(field_value.add, "_sign"):
+            field_value.add = wrap_many_related_manager_add(field_value.add)
+
+def register_post_save_signal():
+    app_configs = apps.get_app_configs()
+
+    models = apps.get_models()
+    for model in models:
+        if is_subclass(model, "django_multitenant.models.TenantModel")  :
+            post_save.connect(post_save_signal, sender=model)
+
+
+def is_subclass(subclass, superclass_name):
+    """
+    Gets the model class and superclass name and returns True if the model class is subclass of the superclass
+    Normally issubclass method is used to check if a class is subclass of another class.However, when using
+    issubclass method, the class should be imported. In our case, we don't want to import the class because
+    importing TenantModel creates a circular dependency with the models.py file. So, we are using this method
+    """
+    
+    try:
+        module_name, class_name = superclass_name.rsplit('.', 1)
+        module = importlib.import_module(module_name)
+        superclass = getattr(module, class_name)
+        return isinstance(subclass, type) and isinstance(superclass, type) and issubclass(subclass, superclass)
+    except (ImportError, AttributeError):
         return False
