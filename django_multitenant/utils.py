@@ -1,5 +1,4 @@
 import inspect
-import importlib
 
 from django.apps import apps
 
@@ -125,7 +124,6 @@ def get_tenant_filters(table, filters=None):
 
 
 def set_current_tenant(tenant):
-
     """
     Utils to set a tenant in the current thread.
     Often used in a middleware once a user is logged in to make sure all db
@@ -151,4 +149,3 @@ def is_distributed_model(model):
         return True
     except ValueError:
         return False
-
