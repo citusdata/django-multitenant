@@ -819,7 +819,7 @@ class MultipleTenantModelTest(BaseTestCase):
 
         store = Store.objects.create(name="store1")
         store.save()
-        
+
         set_current_tenant(tenant=store)
 
         product = Product.objects.create(name="product1", store=store)

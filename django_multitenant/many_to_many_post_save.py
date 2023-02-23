@@ -1,6 +1,7 @@
 from django.apps.registry import apps
 from django.db.models.signals import post_save
 
+
 def wrap_many_related_manager_add(many_related_manager_add):
 
     """
@@ -24,6 +25,7 @@ def wrap_many_related_manager_add(many_related_manager_add):
 
     return add
 
+
 def post_save_signal(sender, **kwargs):
 
     """
@@ -44,6 +46,7 @@ def post_save_signal(sender, **kwargs):
         if not hasattr(field_value.add, "_sign"):
             field_value.add = wrap_many_related_manager_add(field_value.add)
 
+
 def register_post_save_signal():
 
     from django_multitenant.models import TenantModel
@@ -54,4 +57,3 @@ def register_post_save_signal():
     for model in models:
         if issubclass(model, TenantModel):
             post_save.connect(post_save_signal, sender=model)
-

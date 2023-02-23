@@ -209,32 +209,41 @@ class MigrationTestModel(TenantModel):
 
 class MigrationTestReferenceModel(models.Model):
     name = models.CharField(max_length=255)
-    
+
 
 class Store(TenantModel):
-    tenant_id = 'id'
-    name =  models.CharField(max_length=50)
+    tenant_id = "id"
+    name = models.CharField(max_length=50)
     address = models.CharField(max_length=255)
     email = models.CharField(max_length=50)
 
+
 class Product(TenantModel):
-    store = models.ForeignKey(Store,on_delete=models.CASCADE)
-    tenant_id='store_id'
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    tenant_id = "store_id"
     name = models.CharField(max_length=255)
     description = models.TextField()
-    class Meta:
-        unique_together = ["id", "store"]
-        
-class Purchase(TenantModel):
-    store = models.ForeignKey(Store,on_delete=models.CASCADE)
-    tenant_id='store_id'
-    product_purchased = models.ManyToManyField(Product, through='Transaction', through_fields=('purchase', 'product'))
+
     class Meta:
         unique_together = ["id", "store"]
 
+
+class Purchase(TenantModel):
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    tenant_id = "store_id"
+    product_purchased = models.ManyToManyField(
+        Product, through="Transaction", through_fields=("purchase", "product")
+    )
+
+    class Meta:
+        unique_together = ["id", "store"]
+
+
 class Transaction(TenantModel):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
-    tenant_id='store_id'
-    purchase = TenantForeignKey(Purchase,on_delete=models.CASCADE, blank=True, null=True)
+    tenant_id = "store_id"
+    purchase = TenantForeignKey(
+        Purchase, on_delete=models.CASCADE, blank=True, null=True
+    )
     product = TenantForeignKey(Product, on_delete=models.CASCADE)
     date = models.DateField()
