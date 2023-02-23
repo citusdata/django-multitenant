@@ -36,6 +36,6 @@ release:
 	twine check dist/*
 	twine upload --skip-existing dist/*
 
-test-local:
+test-model:
 	 py.test  -s django_multitenant/tests/test_models.py -k 'not concurrency'
 
