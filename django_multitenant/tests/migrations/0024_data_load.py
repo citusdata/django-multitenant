@@ -68,10 +68,5 @@ class Migration(migrations.Migration):
         assert len(accounts) == 6
         assert country is not None
 
-    def reverse_func(apps):
-        Country = apps.get_model("tests", "Country")
-        Account = apps.get_model("tests", "Account")
-        Country.objects.all().delete()
-        Account.objects.all().delete()
 
-    operations = [migrations.RunPython(forwards_func, reverse_func)]
+    operations = [migrations.RunPython(forwards_func)]
