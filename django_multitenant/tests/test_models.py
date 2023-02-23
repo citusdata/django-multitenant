@@ -583,6 +583,7 @@ class TenantModelTest(BaseTestCase):
 
         unset_current_tenant()
 
+
 class MultipleTenantModelTest(BaseTestCase):
     def test_filter_without_joins(self):
         from .models import Project, Account
