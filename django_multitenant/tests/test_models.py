@@ -1,5 +1,6 @@
 from datetime import date
 import re
+import inspect
 
 import django
 import pytest
@@ -8,10 +9,11 @@ from django.db.models import Count
 from django.db.utils import NotSupportedError, DataError
 from .models import Store, Product, Purchase
 
+
 from django_multitenant.utils import (
     set_current_tenant,
     unset_current_tenant,
-    get_current_tenant,
+    get_current_tenant
 )
 
 from .base import BaseTestCase
@@ -816,6 +818,9 @@ class TenantModelTest(BaseTestCase):
 #         list(projects_per_manager)
 
     def test_many_to_many_through_saves(self):
+        
+
+
 
         store = Store.objects.create(name="store1")
         store.save()
@@ -824,7 +829,9 @@ class TenantModelTest(BaseTestCase):
 
         product = Product.objects.create(name="product1", store=store)
         product.save()
-
+        
+        
         purchase = Purchase.objects.create(store=store)
         purchase.save()
         purchase.product_purchased.add(product, through_defaults={"date": date.today()})
+        

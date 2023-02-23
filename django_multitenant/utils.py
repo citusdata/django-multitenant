@@ -82,7 +82,6 @@ def get_object_tenant(instance):
 def set_object_tenant(instance, value):
     if instance.tenant_value is None and value and not isinstance(value, list):
         setattr(instance, instance.tenant_field, value)
-        register_post_save_signal()
 
 
 def get_current_tenant_value():
@@ -139,7 +138,6 @@ def set_current_tenant(tenant):
     ```
     """
     setattr(_thread_locals, "tenant", tenant)
-    register_post_save_signal()
 
 
 def unset_current_tenant():
@@ -156,50 +154,7 @@ def is_distributed_model(model):
     except ValueError:
         return False
 
-def wrap_many_related_manager_add(many_related_manager_add):
 
-    """
-    Wraps the add method of many to many field to set tenant_id in through_defaults
-    parameter of the add method.
-    """
-
-    def add(obj, *objs, through_defaults=None):
-
-        if get_current_tenant():
-            through_defaults[get_tenant_column(obj)] = get_current_tenant_value()
-        return many_related_manager_add(obj, *objs, through_defaults=through_defaults)
-
-    # pylint: disable=protected-access
-    add._sign = "add django-multitenant"
-
-    return add
-
-def post_save_signal( **kwargs):
-
-    """
-    Gets all many to many fields for the object being saved
-    and wraps the add method to set tenant_id for the related objects
-    """
-
-    instance = kwargs["instance"]
-    many_to_many_fields = [
-        field
-        for field in instance._meta.get_fields()
-        if field.many_to_many and not field.auto_created
-    ]
-
-    for field in many_to_many_fields:
-        field_value = getattr(instance, field.name)
-        if not hasattr(field_value.add, "_sign"):
-            field_value.add = wrap_many_related_manager_add(field_value.add)
-
-def register_post_save_signal():
-    app_configs = apps.get_app_configs()
-
-    models = apps.get_models()
-    for model in models:
-        if is_subclass(model, "django_multitenant.models.TenantModel")  :
-            post_save.connect(post_save_signal, sender=model)
 
 
 def is_subclass(subclass, superclass_name):
@@ -217,3 +172,31 @@ def is_subclass(subclass, superclass_name):
         return isinstance(subclass, type) and isinstance(superclass, type) and issubclass(subclass, superclass)
     except (ImportError, AttributeError):
         return False
+    
+
+def increase_indentation(func):
+    # Get the source code of the function
+    source = inspect.getsource(func)
+    
+    # Split the source code into lines
+    lines = source.splitlines()
+    
+    # Add an extra level of indentation to each line
+    indented_lines = ["    " + line for line in lines]
+    
+    # Join the indented lines back into a single string
+    indented_source = "\n".join(indented_lines)
+    
+    # Compile the indented source code into a code object
+    code_obj = compile(indented_source, "<string>", "exec")
+    
+    # Create an empty namespace to execute the code in
+    namespace = {}
+    
+    # Execute the code in the namespace to create the function
+    exec(code_obj, namespace)
+    
+    # Get the function from the namespace
+    indented_func = namespace[func.__name__]
+    
+    return indented_func
