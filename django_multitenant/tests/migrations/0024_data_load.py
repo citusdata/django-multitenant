@@ -68,5 +68,4 @@ class Migration(migrations.Migration):
         assert len(accounts) == 6
         assert country is not None
 
-
     operations = [migrations.RunPython(forwards_func)]
