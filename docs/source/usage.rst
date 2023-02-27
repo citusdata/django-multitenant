@@ -25,25 +25,25 @@ Changes in Models:
 
 5. A sample model implementing the above 2 steps:
 
-.. code:: python
+   .. code:: python
 
-     class Store(TenantModel):
-       tenant_id = 'id'
-       name =  models.CharField(max_length=50)
-       address = models.CharField(max_length=255)
-       email = models.CharField(max_length=50)
+      class Store(TenantModel):
+         tenant_id = 'id'
+         name =  models.CharField(max_length=50)
+         address = models.CharField(max_length=255)
+         email = models.CharField(max_length=50)
 
-     class Product(TenantModel):
-       store = models.ForeignKey(Store)
-       tenant_id='store_id'
-       name = models.CharField(max_length=255)
-       description = models.TextField()
-       class Meta(object):
-         unique_together = ["id", "store"]
-     class Purchase(TenantModel):
-       store = models.ForeignKey(Store)
-       tenant_id='store_id'
-       product_purchased = TenantForeignKey(Product)
+      class Product(TenantModel):
+         store = models.ForeignKey(Store)
+         tenant_id='store_id'
+         name = models.CharField(max_length=255)
+         description = models.TextField()
+         class Meta(object):
+            unique_together = ["id", "store"]
+      class Purchase(TenantModel):
+         store = models.ForeignKey(Store)
+         tenant_id='store_id'
+         product_purchased = TenantForeignKey(Product)
 
 
 Reserved tenant_id keyword
@@ -94,32 +94,32 @@ Changes in Models using mixins
 
 6. A sample model implementing the above 3 steps:
 
-.. code:: python
+   .. code:: python
 
 
-     class ProductManager(TenantManagerMixin, models.Manager):
-       pass
+      class ProductManager(TenantManagerMixin, models.Manager):
+         pass
 
-     class Product(TenantModelMixin, models.Model):
-       store = models.ForeignKey(Store)
-       tenant_id='store_id'
-       name = models.CharField(max_length=255)
-       description = models.TextField()
+      class Product(TenantModelMixin, models.Model):
+         store = models.ForeignKey(Store)
+         tenant_id='store_id'
+         name = models.CharField(max_length=255)
+         description = models.TextField()
 
-       objects = ProductManager()
+         objects = ProductManager()
 
-       class Meta(object):
-         unique_together = ["id", "store"]
+         class Meta(object):
+            unique_together = ["id", "store"]
 
-     class PurchaseManager(TenantManagerMixin, models.Manager):
-       pass
+      class PurchaseManager(TenantManagerMixin, models.Manager):
+         pass
 
-     class Purchase(TenantModelMixin, models.Model):
-       store = models.ForeignKey(Store)
-       tenant_id='store_id'
-       product_purchased = TenantForeignKey(Product)
+      class Purchase(TenantModelMixin, models.Model):
+         store = models.ForeignKey(Store)
+         tenant_id='store_id'
+         product_purchased = TenantForeignKey(Product)
 
-       objects = PurchaseManager()
+         objects = PurchaseManager()
 
 Automating composite foreign keys at db layer
 ----------------------------------------------
@@ -131,14 +131,14 @@ Automating composite foreign keys at db layer
    the db layer, you should change the database ENGINE in the
    settings.py to ``django_multitenant.backends.postgresql``.
 
-.. code:: python
+   .. code:: python
 
-     'default': {
-         'ENGINE': 'django_multitenant.backends.postgresql',
-         ......
-         ......
-         ......
-   }
+      'default': {
+            'ENGINE': 'django_multitenant.backends.postgresql',
+            ......
+            ......
+            ......
+      }
 
 Where to Set the Tenant?
 ------------------------
