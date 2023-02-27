@@ -1,10 +1,12 @@
 # django-multitenant [![Build Status](https://github.com/citusdata/django-multitenant/actions/workflows/django-multitenant-tests.yml/badge.svg)](https://github.com/citusdata/django-multitenant/actions/workflows/django-multitenant-tests.yml)
-[Latest Documentation Status](https://readthedocs.org/projects/django-multitenant/badge/?version=latest)
+[![Latest Documentation Status](https://readthedocs.org/projects/django-multitenant/badge/?version=latest)]
 (https://django-multitenant.readthedocs.io/en/latest/?badge=latest)
-[Build Status](https://github.com/citusdata/django-multitenant/actions/workflows/django-multitenant-tests.yml/badge.svg)
+[![Build Status](https://github.com/citusdata/django-multitenant/actions/workflows/django-multitenant-tests.yml/badge.svg)]
 (https://github.com/citusdata/django-multitenant/actions/workflows/django-multitenant-tests.yml)
-[Coverage Status](https://codecov.io/gh/citusdata/django-multitenant/branch/main/graph/badge.svg?token=taRgoSgHUw)(https://codecov.io/gh/citusdata/django-multitenant)
-[PyPI Version](https://badge.fury.io/py/django-multitenant.svg)(https://badge.fury.io/py/django-multitenant)
+[![Coverage Status](https://codecov.io/gh/citusdata/django-multitenant/branch/main/graph/badge.svg?token=taRgoSgHUw)]
+(https://codecov.io/gh/citusdata/django-multitenant)
+[![PyPI Version](https://badge.fury.io/py/django-multitenant.svg)]
+(https://badge.fury.io/py/django-multitenant)
 
 Python/Django support for distributed multi-tenant databases like Postgres+Citus
 
