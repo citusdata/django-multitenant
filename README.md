@@ -62,7 +62,7 @@ In order to use this library you can either use Mixins or have your models inher
      store = models.ForeignKey(Store)
      name = models.CharField(max_length=255)
      description = models.TextField()
-     class Meta(object):
+     class Meta:
        unique_together = ["id", "store"]
      class TenantMeta:
        tenant_field_name = "store_id"
@@ -88,7 +88,7 @@ In order to use this library you can either use Mixins or have your models inher
 1. Referenced table in TenenatForeignKey should include a unique key including tenant_id and primary key
    ```
    Ex:       
-   class Meta(object):
+   class Meta:
         unique_together = ["id", "store"]
    ```
 1. A sample model implementing the above 3 steps:
@@ -105,7 +105,7 @@ In order to use this library you can either use Mixins or have your models inher
  
      objects = ProductManager()
  
-     class Meta(object):
+     class Meta:
        unique_together = ["id", "store"]
  
    class PurchaseManager(TenantManagerMixin, models.Manager):
