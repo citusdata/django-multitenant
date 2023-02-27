@@ -1,4 +1,5 @@
-# django-multitenant [![Build Status](https://github.com/citusdata/django-multitenant/actions/workflows/django-multitenant-tests.yml/badge.svg)](https://github.com/citusdata/django-multitenant/actions/workflows/django-multitenant-tests.yml)
+# django-multitenant <br>[![Build Status](https://github.com/citusdata/django-multitenant/actions/workflows/django-multitenant-tests.yml/badge.svg)](https://github.com/citusdata/django-multitenant/actions/workflows/django-multitenant-tests.yml) [![Latest Documentation Status](https://readthedocs.org/projects/django-multitenant/badge/?version=latest)](https://django-multitenant.readthedocs.io/en/latest/?badge=latest)  [![Coverage Status](https://codecov.io/gh/citusdata/django-multitenant/branch/main/graph/badge.svg?token=taRgoSgHUw)](https://codecov.io/gh/citusdata/django-multitenant) [![PyPI Version](https://badge.fury.io/py/django-multitenant.svg)](https://badge.fury.io/py/django-multitenant)
+
 Python/Django support for distributed multi-tenant databases like Postgres+Citus
 
 Enables easy scale-out by adding the tenant context to your queries, enabling the database (e.g. Citus) to efficiently route queries to the right database node.
