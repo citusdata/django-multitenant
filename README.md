@@ -45,9 +45,12 @@ In order to use this library you can either use Mixins or have your models inher
    * Using TenantMeta.tenant_field_name variable
    * Using TenantMeta.tenant_id variable
    * Using tenant_id field
-   
+
+
    > **Warning**
    > Using  tenant_id field directly in the class is not suggested since it may cause collision if class has a field named with 'tenant'
+
+
 4. All foreign keys to TenantModel subclasses should use TenantForeignKey in place of
    models.ForeignKey
 5. A sample model implementing the above 2 steps:
