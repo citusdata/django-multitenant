@@ -9,7 +9,7 @@ import django_multitenant.mixins
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("tests", "0023_auto_20200412_0603"),
+        ("tests", "0025_data_load"),
     ]
 
     operations = [

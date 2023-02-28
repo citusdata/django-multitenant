@@ -245,6 +245,7 @@ class Template(TenantModel):
     class TenantMeta:
         tenant_field_name = "tenant_id"
 
+
 class Store(TenantModel):
     tenant_id = "id"
     name = models.CharField(max_length=50)
@@ -281,5 +282,3 @@ class Transaction(TenantModel):
     )
     product = TenantForeignKey(Product, on_delete=models.CASCADE)
     date = models.DateField()
-
-

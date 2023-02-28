@@ -815,7 +815,6 @@ class MultipleTenantModelTest(BaseTestCase):
         unset_current_tenant()
         projects_per_manager = ProjectManager.objects.annotate(Count("project_id"))
         list(projects_per_manager)
-    
 
     def test_many_to_many_through_saves(self):
 
