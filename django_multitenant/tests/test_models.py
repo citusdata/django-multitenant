@@ -249,8 +249,10 @@ class TenantModelTest(BaseTestCase):
 
     @pytest.mark.skipif(
         settings.USE_CITUS,
-        reason=(''' If table is distributed, we can't update the tenant column. 
-                    If Citus is not enabled in settings, there is no reason to run this test.'''),
+        reason=(
+            """ If table is distributed, we can't update the tenant column. 
+                    If Citus is not enabled in settings, there is no reason to run this test."""
+        ),
     )
     def test_update_tenant_project(self):
         from .models import Project
