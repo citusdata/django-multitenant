@@ -21,6 +21,11 @@ jobs:
     - name: Prospector checks 
       run: |
         make lint
+    
+    - name: Documentation Checks
+      run: |
+        cd docs
+        sphinx-build -W -b html source builds
         
 
         
