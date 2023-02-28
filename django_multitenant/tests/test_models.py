@@ -1,8 +1,6 @@
 from datetime import date
 import re
 
-import django
-import pytest
 from django.conf import settings
 from django.db.models import Count
 from django.db.utils import NotSupportedError, DataError
@@ -455,6 +453,7 @@ class TenantModelTest(BaseTestCase):
 
         tasks = Task.objects.exclude(project__isnull=True)
         self.assertEqual(tasks.count(), 150)
+
 
     def test_delete_cascade_distributed(self):
         from .models import Task, Project, SubTask
