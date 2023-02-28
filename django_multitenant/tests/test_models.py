@@ -1,5 +1,6 @@
 from datetime import date
 import re
+import pytest
 
 from django.conf import settings
 from django.db.models import Count
@@ -246,10 +247,12 @@ class TenantModelTest(BaseTestCase):
         with self.assertRaises(DataError):
             Project.objects.bulk_create(projects)
 
+    @pytest.mark.skipif(
+        settings.USE_CITUS,
+        reason=(''' If table is distributed, we can't update the tenant column. 
+                    If Citus is not enabled in settings, there is no reason to run this test.'''),
+    )
     def test_update_tenant_project(self):
-        if not settings.USE_CITUS:
-            return
-
         from .models import Project
 
         account = self.account_fr
