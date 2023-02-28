@@ -454,7 +454,6 @@ class TenantModelTest(BaseTestCase):
         tasks = Task.objects.exclude(project__isnull=True)
         self.assertEqual(tasks.count(), 150)
 
-
     def test_delete_cascade_distributed(self):
         from .models import Task, Project, SubTask
 
