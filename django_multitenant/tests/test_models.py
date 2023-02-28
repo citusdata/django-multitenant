@@ -456,22 +456,6 @@ class TenantModelTest(BaseTestCase):
         tasks = Task.objects.exclude(project__isnull=True)
         self.assertEqual(tasks.count(), 150)
 
-    @pytest.mark.skipif(
-        django.VERSION >= (3, 2),
-        reason="Django 3.2 changed the generated query to one that's not supported by Citus",
-    )
-    def test_exclude_related(self):
-        from .models import Project, Manager, ProjectManager
-
-        project = self.projects[0]
-        project_managers = self.project_managers
-        account = project.account
-        manager = Manager.objects.create(name="Louise", account=account)
-        ProjectManager.objects.create(account=account, project=project, manager=manager)
-
-        excluded = Project.objects.exclude(projectmanagers__manager__name="Louise")
-        self.assertEqual(excluded.count(), 29)
-
     def test_delete_cascade_distributed(self):
         from .models import Task, Project, SubTask
 
