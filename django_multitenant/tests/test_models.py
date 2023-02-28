@@ -453,6 +453,10 @@ class TenantModelTest(BaseTestCase):
         tasks = Task.objects.exclude(project__isnull=True)
         self.assertEqual(tasks.count(), 150)
 
+    @pytest.mark.skipif(
+        not settings.USE_CITUS,
+        reason="Distributed tests only run when using the Citus extension.",
+    )
     def test_delete_cascade_distributed(self):
         from .models import Task, Project, SubTask
 
@@ -488,6 +492,10 @@ class TenantModelTest(BaseTestCase):
                 in [query["sql"] for query in captured_queries.captured_queries]
             )
 
+    @pytest.mark.skipif(
+        not settings.USE_CITUS,
+        reason="Distributed tests only run when using the Citus extension.",
+    )
     def test_delete_cascade_reference_to_distributed(self):
         from .models import Country, Account
 
@@ -518,6 +526,10 @@ class TenantModelTest(BaseTestCase):
                 in [query["sql"] for query in captured_queries.captured_queries]
             )
 
+    @pytest.mark.skipif(
+        not settings.USE_CITUS,
+        reason="Distributed tests only run when using the Citus extension.",
+    )
     def test_delete_cascade_distributed_to_reference(self):
         from .models import Account, Employee, ModelConfig, Project
 
@@ -798,7 +810,6 @@ class MultipleTenantModelTest(BaseTestCase):
         list(projects_per_manager)
 
     def test_many_to_many_through_saves(self):
-
         store = Store.objects.create(name="store1")
         store.save()
 
