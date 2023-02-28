@@ -5,6 +5,11 @@ from django.db.models.deletion import Collector
 from django.db.utils import NotSupportedError
 from django.conf import settings
 
+import django
+from django.db.models.fields.related_descriptors import (
+    create_forward_many_to_many_manager,
+)
+
 
 from .deletion import related_objects
 from .exceptions import EmptyTenant
@@ -17,10 +22,49 @@ from .utils import (
     get_tenant_filters,
     get_object_tenant,
     set_object_tenant,
+    get_tenant_column,
 )
 
 
 logger = logging.getLogger(__name__)
+
+
+def wrap_many_related_manager_add(many_related_manager_add):
+
+    """
+    Wraps the add method of many to many field to set tenant_id in through_defaults
+    parameter of the add method.
+    """
+
+    def add(self, *objs, through_defaults=None):
+        if get_current_tenant():
+            through_defaults[
+                get_tenant_column(self.through)
+            ] = get_current_tenant_value()
+        return many_related_manager_add(self, *objs, through_defaults=through_defaults)
+
+    return add
+
+
+def wrap_forward_many_to_many_manager(create_forward_many_to_many_manager_method):
+
+    """
+    Wraps the create_forward_many_to_many_manager method of the related_descriptors module
+    and changes the add method of the ManyRelatedManagerClass to set tenant_id in through_defaults
+    """
+
+    def create_forward_many_to_many_manager_wrapper(superclass, rel, reverse):
+        ManyRelatedManagerClass = create_forward_many_to_many_manager_method(
+            superclass, rel, reverse
+        )
+        ManyRelatedManagerClass.add = wrap_many_related_manager_add(
+            ManyRelatedManagerClass.add
+        )
+        return ManyRelatedManagerClass
+
+    # pylint: disable=protected-access
+    create_forward_many_to_many_manager_wrapper._sign = "add django-multitenant"
+    return create_forward_many_to_many_manager_wrapper
 
 
 class TenantManagerMixin:
@@ -68,6 +112,11 @@ class TenantModelMixin:
             # Decorates the delete method of Collector to execute citus shard_modify_mode commands
             # if distributed tables are being related to the model.
             Collector.delete = wrap_delete(Collector.delete)
+
+        if not hasattr(create_forward_many_to_many_manager, "_sign"):
+            django.db.models.fields.related_descriptors.create_forward_many_to_many_manager = wrap_forward_many_to_many_manager(
+                create_forward_many_to_many_manager
+            )
 
         # Decorates the update_batch method of UpdateQuery to add tenant_id filters.
         if not hasattr(UpdateQuery.get_compiler, "_sign"):

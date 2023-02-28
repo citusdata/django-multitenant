@@ -133,7 +133,6 @@ def set_current_tenant(tenant):
         get_current_tenant(my_class_object)
     ```
     """
-
     setattr(_thread_locals, "tenant", tenant)
 
 
