@@ -338,7 +338,7 @@ In settings.py, change the database engine to the customized engine provided by 
 
   'ENGINE': 'django_multitenant.backends.postgresql'
 
-**3.1 Introducing the TenantModel
+**3.1 Introducing the TenantModel**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The models will now inherit from ``TenantModel`` which is the base model for tenant-based models .
