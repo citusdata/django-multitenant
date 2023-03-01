@@ -17,7 +17,10 @@ RUN apt-get update && apt-get install -y \
     libbz2-dev \
     libreadline-dev \
     libsqlite3-dev \
-    libssl-dev \libffi-dev liblzma-dev \
+    libssl-dev \
+    libffi-dev \
+    liblzma-dev \
+    gdal-bin \
     && rm -rf /var/lib/apt/lists/*
 
 # See https://github.com/tianon/docker-brew-debian/issues/49 for discussion of the following
