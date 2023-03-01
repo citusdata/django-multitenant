@@ -6,6 +6,8 @@ from .base import BaseTestCase
 
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
+from .models import Account
+from .serializers import AccountSerializer 
 
 class ViewSetTestCases(BaseTestCase):
     def setUp(self):
@@ -22,12 +24,10 @@ class ViewSetTestCases(BaseTestCase):
         # create some test objects
 
         # simulate a GET request to the list endpoint
-        request = self.client.get('/account/')
-        view = AccountViewSet.as_view({'get': 'list'})
-        response = view(request)
-
-        # check that the response contains the correct data
+        mymodel1 = self.account_us
+        mymodel2 = self.account_in
+        response = self.client.get('/account/')
+        expected_data = AccountSerializer([mymodel1, mymodel2], many=True).data
+        print(expected_data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
-        self.assertEqual(response.data[0]['name'], 'Object 1')
-        self.assertEqual(response.data[1]['name'], 'Object 2')
+        self.assertEqual(response.data, expected_data)

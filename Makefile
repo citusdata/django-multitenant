@@ -8,7 +8,7 @@ test:
 	 py.test  --cov-report xml --cov=django_multitenant/tests/. -s django_multitenant/tests/ -k 'not concurrency'
 
 test-local:
-	 py.test -s django_multitenant/tests/test_models.py -k 'not concurrency'
+	 py.test -s django_multitenant/tests/test_viewsets.py -k 'not concurrency'
 
 test-migrations:
 	./manage.py migrate tests
