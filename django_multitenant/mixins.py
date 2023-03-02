@@ -96,7 +96,6 @@ class TenantManagerMixin:
 
 class TenantModelMixin:
     # Abstract model which all the models related to tenant inherit.
-    tenant_id = ""
 
     def __init__(self, *args, **kwargs):
         # Adds tenant_id filters in the delete and update queries.
@@ -196,7 +195,20 @@ class TenantModelMixin:
 
     @property
     def tenant_field(self):
-        return self.tenant_id
+        if hasattr(self, "TenantMeta") and "tenant_field_name" in dir(self.TenantMeta):
+            return self.TenantMeta.tenant_field_name
+        if hasattr(self, "TenantMeta") and "tenant_id" in dir(self.TenantMeta):
+            return self.TenantMeta.tenant_id
+        if hasattr(self, "tenant"):
+            raise AttributeError(
+                "Tenant field exists which may cause collision with tenant_id field. Please rename the tenant field. "
+            )
+        if hasattr(self, "tenant_id"):
+            return self.tenant_id
+
+        raise AttributeError(
+            "tenant_id field not found. Please add tenant_id field to the model."
+        )
 
     @property
     def tenant_value(self):

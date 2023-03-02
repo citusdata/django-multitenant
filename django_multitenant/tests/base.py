@@ -161,14 +161,6 @@ class Fixtures(Exam):
         return subtasks
 
     @fixture
-    def unscoped(self):
-        pass
-
-    @fixture
-    def aliased_tasks(self):
-        pass
-
-    @fixture
     def organization(self):
         return Organization.objects.create(name="organization")
 

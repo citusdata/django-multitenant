@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("tests", "0023_auto_20200412_0603"),
+        ("tests", "0024_business_tenant_alter_account_id_and_more"),
     ]
 
     def forwards_func(apps, schema_editor):

@@ -1,8 +1,7 @@
 from datetime import date
 import re
-
-import django
 import pytest
+
 from django.conf import settings
 from django.db.models import Count
 from django.db.utils import NotSupportedError, DataError
@@ -248,10 +247,14 @@ class TenantModelTest(BaseTestCase):
         with self.assertRaises(DataError):
             Project.objects.bulk_create(projects)
 
+    @pytest.mark.skipif(
+        not settings.USE_CITUS,
+        reason=(
+            """ If table is distributed, we can't update the tenant column. 
+                    If Citus is not enabled in settings, there is no reason to run this test."""
+        ),
+    )
     def test_update_tenant_project(self):
-        if not settings.USE_CITUS:
-            return
-
         from .models import Project
 
         account = self.account_fr
@@ -455,22 +458,6 @@ class TenantModelTest(BaseTestCase):
 
         tasks = Task.objects.exclude(project__isnull=True)
         self.assertEqual(tasks.count(), 150)
-
-    @pytest.mark.skipif(
-        django.VERSION >= (3, 2),
-        reason="Django 3.2 changed the generated query to one that's not supported by Citus",
-    )
-    def test_exclude_related(self):
-        from .models import Project, Manager, ProjectManager
-
-        project = self.projects[0]
-        project_managers = self.project_managers
-        account = project.account
-        manager = Manager.objects.create(name="Louise", account=account)
-        ProjectManager.objects.create(account=account, project=project, manager=manager)
-
-        excluded = Project.objects.exclude(projectmanagers__manager__name="Louise")
-        self.assertEqual(excluded.count(), 29)
 
     def test_delete_cascade_distributed(self):
         from .models import Task, Project, SubTask
@@ -829,3 +816,17 @@ class MultipleTenantModelTest(BaseTestCase):
         purchase = Purchase.objects.create(store=store)
         purchase.save()
         purchase.product_purchased.add(product, through_defaults={"date": date.today()})
+
+    def test_tenant_id_columns(self):
+        from .models import Template, Tenant, Business
+
+        tenant = Tenant.objects.create(name="tenant")
+        tenant.save()
+        business = Business.objects.create(
+            bk_biz_name="business", bk_biz_id=1, tenant=tenant
+        )
+        business.save()
+        template = Template.objects.create(name="template", business=business)
+        template.save()
+
+        Template.objects.filter(business__tenant=tenant).first()

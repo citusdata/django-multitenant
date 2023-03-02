@@ -39,32 +39,44 @@ In order to use this library you can either use Mixins or have your models inher
    from django_multitenant.fields import *
    from django_multitenant.models import *
    ```
-1. All models should inherit the TenantModel class.
+2. All models should inherit the TenantModel class.
    `Ex: class Product(TenantModel):`
-1. Define a static variable named tenant_id and specify the tenant column using this variable.
-   `Ex: tenant_id='store_id'`
-1. All foreign keys to TenantModel subclasses should use TenantForeignKey in place of
-   models.ForeignKey
-1. A sample model implementing the above 2 steps:
-  ```python
-    class Store(TenantModel):
-      tenant_id = 'id'
-      name =  models.CharField(max_length=50)
-      address = models.CharField(max_length=255)
-      email = models.CharField(max_length=50)
+3. Define a static variable named tenant_id and specify the tenant column using this variable.You can define tenant_id in three ways. Any of them is acceptavle 
+   * Using TenantMeta.tenant_field_name variable
+   * Using TenantMeta.tenant_id variable
+   * Using tenant_id field
+   <br>
 
-    class Product(TenantModel):
-      store = models.ForeignKey(Store)
-      tenant_id='store_id'
-      name = models.CharField(max_length=255)
-      description = models.TextField()
-      class Meta(object):
-        unique_together = ["id", "store"]
-    class Purchase(TenantModel):
-      store = models.ForeignKey(Store)
-      tenant_id='store_id'
-      product_purchased = TenantForeignKey(Product)
-  ```
+
+   > **Warning**
+   > Using  tenant_id field directly in the class is not suggested since it may cause collision if class has a field named with 'tenant'
+   <br>
+
+4. All foreign keys to TenantModel subclasses should use TenantForeignKey in place of
+   models.ForeignKey
+5. A sample model implementing the above 2 steps:
+   ```python
+   class Store(TenantModel):
+     name =  models.CharField(max_length=50)
+     address = models.CharField(max_length=255)
+     email = models.CharField(max_length=50)
+     class TenantMeta:
+       tenant_field_name = "id"
+ 
+   class Product(TenantModel):
+     store = models.ForeignKey(Store)
+     name = models.CharField(max_length=255)
+     description = models.TextField()
+     class Meta:
+       unique_together = ["id", "store"]
+     class TenantMeta:
+       tenant_field_name = "store_id"
+   class Purchase(TenantModel):
+     store = models.ForeignKey(Store)
+     product_purchased = TenantForeignKey(Product)
+     class TenantMeta:
+       tenant_field_name = "store_id"
+   ```
 
 
 ### Changes in Models using mixins:
@@ -81,36 +93,36 @@ In order to use this library you can either use Mixins or have your models inher
 1. Referenced table in TenenatForeignKey should include a unique key including tenant_id and primary key
    ```
    Ex:       
-   class Meta(object):
+   class Meta:
         unique_together = ["id", "store"]
    ```
 1. A sample model implementing the above 3 steps:
-  ```python
+   ```python
 
-    class ProductManager(TenantManagerMixin, models.Manager):
-      pass
-
-    class Product(TenantModelMixin, models.Model):
-      store = models.ForeignKey(Store)
-      tenant_id='store_id'
-      name = models.CharField(max_length=255)
-      description = models.TextField()
-
-      objects = ProductManager()
-
-      class Meta(object):
-        unique_together = ["id", "store"]
-
-    class PurchaseManager(TenantManagerMixin, models.Manager):
-      pass
-
-    class Purchase(TenantModelMixin, models.Model):
-      store = models.ForeignKey(Store)
-      tenant_id='store_id'
-      product_purchased = TenantForeignKey(Product)
-
-      objects = PurchaseManager()
-  ```
+   class ProductManager(TenantManagerMixin, models.Manager):
+     pass
+ 
+   class Product(TenantModelMixin, models.Model):
+     store = models.ForeignKey(Store)
+     tenant_id='store_id'
+     name = models.CharField(max_length=255)
+     description = models.TextField()
+ 
+     objects = ProductManager()
+ 
+     class Meta:
+       unique_together = ["id", "store"]
+ 
+   class PurchaseManager(TenantManagerMixin, models.Manager):
+     pass
+ 
+   class Purchase(TenantModelMixin, models.Model):
+     store = models.ForeignKey(Store)
+     tenant_id='store_id'
+     product_purchased = TenantForeignKey(Product)
+ 
+     objects = PurchaseManager()
+   ```
 
 
 
@@ -167,31 +179,31 @@ In order to use this library you can either use Mixins or have your models inher
 ## Supported APIs:
 1. Most of the APIs under Model.objects.*.
 1. Model.save() injects tenant_id for tenant inherited models.
-  ```python
+   ```python
    s=Store.objects.all()[0]
-  set_current_tenant(s)
-
-  #All the below API calls would add suitable tenant filters.
-  #Simple get_queryset()
-  Product.objects.get_queryset()
-
-  #Simple join
-  Purchase.objects.filter(id=1).filter(store__name='The Awesome Store').filter(product__description='All products are awesome')
-
-  #Update
-  Purchase.objects.filter(id=1).update(id=1)
-
-  #Save
-  p=Product(8,1,'Awesome Shoe','These shoes are awesome')
-  p.save()
-
-  #Simple aggregates
-  Product.objects.count()
-  Product.objects.filter(store__name='The Awesome Store').count()
-
-  #Subqueries
-  Product.objects.filter(name='Awesome Shoe');
-  Purchase.objects.filter(product__in=p);
+   set_current_tenant(s)
+   
+   #All the below API calls would add suitable tenant filters.
+   #Simple get_queryset()
+   Product.objects.get_queryset()
+   
+   #Simple join
+   Purchase.objects.filter(id=1).filter(store__name='The Awesome Store').filter(product__description='All products are awesome')
+   
+   #Update
+   Purchase.objects.filter(id=1).update(id=1)
+   
+   #Save
+   p=Product(8,1,'Awesome Shoe','These shoes are awesome')
+   p.save()
+   
+   #Simple aggregates
+   Product.objects.count()
+   Product.objects.filter(store__name='The Awesome Store').count()
+   
+   #Subqueries
+   Product.objects.filter(name='Awesome Shoe');
+   Purchase.objects.filter(product__in=p);
 
    ```
 

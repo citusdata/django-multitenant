@@ -10,7 +10,7 @@ This process will be in 5 steps:
 
 - Introducing the tenant column to models missing it that we want to distribute
 - Changing the primary keys of distributed tables to include the tenant column
-- Updating the models to use the :code:`TenantModelMixin`
+- Updating the models to use the :code:`TenantModel`
 - Distributing the data
 - Updating the Django Application to scope queries
 
@@ -319,7 +319,7 @@ And finally apply the changes by creating a new migration to generate these cons
 
   python manage.py makemigrations
 
-3. Updating the models to use TenantModelMixin and TenantForeignKey
+3. Updating the models to use TenantModel and TenantForeignKey
 --------------------------------------------------------------------
 
 Next, we'll use the `django-multitenant <https://github.com/citusdata/django-multitenant>`_ library to add account_id to foreign keys, and make application queries easier later on.
@@ -338,54 +338,52 @@ In settings.py, change the database engine to the customized engine provided by 
 
   'ENGINE': 'django_multitenant.backends.postgresql'
 
-**3.1 Introducing the TenantModelMixin and TenantManager**
+**3.1 Introducing the TenantModel**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The models will now not only inherit from ``models.Model`` but also from the ``TenantModelMixin``.
+The models will now inherit from ``TenantModel`` which is the base model for tenant-based models .
 
 To do that in your :code:`models.py` file you will need to do the following imports
 
 .. code-block:: python
 
-  from django_multitenant.mixins import *
+  from django_multitenant.models import TenantModel
 
 Previously our example models inherited from just models.Model, but now we need
-to change them to also inherit from TenantModelMixin. The models in real
-projects may inherit from other mixins too like ``django.contrib.gis.db``,
-which is fine.
+to change them to inherit from TenantModel. 
 
 You will also, at this point, introduce the tenant_id to define which column is
 the distribution column.
 
 .. code-block:: python
 
-  class TenantManager(TenantManagerMixin, models.Manager):
+  class TenantManager(TenantModel):
       pass
 
-  class Account(TenantModelMixin, models.Model):
+  class Account(TenantModel):
       ...
-      tenant_id = 'id'
-      objects = TenantManager()
+      class TenantMeta:
+        tenant_field_name = 'id'
 
-  class Manager(TenantModelMixin, models.Model):
+  class Manager(TenantModel):
       ...
-      tenant_id = 'account_id'
-      objects = TenantManager()
+      class TenantMeta:
+        tenant_field_name = 'account_id'
 
-  class Project(TenantModelMixin, models.Model):
+  class Project(TenantModel):
       ...
-      tenant_id = 'account_id'
-      objects = TenantManager()
+      class TenantMeta:
+        tenant_field_name = 'account_id'
 
-  class Task(TenantModelMixin, models.Model):
+  class Task(TenantModel):
       ...
-      tenant_id = 'account_id'
-      objects = TenantManager()
+      class TenantMeta:
+        tenant_field_name = 'account_id'
 
-  class ProjectManager(TenantModelMixin, models.Model):
+  class ProjectManager(TenantModel):
       ...
-      tenant_id = 'account_id'
-      objects = TenantManager()
+      class TenantMeta:
+        tenant_field_name = 'account_id'
 
 **3.2 Handling ForeignKey constraints**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -402,53 +400,50 @@ Finally your models should look like this:
 
   from django.db import models
   from django_multitenant.fields import TenantForeignKey
-  from django_multitenant.mixins import *
+  from django_multitenant.models import TenantModel
 
   class Country(models.Model):  # This table is a reference table
     name = models.CharField(max_length=255)
 
-  class TenantManager(TenantManagerMixin, models.Manager):
-      pass
-
-  class Account(TenantModelMixin, models.Model):
+  class Account(TenantModel):
       name = models.CharField(max_length=255)
       domain = models.CharField(max_length=255)
       subdomain = models.CharField(max_length=255)
       country = models.ForeignKey(Country, on_delete=models.SET_NULL)  # No changes needed
 
-      tenant_id = 'id'
-      objects = TenantManager()
+      class TenantMeta:
+        tenant_field_name = "id" 
 
-  class Manager(TenantModelMixin, models.Model):
+  class Manager(TenantModel):
       name = models.CharField(max_length=255)
       account = models.ForeignKey(Account, related_name='managers',
                                   on_delete=models.CASCADE)
-      tenant_id = 'account_id'
-      objects = TenantManager()
+     class TenantMeta:
+        tenant_field_name = 'account_id'
 
-  class Project(TenantModelMixin, models.Model):
+  class Project(TenantModel):
       account = models.ForeignKey(Account, related_name='projects',
                                   on_delete=models.CASCADE)
       managers = models.ManyToManyField(Manager, through='ProjectManager')
-      tenant_id = 'account_id'
-      objects = TenantManager()
+      class TenantMeta:
+        tenant_field_name = 'account_id'
 
-  class Task(TenantModelMixin, models.Model):
+  class Task(TenantModel):
       name = models.CharField(max_length=255)
       project = TenantForeignKey(Project, on_delete=models.CASCADE,
                                related_name='tasks')
       account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
-      tenant_id = 'account_id'
-      objects = TenantManager()
+      class TenantMeta:
+        tenant_field_name = 'account_id'
 
-  class ProjectManager(TenantModelMixin, models.Model):
+  class ProjectManager(TenantModel):
       project = TenantForeignKey(Project, on_delete=models.CASCADE)
       manager = TenantForeignKey(Manager, on_delete=models.CASCADE)
       account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
-      tenant_id = 'account_id'
-      objects = TenantManager()
+      class TenantMeta:
+        tenant_field_name = 'account_id'
 
 **3.3 Handling ManyToMany constraints**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -457,13 +452,13 @@ In the second section of this article, we introduced the fact that with citus, `
 
 .. code-block:: python
 
-  class ProjectManager(TenantModelMixin, models.Model):
+  class ProjectManager(TenantModel):
       project = TenantForeignKey(Project, on_delete=models.CASCADE)
       manager = TenantForeignKey(Manager, on_delete=models.CASCADE)
       account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
-      tenant_id = 'account_id'
-      objects = TenantManager()
+      class TenantMeta:
+        tenant_field_name = 'account_id'
 
 After installing the library, changing the engine, and updating the models, run
 :code:`python manage.py makemigrations`. This will produce a migration to make the foreign keys composite when necessary.

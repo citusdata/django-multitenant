@@ -7,3 +7,6 @@ pytest-cov
 pytest-django
 prospector[with_everything]
 pylint < 2.16
+Sphinx
+sphinxnotes.strike
+sphinx_rtd_theme
