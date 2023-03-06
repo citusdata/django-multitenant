@@ -1,5 +1,7 @@
 import uuid
 
+from django.contrib.auth.models import User
+
 from django.db import models
 
 
@@ -249,6 +251,7 @@ class Store(TenantModel):
     name = models.CharField(max_length=50)
     address = models.CharField(max_length=255)
     email = models.CharField(max_length=50)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     store_staffs = models.ManyToManyField(
         Staff, through="StoreStaff", through_fields=("store", "staff"), blank=True

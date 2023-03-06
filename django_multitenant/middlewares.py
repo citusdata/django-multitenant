@@ -10,7 +10,7 @@ class MultitenantMiddleware:
         print("MultitenantMiddleware: ", request.user)
         if request.user and not request.user.is_anonymous:
             print("MultitenantMiddleware: ", request.user)
-            raise Exception("MultitenantMiddleware: ", request.user)
-            account = get_tenant(request)
-            set_current_tenant(account)
+            tenant = get_tenant(request)
+            print("Tenant", tenant)
+            set_current_tenant(tenant)
         return self.get_response(request)
