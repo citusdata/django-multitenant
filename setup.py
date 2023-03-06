@@ -14,7 +14,7 @@ with open(path.join(this_directory, "README.md")) as f:
 
 setup(
     name="django-multitenant",
-    version="3.0.0",  # Required
+    version="3.1.0",  # Required
     description="Django Library to Implement Multi-tenant databases",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -32,5 +32,7 @@ setup(
         "Programming Language :: Python :: 3 :: Only",
     ],
     keywords=("citus django multi tenant" "django postgres multi-tenant"),
-    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+    packages=find_packages(
+        exclude=["*.tests", "*.tests.*", "tests.*", "tests", "docs", "docs.*"]
+    ),
 )
