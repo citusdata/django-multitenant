@@ -4,7 +4,7 @@ import pytest
 
 from django.conf import settings
 from django.db.models import Count
-from django.db.utils import NotSupportedError, DataError
+from django.db.utils import NotSupportedError, IntegrityError, DataError
 from .models import Store, Product, Purchase, Staff, StoreStaff
 
 
@@ -248,7 +248,12 @@ class TenantModelTest(BaseTestCase):
         for i in range(10):
             projects.append(Project(name=f"project {i}"))
 
-        with self.assertRaises(DataError):
+        if settings.USE_CITUS:
+            error = DataError
+        else:
+            error = IntegrityError
+
+        with self.assertRaises(error):
             Project.objects.bulk_create(projects)
 
     @pytest.mark.skipif(
