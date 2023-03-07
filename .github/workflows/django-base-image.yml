@@ -28,6 +28,9 @@ jobs:
           docker build -t citusdata/python-all-versions  base_gha_image
           if [[ ${GITHUB_REF##*/} == "main" ]]; then
             docker push citusdata/python-all-versions
+          else
+            docker tag citusdata/python-all-versions citusdata/python-all-versions:${GITHUB_REF##*/}
+            docker push citusdata/python-all-versions:${GITHUB_REF##*/}
           fi
           
 
