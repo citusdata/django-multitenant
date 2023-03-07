@@ -5,13 +5,12 @@ from django.conf import settings
 from django.test import TransactionTestCase
 
 from django_multitenant.db import migrations
-from .utils import undistribute_table,is_table_distributed
+from .utils import undistribute_table, is_table_distributed
 
 
 if settings.USE_CITUS:
 
     class MigrationTest(TransactionTestCase):
-
         def assertTableIsDistributed(self, table_name, column_name, value=True):
             distributed = is_table_distributed(connection, table_name, column_name)
 
@@ -56,7 +55,7 @@ if settings.USE_CITUS:
                 operation.database_forwards("tests", editor, project_state, new_state)
 
             self.assertTableIsDistributed("tests_migrationtestmodel", "id")
-            undistribute_table(connection,"tests_migrationtestmodel")
+            undistribute_table(connection, "tests_migrationtestmodel")
 
         def test_reference_table(self):
             project_state = ProjectState(real_apps={"tests"})
@@ -75,11 +74,10 @@ if settings.USE_CITUS:
                 operation.database_forwards("tests", editor, project_state, new_state)
 
             self.assertTableIsReference("tests_migrationtestreferencemodel")
-            undistribute_table(connection,"tests_migrationtestreferencemodel")
+            undistribute_table(connection, "tests_migrationtestreferencemodel")
 
         def test_reference_different_app_table(self):
             project_state = ProjectState(real_apps={"auth"})
-            # pylint: disable=hard-coded-auth-user
             operation = migrations.Distribute("auth.Group", reference=True)
 
             self.assertEqual(
@@ -93,4 +91,4 @@ if settings.USE_CITUS:
                 operation.database_forwards("tests", editor, project_state, new_state)
 
             self.assertTableIsReference("auth_group")
-            undistribute_table(connection,"auth_group")
+            undistribute_table(connection, "auth_group")

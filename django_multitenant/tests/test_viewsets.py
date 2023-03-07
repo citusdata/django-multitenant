@@ -25,20 +25,20 @@ class ViewSetTestCases(BaseTestCase):
         self.client = APIClient()
         self.client.login(username="testuser", password="testpass")
 
-    # def test_list(self):
-    #     # create some test objects
+    def test_list(self):
+        # create some test objects
 
-    #     store = Store.objects.create(name="store1", user=self.user)
-    #     store.save()
+        store = Store.objects.create(name="store1", user=self.user)
+        store.save()
 
-    #     store2 = Store.objects.create(name="store2", user=self.user2)
-    #     store2.save()
+        store2 = Store.objects.create(name="store2", user=self.user2)
+        store2.save()
 
-    #     # make the request and check the response if it is matching the store object
-    #     # related to the test_user which is the logged in user
+        # make the request and check the response if it is matching the store object
+        # related to the test_user which is the logged in user
 
-    #     response = self.client.get("/store/")
-    #     expected_data = StoreSerializer([store], many=True).data
-    #     print(expected_data)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.data, expected_data)
+        response = self.client.get("/store/")
+        expected_data = StoreSerializer([store], many=True).data
+        print(expected_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, expected_data)

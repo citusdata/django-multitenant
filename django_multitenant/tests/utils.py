@@ -1,4 +1,4 @@
-def undistribute_table( connection,table_name):
+def undistribute_table(connection, table_name):
     queries = [
         "CREATE TABLE %(table_name)s_bis (LIKE %(table_name)s INCLUDING ALL);"
         "CREATE TEMP TABLE %(table_name)s_temp AS SELECT * FROM %(table_name)s;"
@@ -11,7 +11,8 @@ def undistribute_table( connection,table_name):
         for query in queries:
             cursor.execute(query % {"table_name": table_name})
 
-def is_table_distributed( connection,table_name, column_name):
+
+def is_table_distributed(connection, table_name, column_name):
     query = """
     SELECT logicalrelid, pg_attribute.attname
     FROM pg_dist_partition
@@ -27,5 +28,5 @@ def is_table_distributed( connection,table_name, column_name):
 
         if row and row[1] == column_name:
             distributed = True
-    
+
     return distributed

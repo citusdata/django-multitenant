@@ -8,10 +8,7 @@ class MultitenantMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        print("MultitenantMiddleware: ", request.user)
         if request.user and not request.user.is_anonymous:
-            print("MultitenantMiddleware: ", request.user)
             tenant = get_tenant(request)
-            print("Tenant", tenant)
             set_current_tenant(tenant)
         return self.get_response(request)
