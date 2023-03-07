@@ -39,6 +39,5 @@ class ViewSetTestCases(BaseTestCase):
 
         response = self.client.get("/store/")
         expected_data = StoreSerializer([store], many=True).data
-        print(expected_data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, expected_data)
