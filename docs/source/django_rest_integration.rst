@@ -16,8 +16,6 @@ Using with Django Rest Framwork
 
         # views.py
 
-        from django_multitenant.utils import get_tenant_model
-
         def tenant_func(request):
             return Store.objects.filter(user=request.user).first()
 
