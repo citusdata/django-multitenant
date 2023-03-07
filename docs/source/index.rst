@@ -50,4 +50,5 @@ https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-
    general
    usage
    migration_mt_django
+   django_rest_integration
    license
