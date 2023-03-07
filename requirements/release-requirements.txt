@@ -12,9 +12,9 @@ certifi==2022.12.7
     # via requests
 cffi==1.15.1
     # via cryptography
-charset-normalizer==3.0.1
+charset-normalizer==3.1.0
     # via requests
-cryptography==39.0.1
+cryptography==39.0.2
     # via secretstorage
 docutils==0.19
     # via readme-renderer
@@ -24,7 +24,7 @@ importlib-metadata==6.0.0
     # via
     #   keyring
     #   twine
-importlib-resources==5.10.2
+importlib-resources==5.12.0
     # via keyring
 jaraco-classes==3.2.3
     # via keyring
@@ -34,11 +34,11 @@ jeepney==0.8.0
     #   secretstorage
 keyring==23.13.1
     # via twine
-markdown-it-py==2.1.0
+markdown-it-py==2.2.0
     # via rich
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==9.0.0
+more-itertools==9.1.0
     # via jaraco-classes
 packaging==23.0
     # via build
@@ -62,7 +62,7 @@ requests-toolbelt==0.10.1
     # via twine
 rfc3986==2.0.0
     # via twine
-rich==13.3.1
+rich==13.3.2
     # via twine
 secretstorage==3.3.3
     # via keyring
@@ -74,7 +74,7 @@ tomli==2.0.1
     #   pyproject-hooks
 twine==4.0.2
     # via -r requirements/release.in
-typing-extensions==4.4.0
+typing-extensions==4.5.0
     # via rich
 urllib3==1.26.14
     # via
@@ -82,7 +82,7 @@ urllib3==1.26.14
     #   twine
 webencodings==0.5.1
     # via bleach
-zipp==3.12.1
+zipp==3.15.0
     # via
     #   importlib-metadata
     #   importlib-resources
