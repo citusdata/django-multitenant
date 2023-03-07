@@ -1,3 +1,5 @@
+from random import randint
+
 from django.test import TransactionTestCase
 
 from exam.cases import Exam
@@ -39,7 +41,7 @@ class Fixtures(Exam):
     @fixture
     def account_fr(self):
         return Account.objects.create(
-            pk=1,
+            pk=randint(1000, 2000),
             name="Account FR",
             country=self.france,
             subdomain="fr.",
@@ -49,7 +51,7 @@ class Fixtures(Exam):
     @fixture
     def account_in(self):
         return Account.objects.create(
-            pk=2,
+            pk=randint(2001, 3000),
             name="Account IN",
             country=self.india,
             subdomain="in.",
@@ -59,7 +61,7 @@ class Fixtures(Exam):
     @fixture
     def account_us(self):
         return Account.objects.create(
-            pk=3,
+            pk=randint(3001, 4000),
             name="Account US",
             country=self.united_states,
             subdomain="us.",
