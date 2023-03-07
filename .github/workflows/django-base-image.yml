@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - "python-all-versions/**"
+      - "main"
   workflow_dispatch:
 jobs:
   build:
