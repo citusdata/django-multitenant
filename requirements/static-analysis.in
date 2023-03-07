@@ -10,3 +10,4 @@ pylint < 2.16
 Sphinx
 sphinxnotes.strike
 sphinx_rtd_theme
+djangorestframework
