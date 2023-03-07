@@ -1,3 +1,4 @@
+name: "Django MT Docker Image For Tests"
 on:
   schedule:
     - cron: 30 0 * * *
@@ -23,9 +24,13 @@ jobs:
         env:
           DOCKER_BUILDKIT: 1
         run: |
+          set -euxo pipefail
           docker build -t citusdata/python-all-versions  base_gha_image
-          if ${GITHUB_REF##*/} == "main"; then
+          if [[ ${GITHUB_REF##*/} == "main" ]]; then
             docker push citusdata/python-all-versions
+          else
+            docker tag citusdata/python-all-versions citusdata/python-all-versions:${GITHUB_REF##*/}
+            docker push citusdata/python-all-versions:${GITHUB_REF##*/}
           fi
           
 
