@@ -1,22 +1,14 @@
 from django_multitenant.views import TenantModelViewSet
-from .models import Account,Store
-from .serializers import AccountSerializer
+from .models import Store
+from .serializers import StoreSerializer
 from rest_framework import permissions
 
-class AccountViewSet(TenantModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
 
-    model_class = Account
-    serializer_class = AccountSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    
 class StoreViewSet(TenantModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
 
     model_class = Store
-    serializer_class = AccountSerializer
+    serializer_class = StoreSerializer
     permission_classes = [permissions.IsAuthenticated]

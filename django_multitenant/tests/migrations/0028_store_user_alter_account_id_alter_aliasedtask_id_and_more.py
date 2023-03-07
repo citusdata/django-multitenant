@@ -3,7 +3,6 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-from django_multitenant.db import migrations as tenant_migrations
 
 
 class Migration(migrations.Migration):
@@ -14,12 +13,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(
-            "SET LOCAL citus.multi_shard_modify_mode TO 'sequential';"
-        ),
-        migrations.RunSQL(
-            "SELECT create_reference_table('auth_user');"
-        ),
+        migrations.RunSQL("SET LOCAL citus.multi_shard_modify_mode TO 'sequential';"),
+        migrations.RunSQL("SELECT create_reference_table('auth_user');"),
         migrations.AddField(
             model_name="store",
             name="user",
@@ -28,5 +23,5 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.CASCADE,
                 to=settings.AUTH_USER_MODEL,
             ),
-        )
+        ),
     ]

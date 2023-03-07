@@ -40,7 +40,7 @@ MIDDLEWARE = (
 
 
 INSTALLED_APPS = [
-    'rest_framework',
+    "rest_framework",
     "django.contrib.admin",
     "django.contrib.messages",
     "django.contrib.auth",
