@@ -26,7 +26,8 @@ jobs:
         run: |
           set -euxo pipefail
           docker build -t citusdata/python-all-versions  base_gha_image
-          if [[ ${GITHUB_REF##*/} == "main" ]]; then
+          TEST_PARAM="main"
+          if [[ ${TEST_PARAM} == "main" ]] ; then
             docker push citusdata/python-all-versions
           fi
           
