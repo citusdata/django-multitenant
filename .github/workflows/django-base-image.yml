@@ -1,3 +1,4 @@
+name: "Django MT Docker Image For Tests"
 on:
   schedule:
     - cron: 30 0 * * *
