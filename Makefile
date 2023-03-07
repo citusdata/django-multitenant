@@ -16,7 +16,7 @@ test-missing-modules:
 	# Normally, application without rest_framework will not be installed in setting file.
 	# In our application we are installing rest_framework in test settings file to test the rest_framework related tasks. 
 	cp django_multitenant/tests/settings.py django_multitenant/tests/settings.py.bak
-	sed -i '/rest_framework/d' django_multitenant/tests/settings.py
+	sed -i '/INSTALLED_APPS/{n; /rest_framework/d;}' django_multitenant/tests/settings.py
 	py.test -s --cov-report xml --cov=django_multitenant/tests/. django_multitenant/tests/test_missing_modules.py -k 'not concurrency'
 	# Revert the changes in settings.py
 	mv django_multitenant/tests/settings.py.bak django_multitenant/tests/settings.py
