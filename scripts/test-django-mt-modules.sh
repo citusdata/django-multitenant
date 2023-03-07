@@ -6,4 +6,4 @@ make test-dependencies
 if [[ "${DJANGO_REST_FRAMEWORK}" == "true" ]]; then
     pip install djangorestframework
 fi
-make test-django-rest-framework
+make test-missing-modules
