@@ -23,8 +23,9 @@ jobs:
         env:
           DOCKER_BUILDKIT: 1
         run: |
+          set -o errexit
           docker build -t citusdata/python-all-versions  base_gha_image
-          if ${GITHUB_REF##*/} == "main"; then
+          if [[ ${GITHUB_REF##*/} == "main" ]]; then
             docker push citusdata/python-all-versions
           fi
           
