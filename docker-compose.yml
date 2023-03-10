@@ -3,14 +3,14 @@ version: '2.1'
 services:
   master:
     container_name: "${COMPOSE_PROJECT_NAME:-citus}_master"
-    image: 'citusdata/citus:${CITUS_VERSION:-11.2}'
+    image: 'citusdata/citus-postgis:${CITUS_VERSION:-11.2}'
     ports: [ '5600:5432' ]
     labels: [ 'com.citusdata.role=Master' ]
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
     command: -c fsync=off -c full_page_writes=off
   worker1:
-    image: 'citusdata/citus:${CITUS_VERSION:-11.2}'
+    image: 'citusdata/citus-postgis:${CITUS_VERSION:-11.2}'
     ports: [ '5601:5432' ]
     labels: [ 'com.citusdata.role=Worker' ]
     depends_on: { manager: { condition: service_healthy } }
@@ -18,7 +18,7 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
     command: -c fsync=off -c full_page_writes=off
   worker2:
-    image: 'citusdata/citus:${CITUS_VERSION:-11.2}'
+    image: 'citusdata/citus-postgis:${CITUS_VERSION:-11.2}'
     ports: [ '5602:5432' ]
     labels: [ 'com.citusdata.role=Worker' ]
     depends_on: { manager: { condition: service_healthy } }
