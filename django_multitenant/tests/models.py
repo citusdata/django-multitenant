@@ -247,6 +247,11 @@ class Template(TenantModel):
     class TenantMeta:
         tenant_field_name = "tenant_id"
 
+# Non-Tenant Model which should be Reference Table
+# to be referenced by Store which is a Tenant Model
+# in Citus 10. 
+class Staff(models.Model):
+    name = models.CharField(max_length=50)
 
 class Store(TenantModel):
     tenant_id = "id"
@@ -254,9 +259,13 @@ class Store(TenantModel):
     address = models.CharField(max_length=255)
     email = models.CharField(max_length=50)
 
-    store_users = models.ManyToManyField(
-        get_user_model(), related_name="store_users", blank=True
+    store_staffs = models.ManyToManyField(
+        Staff,  through="StoreStaff", through_fields=("store", "staff"), blank=True
     )
+
+class StoreStaff(models.Model):
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
 
 
 class Product(TenantModel):
@@ -288,3 +297,4 @@ class Transaction(TenantModel):
     )
     product = TenantForeignKey(Product, on_delete=models.CASCADE)
     date = models.DateField()
+    
