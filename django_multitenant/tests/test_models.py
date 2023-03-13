@@ -414,7 +414,6 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_str_model_tenant_set(self):
-        from .models import Task
 
         projects = self.projects
         account = self.account_fr
@@ -422,18 +421,14 @@ class TenantModelTest(BaseTestCase):
 
         set_current_tenant(account)
 
-        print(Task.objects.first())
 
         unset_current_tenant()
 
     def test_str_model_tenant_not_set(self):
-        from .models import Task
 
         projects = self.projects
         account = self.account_fr
         tasks = self.tasks
-
-        print(Task.objects.first())
 
     def test_exclude_tenant_set(self):
         from .models import Task
@@ -826,7 +821,7 @@ class MultipleTenantModelTest(BaseTestCase):
 
         set_current_tenant(tenant=store)
 
-        user = get_user_model().objects.create(username="test", email="test")
+        user = get_user_model().objects.create(username="test", email="test", password="test")
 
         store.store_users.add(user)
 
