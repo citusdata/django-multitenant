@@ -5,9 +5,7 @@ import pytest
 from django.conf import settings
 from django.db.models import Count
 from django.db.utils import NotSupportedError, DataError
-from .models import Store, Product, Purchase,Staff,StoreStaff
-
-from django.contrib.auth import get_user_model
+from .models import Store, Product, Purchase, Staff, StoreStaff
 
 
 from django_multitenant.utils import (
@@ -420,7 +418,6 @@ class TenantModelTest(BaseTestCase):
         tasks = self.tasks
 
         set_current_tenant(account)
-
 
         unset_current_tenant()
 

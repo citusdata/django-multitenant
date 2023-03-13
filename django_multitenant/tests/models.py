@@ -7,9 +7,6 @@ from django_multitenant.mixins import TenantModelMixin, TenantManagerMixin
 from django_multitenant.models import TenantModel
 from django_multitenant.fields import TenantForeignKey
 
-from django.contrib.auth import get_user_model
-
-
 class Country(models.Model):
     name = models.CharField(max_length=255)
 
@@ -247,11 +244,13 @@ class Template(TenantModel):
     class TenantMeta:
         tenant_field_name = "tenant_id"
 
+
 # Non-Tenant Model which should be Reference Table
 # to be referenced by Store which is a Tenant Model
-# in Citus 10. 
+# in Citus 10.
 class Staff(models.Model):
     name = models.CharField(max_length=50)
+
 
 class Store(TenantModel):
     tenant_id = "id"
@@ -260,8 +259,9 @@ class Store(TenantModel):
     email = models.CharField(max_length=50)
 
     store_staffs = models.ManyToManyField(
-        Staff,  through="StoreStaff", through_fields=("store", "staff"), blank=True
+        Staff, through="StoreStaff", through_fields=("store", "staff"), blank=True
     )
+
 
 class StoreStaff(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
@@ -297,4 +297,3 @@ class Transaction(TenantModel):
     )
     product = TenantForeignKey(Product, on_delete=models.CASCADE)
     date = models.DateField()
-    
