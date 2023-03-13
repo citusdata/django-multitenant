@@ -463,7 +463,12 @@ In the second section of this article, we introduced the fact that with citus, `
 After installing the library, changing the engine, and updating the models, run
 :code:`python manage.py makemigrations`. This will produce a migration to make the foreign keys composite when necessary.
 
-4. Distribute data in Citus
+..warning
+ If you use Citus 10, you will need to distribute the model inherited from "models.Model" as reference if you have a "ManyToMany" relationship 
+ between a class derived from "TenantModel" and a class derived from "models.Model," 
+ as Citus 10 does not support such relationships between distributed and local tables.
+
+1. Distribute data in Citus
 ----------------------------
 
 We need one final migration to tell Citus to mark tables for distribution. Create a new migration :code:`python manage.py makemigrations appname --empty --name distribute_tables`. Edit the result to look like this:
