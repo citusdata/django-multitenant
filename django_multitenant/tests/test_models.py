@@ -4,7 +4,7 @@ import pytest
 
 from django.conf import settings
 from django.db.models import Count
-from django.db.utils import NotSupportedError, IntegrityError, DataError
+from django.db.utils import NotSupportedError, DataError
 from .models import Store, Product, Purchase, Staff, StoreStaff
 
 
@@ -248,12 +248,7 @@ class TenantModelTest(BaseTestCase):
         for i in range(10):
             projects.append(Project(name=f"project {i}"))
 
-        if settings.USE_CITUS:
-            error = DataError
-        else:
-            error = IntegrityError
-
-        with self.assertRaises(error):
+        with self.assertRaises(DataError):
             Project.objects.bulk_create(projects)
 
     @pytest.mark.skipif(
@@ -421,7 +416,6 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_str_model_tenant_set(self):
-
         projects = self.projects
         account = self.account_fr
         tasks = self.tasks
@@ -431,7 +425,6 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_str_model_tenant_not_set(self):
-
         projects = self.projects
         account = self.account_fr
         tasks = self.tasks
@@ -894,7 +887,6 @@ class MultipleTenantModelTest(BaseTestCase):
         purchase.product_purchased.add(product, through_defaults={"date": date.today()})
 
     def test_many_to_many_through_saves_to_nontenant(self):
-
         store = Store.objects.create(name="store1")
         store.save()
 

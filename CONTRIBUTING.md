@@ -54,11 +54,6 @@ make test
 
 #### Running GIS Tests
 
-You can bring up a PostGIS instance using docker compose:
-```shell
-docker compose --project-name django-multitenant-gis -f single-node-gis-docker-compose.yml up
-```
-
 In order to run the tests ensure that you set the `DJANGO_MULTITENANT_GIS_TESTS` environment variable to `True`:
 
 ```shell
