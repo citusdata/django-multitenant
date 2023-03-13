@@ -53,7 +53,7 @@ jobs:
       CITUS_VERSION: ${{ matrix.citus_version }}
       DJANGO_VERSION: ${{ matrix.django_version }}
     steps:
-    - uses: codecov/codecov-action@v3.1.1
+    - uses: actions/checkout@v3
     - name: Test Django MT
       run: |
         docker-compose --project-name django-multitenant up -d || { docker-compose logs && false ; }
