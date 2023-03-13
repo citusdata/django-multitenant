@@ -7,6 +7,8 @@ from django.db.models import Count
 from django.db.utils import NotSupportedError, DataError
 from .models import Store, Product, Purchase
 
+from django.contrib.auth import get_user_model
+
 
 from django_multitenant.utils import (
     set_current_tenant,
@@ -816,6 +818,19 @@ class MultipleTenantModelTest(BaseTestCase):
         purchase = Purchase.objects.create(store=store)
         purchase.save()
         purchase.product_purchased.add(product, through_defaults={"date": date.today()})
+
+    def test_many_to_many_through_saves_to_nontenant(self):
+
+        store = Store.objects.create(name="store1")
+        store.save()
+
+        set_current_tenant(tenant=store)
+
+        user = get_user_model().objects.create(username="test", email="test")
+
+        store.store_users.add(user)
+
+        self.assertEqual(user.store_users.first(), store)
 
     def test_tenant_id_columns(self):
         from .models import Template, Tenant, Business

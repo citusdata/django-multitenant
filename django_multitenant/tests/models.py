@@ -7,6 +7,8 @@ from django_multitenant.mixins import TenantModelMixin, TenantManagerMixin
 from django_multitenant.models import TenantModel
 from django_multitenant.fields import TenantForeignKey
 
+from django.contrib.auth import get_user_model
+
 
 class Country(models.Model):
     name = models.CharField(max_length=255)
@@ -251,6 +253,10 @@ class Store(TenantModel):
     name = models.CharField(max_length=50)
     address = models.CharField(max_length=255)
     email = models.CharField(max_length=50)
+
+    store_users = models.ManyToManyField(
+        get_user_model(), related_name="store_users", blank=True
+    )
 
 
 class Product(TenantModel):
