@@ -7,6 +7,7 @@ from django_multitenant.mixins import TenantModelMixin, TenantManagerMixin
 from django_multitenant.models import TenantModel
 from django_multitenant.fields import TenantForeignKey
 
+
 class Country(models.Model):
     name = models.CharField(max_length=255)
 
