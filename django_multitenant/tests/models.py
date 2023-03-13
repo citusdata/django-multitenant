@@ -88,9 +88,6 @@ class Project(TenantModel):
     )
     tenant_id = "account_id"
 
-    def __str__(self):
-        return f"{self.name} ({self.account})"
-
 
 class ProjectManager(TenantModel):
     project = TenantForeignKey(
@@ -133,9 +130,6 @@ class Task(TenantModelMixin, models.Model):
     objects = TaskManager()
 
     tenant_id = "account_id"
-
-    def __str__(self):
-        return f"{self.name} ({self.project})"
 
 
 class SubTask(TenantModel):
