@@ -7,7 +7,7 @@ BASE_PATH = os.path.normpath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
 )
 
-print("Django version: ", django.VERSION)
+# print("Django version: ", django.VERSION)
 if django.VERSION >= (4, 0):
     test_db = {"NAME": "postgres"}
 else:
