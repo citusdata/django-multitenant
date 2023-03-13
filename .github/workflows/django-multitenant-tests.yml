@@ -88,6 +88,8 @@ jobs:
     - uses: actions/checkout@v3
     - name: Test Django MT
       run: |
+        echo "PWD: $(pwd)"
+        ls -la
         docker-compose --project-name django-multitenant up -d || { docker-compose logs && false ; }
         echo "Running tests for python $PYTHON_VERSION, django $DJANGO_VERSION, citus $CITUS_VERSION"
         docker run \
