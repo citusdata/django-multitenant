@@ -29,7 +29,6 @@ class Account(TenantModel):
     tenant_id = "id"
 
 
-
 class Employee(models.Model):
     # Reference table
     account = models.ForeignKey(
