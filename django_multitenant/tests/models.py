@@ -28,8 +28,6 @@ class Account(TenantModel):
     # TODO change to Meta
     tenant_id = "id"
 
-    def __str__(self):
-        return f"{self.name}"
 
 
 class Employee(models.Model):
