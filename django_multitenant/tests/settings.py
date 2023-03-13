@@ -9,8 +9,10 @@ BASE_PATH = os.path.normpath(
 
 print("Django version: ", django.VERSION)
 if django.VERSION >= (4, 0):
+    print("Test database is serialized")
     test_db = {"NAME": "postgres"}
 else:
+    print("Test database is not serialized")
     test_db = {"NAME": "postgres", "SERIALIZE": False}
 
 DATABASES = {
