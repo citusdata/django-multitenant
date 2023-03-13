@@ -821,7 +821,7 @@ class MultipleTenantModelTest(BaseTestCase):
 
         set_current_tenant(tenant=store)
 
-        user = get_user_model().objects.create(username="test", email="test", password="test")
+        user = get_user_model().objects.create(username="test", email="test", password="test", id=1)
 
         store.store_users.add(user)
 
