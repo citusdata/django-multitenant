@@ -1,3 +1,7 @@
+### Django-Multitenant v3.1.1 (March 15, 2023) ###
+
+* Fixes #164 ManyToMany Non tenant model save issue 
+
 ### Django-Multitenant v3.1.0(March 1, 2023) ###
 
 * Adds support for Django 4.1

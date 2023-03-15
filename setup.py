@@ -14,7 +14,7 @@ with open(path.join(this_directory, "README.md")) as f:
 
 setup(
     name="django-multitenant",
-    version="3.1.0",  # Required
+    version="3.1.1",  # Required
     description="Django Library to Implement Multi-tenant databases",
     long_description=long_description,
     long_description_content_type="text/markdown",
