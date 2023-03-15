@@ -28,6 +28,7 @@ class Migration(migrations.Migration):
     ]
 
     operations += [
+        tenant_migrations.Distribute("Staff", reference=True),
         tenant_migrations.Distribute("Store"),
         tenant_migrations.Distribute("Product"),
         tenant_migrations.Distribute("Purchase"),

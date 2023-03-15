@@ -46,6 +46,21 @@ class Migration(migrations.Migration):
             bases=(django_multitenant.mixins.TenantModelMixin, models.Model),
         ),
         migrations.CreateModel(
+            name="Staff",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+            ],
+        ),
+        migrations.CreateModel(
             name="Store",
             fields=[
                 (
@@ -65,6 +80,42 @@ class Migration(migrations.Migration):
                 "abstract": False,
             },
             bases=(django_multitenant.mixins.TenantModelMixin, models.Model),
+        ),
+        migrations.CreateModel(
+            name="StoreStaff",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "staff",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="tests.staff"
+                    ),
+                ),
+                (
+                    "store",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="tests.store"
+                    ),
+                ),
+            ],
+            options={
+                "abstract": False,
+            },
+        ),
+        migrations.AddField(
+            model_name="store",
+            name="store_staffs",
+            field=models.ManyToManyField(
+                blank=True, through="tests.StoreStaff", to="tests.Staff"
+            ),
         ),
         migrations.CreateModel(
             name="Transaction",

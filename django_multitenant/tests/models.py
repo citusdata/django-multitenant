@@ -28,9 +28,6 @@ class Account(TenantModel):
     # TODO change to Meta
     tenant_id = "id"
 
-    def __str__(self):
-        return f"{self.name}"
-
 
 class Employee(models.Model):
     # Reference table
@@ -91,9 +88,6 @@ class Project(TenantModel):
     )
     tenant_id = "account_id"
 
-    def __str__(self):
-        return f"{self.name} ({self.account})"
-
 
 class ProjectManager(TenantModel):
     project = TenantForeignKey(
@@ -136,9 +130,6 @@ class Task(TenantModelMixin, models.Model):
     objects = TaskManager()
 
     tenant_id = "account_id"
-
-    def __str__(self):
-        return f"{self.name} ({self.project})"
 
 
 class SubTask(TenantModel):
@@ -246,11 +237,27 @@ class Template(TenantModel):
         tenant_field_name = "tenant_id"
 
 
+# Non-Tenant Model which should be Reference Table
+# to be referenced by Store which is a Tenant Model
+# in Citus 10.
+class Staff(models.Model):
+    name = models.CharField(max_length=50)
+
+
 class Store(TenantModel):
     tenant_id = "id"
     name = models.CharField(max_length=50)
     address = models.CharField(max_length=255)
     email = models.CharField(max_length=50)
+
+    store_staffs = models.ManyToManyField(
+        Staff, through="StoreStaff", through_fields=("store", "staff"), blank=True
+    )
+
+
+class StoreStaff(models.Model):
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
 
 
 class Product(TenantModel):

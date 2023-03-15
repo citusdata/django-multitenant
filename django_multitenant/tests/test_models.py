@@ -5,7 +5,7 @@ import pytest
 from django.conf import settings
 from django.db.models import Count
 from django.db.utils import NotSupportedError, DataError
-from .models import Store, Product, Purchase
+from .models import Store, Product, Purchase, Staff, StoreStaff
 
 
 from django_multitenant.utils import (
@@ -412,7 +412,6 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_str_model_tenant_set(self):
-        from .models import Task
 
         projects = self.projects
         account = self.account_fr
@@ -420,18 +419,13 @@ class TenantModelTest(BaseTestCase):
 
         set_current_tenant(account)
 
-        print(Task.objects.first())
-
         unset_current_tenant()
 
     def test_str_model_tenant_not_set(self):
-        from .models import Task
 
         projects = self.projects
         account = self.account_fr
         tasks = self.tasks
-
-        print(Task.objects.first())
 
     def test_exclude_tenant_set(self):
         from .models import Task
@@ -816,6 +810,19 @@ class MultipleTenantModelTest(BaseTestCase):
         purchase = Purchase.objects.create(store=store)
         purchase.save()
         purchase.product_purchased.add(product, through_defaults={"date": date.today()})
+
+    def test_many_to_many_through_saves_to_nontenant(self):
+
+        store = Store.objects.create(name="store1")
+        store.save()
+
+        set_current_tenant(tenant=store)
+
+        staff = Staff.objects.create(name="staff1")
+
+        store.store_staffs.add(staff)
+
+        self.assertEqual(StoreStaff.objects.get(store=store, staff=staff).store, store)
 
     def test_tenant_id_columns(self):
         from .models import Template, Tenant, Business

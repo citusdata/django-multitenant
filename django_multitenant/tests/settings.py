@@ -51,8 +51,6 @@ INSTALLED_APPS = [
 
 SECRET_KEY = "blabla"
 
-ROOT_URLCONF = "django_multitenant.tests.urls"
-
 
 TEMPLATES = [
     {

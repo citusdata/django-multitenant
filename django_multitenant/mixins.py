@@ -37,7 +37,8 @@ def wrap_many_related_manager_add(many_related_manager_add):
     """
 
     def add(self, *objs, through_defaults=None):
-        if get_current_tenant():
+
+        if hasattr(self.through, "tenant_field") and get_current_tenant():
             through_defaults[
                 get_tenant_column(self.through)
             ] = get_current_tenant_value()
@@ -201,13 +202,13 @@ class TenantModelMixin:
             return self.TenantMeta.tenant_id
         if hasattr(self, "tenant"):
             raise AttributeError(
-                "Tenant field exists which may cause collision with tenant_id field. Please rename the tenant field. "
+                f"Tenant field exists which may cause collision with tenant_id field. Please rename the tenant field in {self.__class__.__name__} "
             )
         if hasattr(self, "tenant_id"):
             return self.tenant_id
 
         raise AttributeError(
-            "tenant_id field not found. Please add tenant_id field to the model."
+            f"tenant_id field not found. Please add tenant_id field to the model {self.__class__.__name__}"
         )
 
     @property
