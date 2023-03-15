@@ -465,7 +465,7 @@ After installing the library, changing the engine, and updating the models, run
 
 .. warning::
  If you use Citus 10, you will need to distribute the model inherited from "models.Model" as reference if you have a "ManyToMany" relationship 
- between a class derived from "TenantModel" and a class derived from "models.Model," 
+ between a class derived from "TenantModel" and a class derived from "models.Model" 
  as Citus 10 does not support such relationships between distributed and local tables.
 
 1. Distribute data in Citus
