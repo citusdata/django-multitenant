@@ -21,5 +21,6 @@ Sample Usages
 2. Use directly the model class import 
    
    .. code:: python
+    
       from .models import  MigrationUseInMigrationsModel 
       MigrationUseInMigrationsModel.objects.create(name="test")
