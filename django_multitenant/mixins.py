@@ -206,6 +206,11 @@ class TenantModelMixin:
             )
         if hasattr(self, "tenant_id"):
             return self.tenant_id
+        if self.__module__ == "__fake__":
+            raise AttributeError(
+                f"apps.get_model method should not be used to get the model {self.__class__.__name__}."
+                "Either import the model directly or use the module apps under the module django.apps."
+            )
 
         raise AttributeError(
             f"tenant_id field not found. Please add tenant_id field to the model {self.__class__.__name__}"

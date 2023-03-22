@@ -18,9 +18,9 @@ def test_invalid_model(apps):
     try:
         model_from_apps.objects.create(name="test")
     except AttributeError as e:
-        assert (
-            str(e)
-            == "tenant_id field not found. Please add tenant_id field to the model MigrationUseInMigrationsModel"
+        assert str(e) == (
+            "apps.get_model method should not be used to get the model MigrationUseInMigrationsModel."
+            "Either import the model directly or use the module apps under the module django.apps."
         )
 
 
