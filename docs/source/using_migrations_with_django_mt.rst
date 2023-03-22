@@ -12,15 +12,14 @@ Sample Usages
 
 1. Use apps module from  to get the model you want to use instead of the 'apps' in the method being executed in RunPython
 
-``` python
-from django.apps import apps  
-MigrationUseInMigrationsModel = apps.get_model("tests", "MigrationUseInMigrationsModel")
-MigrationUseInMigrationsModel.objects.create(name="test")
-```
+   .. code:: python
+
+        from django.apps import apps  
+        MigrationUseInMigrationsModel = apps.get_model("tests", "MigrationUseInMigrationsModel")
+        MigrationUseInMigrationsModel.objects.create(name="test")
 
 2. Use directly the model class import 
    
-``` python
-from .models import  MigrationUseInMigrationsModel 
-MigrationUseInMigrationsModel.objects.create(name="test")
-```
+   .. code:: python
+      from .models import  MigrationUseInMigrationsModel 
+      MigrationUseInMigrationsModel.objects.create(name="test")
