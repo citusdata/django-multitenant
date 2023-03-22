@@ -293,6 +293,6 @@ class Transaction(TenantModel):
 
 class MigrationUseInMigrationsModel(TenantModel):
     name = models.CharField(max_length=255)
-    
-    class TenantMeta:   
+
+    class TenantMeta:
         tenant_field_name = "id"
