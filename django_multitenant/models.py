@@ -9,8 +9,8 @@ logger = logging.getLogger(__name__)
 
 
 class TenantManager(TenantManagerMixin, models.Manager):
-    # Below is the manager related to the above class.
-    pass
+    # This parameter is required to add Tenenat Manager in models in the migrations.
+    use_in_migrations = True
 
 
 class TenantModel(TenantModelMixin, models.Model):
