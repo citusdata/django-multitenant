@@ -12,6 +12,7 @@ def test_valid_model(model_class):
 
     model_class.objects.create(name="test")
 
+
 def test_invalid_model(apps):
     model_from_apps = apps.get_model("tests", "MigrationUseInMigrationsModel")
     try:
@@ -22,7 +23,8 @@ def test_invalid_model(apps):
             == "tenant_id field not found. Please add tenant_id field to the model MigrationUseInMigrationsModel"
         )
 
- # pylint: disable=unused-argument
+
+# pylint: disable=unused-argument
 def empty_users(apps, schema_editor):
 
     model_from_global = apps_global.get_model("tests", "MigrationUseInMigrationsModel")
