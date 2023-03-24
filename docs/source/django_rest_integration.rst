@@ -22,7 +22,7 @@ Using with Django Rest Framwork
         # Monkey patching get_tenant function
         from django_multitenant import views
         views.get_tenant = tenant_func
-3. Add your viewset derived from TenantViewSet:
+3. Add your viewset derived from TenantModelViewSet:
 
     .. code-block:: python
 
@@ -36,7 +36,7 @@ Using with Django Rest Framwork
             serializer_class = StoreSerializer
             permission_classes = [permissions.IsAuthenticated]
 
-    In the above example, we're defining a StoreViewSet that is derived from TenantViewSet. This means that any views in StoreViewSet will automatically be scoped to the current tenant based on the tenant attribute of the request object.
+    In the above example, we're defining a StoreViewSet that is derived from TenantModelViewSet. This means that any views in StoreViewSet will automatically be scoped to the current tenant based on the tenant attribute of the request object.
 
     You can then define the queryset and serializer_class attributes as usual. Note that you do not need to filter the queryset by the current tenant, as this is automatically handled by django-multitenant.
 

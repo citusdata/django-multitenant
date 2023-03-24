@@ -1,7 +1,7 @@
 import importlib
 
 
-def check_drf():
+def import_drf_or_die():
     try:
         importlib.import_module("rest_framework")
     except ImportError as e:
@@ -10,4 +10,4 @@ def check_drf():
         ) from e
 
 
-check_drf()
+import_drf_or_die()

@@ -496,6 +496,12 @@ With all the migrations created from the steps so far, apply them to the databas
 
 At this point the Django application models are ready to work with a Citus backend. You can continue by importing data to the new system and modifying views as necessary to deal with the model changes.
 
+.. warning::
+    After Citus 11, you may get below error when you try to run the migrations:
+    ``ERROR:  cannot run type command because there was a parallel operation on a distributed table in the transaction``.
+    This is because of the new transaction model in Citus 11. To fix this, you can run the migrations in a single transaction by setting below Citus setting at the top of your distribute operations.
+    ``operations = [ migrations.RunSQL("SET LOCAL citus.multi_shard_modify_mode TO 'sequential';"),]``
+
 Updating the Django Application to scope queries
 ------------------------------------------------
 
@@ -557,3 +563,4 @@ Enable the middleware by updating the MIDDLEWARE array in src/appname/settings/b
 
       'appname.middleware.MultitenantMiddleware'
   ]
+
