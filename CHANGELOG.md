@@ -1,3 +1,9 @@
+### Django-Multitenant v3.2.0 (March 29, 2023) ###
+
+* Adds DjangoRestFramework support (#157)
+
+* Adds guidelines to get model in migration (#167) 
+
 ### Django-Multitenant v3.1.1 (March 15, 2023) ###
 
 * Fixes #164 ManyToMany Non tenant model save issue 
