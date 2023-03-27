@@ -49,6 +49,5 @@ https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-
 
    general
    usage
-   using_migrations_with_django_mt
    migration_mt_django
    license
