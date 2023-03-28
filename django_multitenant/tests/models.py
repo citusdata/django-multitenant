@@ -289,3 +289,10 @@ class Transaction(TenantModel):
     )
     product = TenantForeignKey(Product, on_delete=models.CASCADE)
     date = models.DateField()
+
+
+class MigrationUseInMigrationsModel(TenantModel):
+    name = models.CharField(max_length=255)
+
+    class TenantMeta:
+        tenant_field_name = "id"

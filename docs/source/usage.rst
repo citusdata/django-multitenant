@@ -4,8 +4,8 @@ Usage
 In order to use this library you can either use Mixins or have your
 models inherit from our custom model class.
 
-Changes in Models:
-------------------
+Changes in Models
+-----------------
 
 1. In whichever files you want to use the library import it:
 
@@ -120,6 +120,48 @@ Changes in Models using mixins
          product_purchased = TenantForeignKey(Product)
 
          objects = PurchaseManager()
+
+Changes in Migrations
+---------------------
+
+Typical Django ORM migrations use ``apps.get_model()`` in `RunPython
+<https://docs.djangoproject.com/en/4.1/ref/migration-operations/#runpython>`_
+to get a model from the app registry. For example:
+
+.. code:: python
+
+   # normal way -- does NOT work in Django Multitenant
+
+   def forwards_func(apps, schema_editor):
+      MigrationUseInMigrationsModel = apps.get_model("tests", "MigrationUseInMigrationsModel")
+      MigrationUseInMigrationsModel.objects.create(name="test")
+
+However the ``get_model`` method creates "fake" models that lack transient
+fields, and Django Multitenant relies on the ``tenant_id`` transient field to
+function properly.  When doing ORM database migrations with Django Multitenant,
+you'll need to get the model differently.
+
+Here are two alternatives.
+
+1. Use the ``apps`` module rather than the ``apps`` parameter in RunPython
+   methods (such as ``forwards_func``) to get the model you want to use:
+
+   .. code:: python
+
+      from django.apps import apps
+
+      def forwards_func(ignored, schema_editor):
+         MigrationUseInMigrationsModel = apps.get_model("tests", "MigrationUseInMigrationsModel")
+         MigrationUseInMigrationsModel.objects.create(name="test")
+
+2. Directly import the class from models:
+
+   .. code:: python
+
+      from .models import  MigrationUseInMigrationsModel
+
+      def forwards_func(ignored, schema_editor):
+         MigrationUseInMigrationsModel.objects.create(name="test")
 
 Automating composite foreign keys at db layer
 ----------------------------------------------
