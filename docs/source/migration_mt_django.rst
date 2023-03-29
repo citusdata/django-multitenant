@@ -496,6 +496,12 @@ With all the migrations created from the steps so far, apply them to the databas
 
 At this point the Django application models are ready to work with a Citus backend. You can continue by importing data to the new system and modifying views as necessary to deal with the model changes.
 
+.. warning::
+    After Citus 11, you may get below error when you try to run the migrations:
+    ``ERROR:  cannot run type command because there was a parallel operation on a distributed table in the transaction``.
+    This is because of the new transaction model in Citus 11. To fix this, you can run the migrations in a single transaction by setting below Citus setting at the top of your distribute operations.
+    ``operations = [ migrations.RunSQL("SET LOCAL citus.multi_shard_modify_mode TO 'sequential';"),]``
+
 Updating the Django Application to scope queries
 ------------------------------------------------
 
@@ -530,6 +536,39 @@ Automating with middleware
 
 Rather than calling ``set_current_tenant()`` in each view, you can create and install a new `middleware <https://docs.djangoproject.com/en/3.0/topics/http/middleware/>`_ class in your Django application to do it automatically.
 
+You can either use the base class provided by django-multitenant, or create your own middleware class that calls ``set_current_tenant`` with the appropriate value.
+
+1. Using the base class provided by django-multitenant
+   
+   Base class usage is recommended for most applications. It provides a simple way to set the current tenant based on the current user. However, you need to provide a function that returns the tenant object for the current user.
+
+   1. Add ``'django_multitenant.middleware.MultitenantMiddleware'`` to the ``MIDDLEWARE`` list in your ``settings.py`` file:
+
+       .. code-block:: python
+
+           MIDDLEWARE = [
+               # other middleware
+               'django_multitenant.middleware.MultitenantMiddleware',
+           ]
+
+   2. Monkey patch ``django_multitenant.views.get_tenant`` function with your own function which returns tenant object:
+
+       .. code-block:: python
+
+           # views.py
+
+           def tenant_func(request):
+               return Store.objects.filter(user=request.user).first()
+
+           # Monkey patching get_tenant function
+           from django_multitenant import views
+           views.get_tenant = tenant_func
+
+2. Creating your own middleware class
+   
+   You can add your own Middleware class to your application. This allows you to customize the logic for setting the current tenant. For example, you can set the tenant based on a different value in the session, or based on a different user attribute.
+   Here, below is an example of a middleware class that sets the current tenant based on the current user.
+   
 .. code-block:: python
 
   # src/appname/middleware.py
@@ -542,7 +581,10 @@ Rather than calling ``set_current_tenant()`` in each view, you can create and in
 
       def __call__(self, request):
           if request.user and not request.user.is_anonymous:
-              set_current_tenant(request.user.employee.company)
+              # Your custom logic to set the current tenant
+              current_tenant=your_method(request)
+              set_current_tenant(current_tenant)
+              your
           response = self.get_response(request)
           return response
 
@@ -557,3 +599,4 @@ Enable the middleware by updating the MIDDLEWARE array in src/appname/settings/b
 
       'appname.middleware.MultitenantMiddleware'
   ]
+

@@ -37,6 +37,10 @@ coverage[toml]==7.0.5
 dill==0.3.6
     # via pylint
 django==4.1.7
+    # via
+    #   -r requirements/static-analysis.in
+    #   djangorestframework
+djangorestframework==3.14.0
     # via -r requirements/static-analysis.in
 docutils==0.19
     # via
@@ -166,7 +170,9 @@ pytest-cov==4.0.0
 pytest-django==4.5.2
     # via -r requirements/static-analysis.in
 pytz==2022.7.1
-    # via babel
+    # via
+    #   babel
+    #   djangorestframework
 pyyaml==6.0
     # via
     #   bandit

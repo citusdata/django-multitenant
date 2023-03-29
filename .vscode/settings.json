@@ -4,5 +4,6 @@
     "python.envFile": "${workspaceFolder}/.envs",
     "python.linting.prospectorEnabled": true,
     "python.linting.enabled": true,
-    "esbonio.sphinx.confDir": "",
+    "python.languageServer": "Pylance",
+    "esbonio.sphinx.confDir": ""
 }
