@@ -1,3 +1,7 @@
+### Django-Multitenant v3.2.1 (April 10, 2023) ###
+
+* Add m2m with no through_defaults fix (#170)
+
 ### Django-Multitenant v3.2.0 (March 29, 2023) ###
 
 * Adds DjangoRestFramework support (#157)
