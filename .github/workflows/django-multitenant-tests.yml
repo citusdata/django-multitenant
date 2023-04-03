@@ -68,8 +68,25 @@ jobs:
         citusdata/python-all-versions
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
+      with:
+        flags: postgres
+    - name: Test GeoDjango MT
+      run: |
+        docker-compose --project-name django-multitenant-gis -f single-node-gis-docker-compose.yml up -d || { docker-compose logs && false ; }
+        echo "Running tests for python $PYTHON_VERSION, django $DJANGO_VERSION"
+        docker run \
+        --entrypoint /build/scripts/test-geodjango-mt.sh \
+        -v $(pwd):/build \
+        --network=host \
+        -e PYTHON_VERSION -e DJANGO_VERSION \
+        citusdata/python-all-versions
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        flags: postgis
     - name: Test Missing Modules
       run: |
+        docker-compose --project-name django-multitenant up -d || { docker-compose logs && false ; }
         echo "Running tests for python $PYTHON_VERSION, django $DJANGO_VERSION, citus $CITUS_VERSION"
         docker run \
         --entrypoint /build/scripts/test-django-mt-modules.sh \
@@ -79,6 +96,8 @@ jobs:
         citusdata/python-all-versions
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
+      with:
+        flags: missing-modules
 
   tests-django-mt-4_1:
     runs-on: ubuntu-latest
@@ -111,8 +130,25 @@ jobs:
         citusdata/python-all-versions
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
+      with:
+        flags: postgres
+    - name: Test GeoDjango MT
+      run: |
+        docker-compose --project-name django-multitenant-gis -f single-node-gis-docker-compose.yml up -d || { docker-compose logs && false ; }
+        echo "Running tests for python $PYTHON_VERSION, django $DJANGO_VERSION"
+        docker run \
+        --entrypoint /build/scripts/test-geodjango-mt.sh \
+        -v $(pwd):/build \
+        --network=host \
+        -e PYTHON_VERSION -e DJANGO_VERSION \
+        citusdata/python-all-versions
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        flags: postgis
     - name: Test Missing Modules
       run: |
+        docker-compose --project-name django-multitenant up -d || { docker-compose logs && false ; }
         echo "Running tests for python $PYTHON_VERSION, django $DJANGO_VERSION, citus $CITUS_VERSION"
         docker run \
         --entrypoint /build/scripts/test-django-mt-modules.sh \
@@ -122,3 +158,5 @@ jobs:
         citusdata/python-all-versions
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
+      with:
+        flags: missing-modules
