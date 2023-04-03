@@ -22,9 +22,10 @@ https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-
 
 | Python                | Django        |Citus          |
 | ----------------------| --------------|---------------|
-| 3.7                   | 3.2           | 10  11        |
-| 3.8 3.9 3.10 3.11     | 4.0           | 10  11        |
 | 3.8 3.9 3.10 3.11     | 4.1           | 11            |
+| 3.8 3.9 3.10 3.11     | 4.0           | 10  11        |
+| 3.7                   | 3.2           | 10  11        |
+
 
 
 
@@ -213,5 +214,5 @@ This library uses similar logic of setting/getting tenant object as in [django-s
 
 ## License
 
-Copyright (C) 2018, Citus Data
+Copyright (C) 2023, Citus Data
 Licensed under the MIT license, see LICENSE file for details.
