@@ -811,6 +811,20 @@ class MultipleTenantModelTest(BaseTestCase):
         purchase.save()
         purchase.product_purchased.add(product, through_defaults={"date": date.today()})
 
+    def test_many_to_many_with_no_through_defaults_saves(self):
+
+        store = Store.objects.create(name="store1")
+        store.save()
+
+        set_current_tenant(tenant=store)
+
+        product = Product.objects.create(name="product1", store=store)
+        product.save()
+
+        purchase = Purchase.objects.create(store=store)
+        purchase.save()
+        purchase.product_purchased.add(product)
+
     def test_many_to_many_through_saves_to_nontenant(self):
 
         store = Store.objects.create(name="store1")

@@ -290,7 +290,7 @@ class Transaction(TenantModel):
         Purchase, on_delete=models.CASCADE, blank=True, null=True
     )
     product = TenantForeignKey(Product, on_delete=models.CASCADE)
-    date = models.DateField()
+    date = models.DateField(auto_now_add=True)
 
 
 class MigrationUseInMigrationsModel(TenantModel):
