@@ -78,6 +78,16 @@ In order to use this library you can either use Mixins or have your models inher
        tenant_field_name = "store_id"
    ```
 
+#### GeoDjango Models
+
+1. If you wish to use GeoDjango models you can use the GisTenantModel:
+  ```python
+    class StoreLocation(GisTenantModel):
+      store = models.ForeignKey(Store)
+      tenant_id = "store_id"
+      location = models.PointField()
+  ```
+
 
 ### Changes in Models using mixins:
 1. In whichever files you want to use the library import it by just saying 
@@ -135,6 +145,16 @@ In order to use this library you can either use Mixins or have your models inher
         ......
         ......
   }
+  ```
+
+#### PostGIS support
+1. A separate backend is provided for PostGIS support `django_multitenant.backends.postgis`
+  ```python
+    'default': {
+        'ENGINE': 'django_multitenant.backends.postgis',
+        ......
+        ......
+        ......
   ```
 ### Where to Set the Tenant?
 1. Write authentication logic using a middleware which also sets/unsets a tenant for each session/request. This way developers need not worry about setting a tenant on a per view basis. Just set it while authentication and the library would ensure the rest (adding tenant_id filters to the queries). A sample implementation of the above is as follows:

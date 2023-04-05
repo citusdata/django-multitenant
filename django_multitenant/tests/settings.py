@@ -78,3 +78,14 @@ CITUS_EXTENSION_INSTALLED = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 USE_TZ = True
+
+USE_GIS = False
+
+if os.environ.get("DJANGO_MULTITENANT_GIS_TESTS", "False") == "True":
+    DATABASES["default"]["ENGINE"] = "django_multitenant.backends.postgis"
+    DATABASES["default"]["PORT"] = 5605
+    INSTALLED_APPS.append("django.contrib.gis")
+
+    USE_GIS = True
+    USE_CITUS = False
+    CITUS_EXTENSION_INSTALLED = False
