@@ -212,7 +212,7 @@ sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
 sphinxnotes-strike==1.2
     # via -r requirements/static-analysis.in
-sqlparse==0.4.3
+sqlparse==0.4.4
     # via django
 stevedore==4.1.1
     # via bandit
