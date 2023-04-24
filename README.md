@@ -13,6 +13,7 @@ https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-
 **Other useful links on multi-tenancy**:
 1. https://www.citusdata.com/blog/2017/03/09/multi-tenant-sharding-tutorial/
 1. https://www.citusdata.com/blog/2017/06/02/scaling-complex-sql-transactions/
+1. https://www.youtube.com/watch?v=RKSwjaZKXL0
 
 
 ## Installation:
