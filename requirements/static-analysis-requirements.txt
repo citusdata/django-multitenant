@@ -16,8 +16,6 @@ astroid==2.13.5
     #   requirements-detector
 babel==2.12.1
     # via sphinx
-backports-zoneinfo==0.2.1
-    # via django
 black==23.3.0
     # via -r static-analysis.in
 certifi==2023.5.7

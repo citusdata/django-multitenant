@@ -412,7 +412,6 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_str_model_tenant_set(self):
-
         projects = self.projects
         account = self.account_fr
         tasks = self.tasks
@@ -422,7 +421,6 @@ class TenantModelTest(BaseTestCase):
         unset_current_tenant()
 
     def test_str_model_tenant_not_set(self):
-
         projects = self.projects
         account = self.account_fr
         tasks = self.tasks
@@ -798,7 +796,6 @@ class MultipleTenantModelTest(BaseTestCase):
         list(projects_per_manager)
 
     def test_many_to_many_through_saves(self):
-
         store = Store.objects.create(name="store1")
         store.save()
 
@@ -812,7 +809,6 @@ class MultipleTenantModelTest(BaseTestCase):
         purchase.product_purchased.add(product, through_defaults={"date": date.today()})
 
     def test_many_to_many_with_no_through_defaults_saves(self):
-
         store = Store.objects.create(name="store1")
         store.save()
 
@@ -826,7 +822,6 @@ class MultipleTenantModelTest(BaseTestCase):
         purchase.product_purchased.add(product)
 
     def test_many_to_many_through_saves_to_nontenant(self):
-
         store = Store.objects.create(name="store1")
         store.save()
 

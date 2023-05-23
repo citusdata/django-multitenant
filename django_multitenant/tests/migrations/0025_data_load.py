@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tests", "0024_business_tenant_alter_account_id_and_more"),
     ]
