@@ -10,6 +10,9 @@ The following link talks more about the trade-offs on when and how to choose the
 
 https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-scalability/
 
+The following blogpost is a good starting point to start to use django-multitenant
+https://www.citusdata.com/blog/2023/05/09/evolving-django-multitenant-to-build-scalable-saas-apps-on-postgres-and-citus/
+
 **Other useful links on multi-tenancy**:
 1. https://www.citusdata.com/blog/2017/03/09/multi-tenant-sharding-tutorial/
 1. https://www.citusdata.com/blog/2017/06/02/scaling-complex-sql-transactions/
