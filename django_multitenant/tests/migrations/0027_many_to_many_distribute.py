@@ -5,7 +5,6 @@ from django_multitenant.db import migrations as tenant_migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tests", "0026_product_purchase_store_alter_account_id_and_more"),
     ]

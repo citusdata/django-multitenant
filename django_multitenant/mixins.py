@@ -30,14 +30,12 @@ logger = logging.getLogger(__name__)
 
 
 def wrap_many_related_manager_add(many_related_manager_add):
-
     """
     Wraps the add method of many to many field to set tenant_id in through_defaults
     parameter of the add method.
     """
 
     def add(self, *objs, through_defaults=None):
-
         if hasattr(self.through, "tenant_field") and get_current_tenant():
             through_defaults = through_defaults or {}
             through_defaults[
@@ -49,7 +47,6 @@ def wrap_many_related_manager_add(many_related_manager_add):
 
 
 def wrap_forward_many_to_many_manager(create_forward_many_to_many_manager_method):
-
     """
     Wraps the create_forward_many_to_many_manager method of the related_descriptors module
     and changes the add method of the ManyRelatedManagerClass to set tenant_id in through_defaults
