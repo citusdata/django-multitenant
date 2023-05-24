@@ -13,6 +13,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunSQL("ALTER TABLE auth_user ALTER COLUMN id SET DATA TYPE bigint;"),
+        migrations.RunSQL("ALTER TABLE auth_group ALTER COLUMN id SET DATA TYPE bigint;"),
         migrations.RunSQL("SET LOCAL citus.multi_shard_modify_mode TO 'sequential';"),
         migrations.RunSQL("SELECT create_reference_table('auth_user');"),
         migrations.AddField(
