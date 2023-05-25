@@ -6,13 +6,18 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("tests", "0029_migration_tests_apps_get_model_20230318_0300"),
     ]
 
     operations = [
+        migrations.RunSQL(
+            "ALTER TABLE auth_user ALTER COLUMN id SET DATA TYPE bigint;"
+        ),
+        migrations.RunSQL(
+            "ALTER TABLE auth_group ALTER COLUMN id SET DATA TYPE bigint;"
+        ),
         migrations.RunSQL("SET LOCAL citus.multi_shard_modify_mode TO 'sequential';"),
         migrations.RunSQL("SELECT create_reference_table('auth_user');"),
         migrations.AddField(

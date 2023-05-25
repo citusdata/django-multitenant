@@ -7,7 +7,6 @@ from django.apps import apps as apps_global
 
 
 def test_valid_model(model_class):
-
     assert model_class.objects.__class__.__name__ == "TenantManager"
 
     model_class.objects.create(name="test")
@@ -26,7 +25,6 @@ def test_invalid_model(apps):
 
 # pylint: disable=unused-argument
 def empty_users(apps, schema_editor):
-
     model_from_global = apps_global.get_model("tests", "MigrationUseInMigrationsModel")
     test_valid_model(model_from_global)
 
@@ -36,7 +34,6 @@ def empty_users(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tests", "0028_migrationuseinmigrationsmodel_alter_account_managers_and_more"),
     ]

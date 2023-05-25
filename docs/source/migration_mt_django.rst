@@ -468,6 +468,15 @@ After installing the library, changing the engine, and updating the models, run
  between a class derived from "TenantModel" and a class derived from "models.Model" 
  as Citus 10 does not support such relationships between distributed and local tables.
 
+.. warning::
+ Beginning with Citus 11.3, it is required that identity columns for distributed tables be of type bigint. 
+ For more information, please consult the Citus 11.3 changelog <https://github.com/citusdata/citus/blob/main/CHANGELOG.md#citus-v1130-may-2-2023>.
+ From now on, any classes inherited from TenantModel will automatically have bigint as the identity column. 
+ If you create new models derived from TenantModel, no additional steps are necessary.
+ However, if you already have existing models derived from TenantModel, you must update the identity column to bigint. 
+ After updating models, creating a migration and executing it is necessary afterwards.
+ Furthermore, if you are using models that need to be distributed but do not use TenantModel as the base class, you will need to manually update your models to utilize bigint as the identity column.
+
 4. Distribute data in Citus
 ----------------------------
 

@@ -7,7 +7,6 @@ import django_multitenant.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tests", "0027_many_to_many_distribute"),
     ]

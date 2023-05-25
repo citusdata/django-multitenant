@@ -7,7 +7,6 @@ import django_multitenant.mixins
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tests", "0025_data_load"),
     ]
