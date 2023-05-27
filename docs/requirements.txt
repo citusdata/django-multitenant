@@ -20,8 +20,6 @@ idna==3.4
     # via requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==6.0.0
-    # via sphinx
 jinja2==3.1.2
     # via sphinx
 markupsafe==2.1.2
@@ -34,7 +32,7 @@ pytz==2022.7.1
     # via babel
 readthedocs-sphinx-search==0.2.0
     # via -r requirements.in
-requests==2.28.2
+requests==2.31.0
     # via sphinx
 snowballstemmer==2.2.0
     # via sphinx
@@ -63,8 +61,6 @@ sphinxnotes-strike==1.2
     # via -r requirements.in
 urllib3==1.26.14
     # via requests
-zipp==3.13.0
-    # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
