@@ -46,7 +46,7 @@ In order to use this library you can either use Mixins or have your models inher
    ```
 2. All models should inherit the TenantModel class.
    `Ex: class Product(TenantModel):`
-3. Define a static variable named tenant_id and specify the tenant column using this variable.You can define tenant_id in three ways. Any of them is acceptavle 
+3. Define a static variable named tenant_id and specify the tenant column using this variable.You can define tenant_id in three ways. Any of them is acceptable 
    * Using TenantMeta.tenant_field_name variable
    * Using TenantMeta.tenant_id variable
    * Using tenant_id field
