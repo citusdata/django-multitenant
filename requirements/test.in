@@ -3,3 +3,4 @@ pytest
 pytest-cov
 pytest-django
 exam
+asgiref>= 3.5.2
