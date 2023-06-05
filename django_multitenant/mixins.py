@@ -79,16 +79,40 @@ class TenantManagerMixin:
         if current_tenant:
             kwargs = get_tenant_filters(self.model)
             return queryset.filter(**kwargs)
+
+        empty_tenant_message = (
+            f"TenantForeignKey field {self.model.__name__}.{self.name} "
+            "accessed without a current tenant set. "
+            "This may cause issues in a partitioned environment. "
+            "Recommend calling set_current_tenant() before accessing "
+            "this field."
+        )
+
+        if getattr(settings, "TENANT_STRICT_MODE", False):
+            raise EmptyTenant(empty_tenant_message)
+
         return queryset
 
     def bulk_create(self, objs, **kwargs):
         # Helper method to set tenant_id in the current thread for the results returned from query_set.
         # For example, if we have a query_set of all the users in the current tenant, we can set the tenant_id by calling
         # User.object.bulk_create(users)
+
+        empty_tenant_message = (
+            f"TenantForeignKey field {self.model.__name__}.{self.name} "
+            "accessed without a current tenant set. "
+            "This may cause issues in a partitioned environment. "
+            "Recommend calling set_current_tenant() before accessing "
+            "this field."
+        )
+
         if get_current_tenant():
             tenant_value = get_current_tenant_value()
             for obj in objs:
                 set_object_tenant(obj, tenant_value)
+
+        elif getattr(settings, "TENANT_STRICT_MODE", False):
+            raise EmptyTenant(empty_tenant_message)
 
         return super().bulk_create(objs, **kwargs)
 
