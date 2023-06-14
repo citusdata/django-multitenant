@@ -40,19 +40,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python_version: ["3.8","3.9","3.10","3.11"]
+        python_version: ["3.7","3.8","3.9","3.10","3.11"]
         django_version: ["3.2","4.0"]
         citus_version: ["10","11"]
-        include:
+        exclude:
           - python_version: "3.7"
-            django_version: "3.2"
+            django_version: "4.0"
             citus_version: "10"
           - python_version: "3.7"
-            django_version: "3.2"
+            django_version: "4.0"
             citus_version: "11"
-          - python_version: "3.9"
-            django_version: "3.2"
-            citus_version: "11"
+
     env:
       PYTHON_VERSION: ${{ matrix.python_version }}
       CITUS_VERSION: ${{ matrix.citus_version }}
