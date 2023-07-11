@@ -20,21 +20,21 @@ backports-zoneinfo==0.2.1
     # via django
 bandit==1.7.5
     # via prospector
-black==23.3.0
+black==23.7.0
     # via -r requirements/static-analysis.in
 build==0.10.0
     # via pyroma
 certifi==2023.5.7
     # via requests
-charset-normalizer==3.1.0
+charset-normalizer==3.2.0
     # via requests
-click==8.1.3
+click==8.1.4
     # via black
 coverage[toml]==7.2.7
     # via pytest-cov
 dill==0.3.6
     # via pylint
-django==4.2.2
+django==4.2.3
     # via
     #   -r requirements/static-analysis.in
     #   djangorestframework
@@ -49,7 +49,7 @@ dodgy==0.2.1
     # via prospector
 exam==0.10.6
     # via -r requirements/static-analysis.in
-exceptiongroup==1.1.1
+exceptiongroup==1.1.2
     # via pytest
 flake8==5.0.4
     # via
@@ -59,7 +59,7 @@ flake8-polyfill==1.0.2
     # via pep8-naming
 gitdb==4.0.10
     # via gitpython
-gitpython==3.1.31
+gitpython==3.1.32
     # via
     #   bandit
     #   prospector
@@ -67,7 +67,7 @@ idna==3.4
     # via requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==6.6.0
+importlib-metadata==6.8.0
     # via sphinx
 iniconfig==2.0.0
     # via pytest
@@ -90,7 +90,7 @@ mdurl==0.1.2
     # via markdown-it-py
 mock==5.0.2
     # via exam
-mypy==1.3.0
+mypy==1.4.1
     # via prospector
 mypy-extensions==1.0.0
     # via
@@ -113,11 +113,11 @@ pbr==5.11.1
     # via stevedore
 pep8-naming==0.10.0
     # via prospector
-platformdirs==3.5.3
+platformdirs==3.8.1
     # via
     #   black
     #   pylint
-pluggy==1.0.0
+pluggy==1.2.0
     # via pytest
 prospector[with_everything]==1.10.2
     # via -r requirements/static-analysis.in
@@ -160,11 +160,11 @@ pylint-plugin-utils==0.7
     #   pylint-flask
 pyproject-hooks==1.0.0
     # via build
-pyright==1.1.314
+pyright==1.1.316
     # via prospector
 pyroma==4.2
     # via prospector
-pytest==7.3.2
+pytest==7.4.0
     # via
     #   -r requirements/static-analysis.in
     #   pytest-cov
@@ -189,7 +189,7 @@ requirements-detector==1.2.2
     # via prospector
 rich==13.4.2
     # via bandit
-semver==3.0.0
+semver==3.0.1
     # via requirements-detector
 setoptconf-tmp==0.3.1
     # via prospector
@@ -243,9 +243,9 @@ tomli==2.0.1
     #   pytest
 tomlkit==0.11.8
     # via pylint
-trove-classifiers==2023.5.24
+trove-classifiers==2023.7.6
     # via pyroma
-typing-extensions==4.6.3
+typing-extensions==4.7.1
     # via
     #   asgiref
     #   astroid
@@ -259,7 +259,7 @@ vulture==2.7
     # via prospector
 wrapt==1.15.0
     # via astroid
-zipp==3.15.0
+zipp==3.16.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:

@@ -8,7 +8,7 @@ coverage[toml]==7.2.7
     # via pytest-cov
 exam==0.10.6
     # via -r requirements/test.in
-exceptiongroup==1.1.1
+exceptiongroup==1.1.2
     # via pytest
 iniconfig==2.0.0
     # via pytest
@@ -16,11 +16,11 @@ mock==5.0.2
     # via exam
 packaging==23.1
     # via pytest
-pluggy==1.0.0
+pluggy==1.2.0
     # via pytest
 psycopg2-binary==2.9.6
     # via -r requirements/test.in
-pytest==7.3.2
+pytest==7.4.0
     # via
     #   -r requirements/test.in
     #   pytest-cov
