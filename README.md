@@ -6,7 +6,7 @@ Enables easy scale-out by adding the tenant context to your queries, enabling th
 
 There are architecures for building multi-tenant databases viz. **Create one database per tenant**, **Create one schema per tenant** and **Have all tenants share the same table(s)**. This library is based on the 3rd design i.e **Have all tenants share the same table(s)**, it assumes that all the tenant relates models/tables have a tenant_id column for representing a tenant.
 
-The following link talks more about the trade-offs on when and how to choose the right architecture for your multi-tenat database:
+The following link talks more about the trade-offs on when and how to choose the right architecture for your multi-tenant database:
 
 https://www.citusdata.com/blog/2016/10/03/designing-your-saas-database-for-high-scalability/
 
@@ -95,7 +95,7 @@ In order to use this library you can either use Mixins or have your models inher
    `Ex: tenant_id='store_id'`
 1. All foreign keys to TenantModel subclasses should use TenantForeignKey in place of
    models.ForeignKey
-1. Referenced table in TenenatForeignKey should include a unique key including tenant_id and primary key
+1. Referenced table in TenantForeignKey should include a unique key including tenant_id and primary key
    ```
    Ex:       
    class Meta:
