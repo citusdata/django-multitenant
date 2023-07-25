@@ -8,7 +8,7 @@ bleach==6.0.0
     # via readme-renderer
 build==0.10.0
     # via -r requirements/release.in
-certifi==2023.5.7
+certifi==2023.7.22
     # via requests
 cffi==1.15.1
     # via cryptography
