@@ -305,7 +305,8 @@ class TenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), 30)
 
         set_current_tenant(account)
-        with self.assertNumQueries(7) as captured_queries:
+        query_count = 9 if django.VERSION >= (4, 2) else 7
+        with self.assertNumQueries(query_count) as captured_queries:
             Project.objects.all().delete()
             unset_current_tenant()
 
