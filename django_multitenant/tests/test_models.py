@@ -311,7 +311,7 @@ class TenantModelTest(BaseTestCase):
 
             for query in captured_queries.captured_queries:
                 print(f"SQL: {query['sql']}")
-                
+
                 if query["sql"] == "BEGIN":
                     continue
                 if "tests_revenue" in query["sql"]:
