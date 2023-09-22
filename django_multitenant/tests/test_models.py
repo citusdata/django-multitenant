@@ -310,6 +310,8 @@ class TenantModelTest(BaseTestCase):
             unset_current_tenant()
 
             for query in captured_queries.captured_queries:
+                print(f"SQL: {query['sql']}")
+
                 if "tests_revenue" in query["sql"]:
                     self.assertTrue(f'"acc_id" = {account.id}' in query["sql"])
                 else:
@@ -471,7 +473,7 @@ class TenantModelTest(BaseTestCase):
         self.assertEqual(SubTask.objects.count(), 250)
 
         project = Project.objects.first()
-        
+
         query_count = 14 if django.VERSION >= (4, 2) else 12
 
         with self.assertNumQueries(query_count) as captured_queries:
@@ -504,7 +506,6 @@ class TenantModelTest(BaseTestCase):
         )
 
         self.assertEqual(Account.objects.count(), 2)
-
 
         query_count = 18 if django.VERSION >= (4, 2) else 16
         with self.assertNumQueries(query_count) as captured_queries:
@@ -548,7 +549,7 @@ class TenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), 30)
 
         set_current_tenant(account)
-        
+
         query_count = 29 if django.VERSION >= (4, 2) else 28
         with self.assertNumQueries(query_count) as captured_queries:
             account.delete()
@@ -677,7 +678,7 @@ class MultipleTenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), 30)
 
         set_current_tenant(accounts)
-        
+
         query_count = 10 if django.VERSION >= (4, 2) else 8
         with self.assertNumQueries(query_count) as captured_queries:
             Project.objects.all().delete()
