@@ -53,6 +53,19 @@ jobs:
           - python_version: "3.7"
             django_version: "3.2"
             citus_version: "12"
+        exclude:
+          - python_version: "3.8"
+            django_version: "4.1"
+            citus_version: "10"
+          - python_version: "3.9"
+            django_version: "4.1"
+            citus_version: "10"
+          - python_version: "3.10"
+            django_version: "4.1"
+            citus_version: "10"
+          - python_version: "3.11"
+            django_version: "4.1"
+            citus_version: "10"
 
     env:
       PYTHON_VERSION: ${{ matrix.python_version }}
