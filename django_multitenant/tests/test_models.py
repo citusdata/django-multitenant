@@ -1,6 +1,7 @@
 from datetime import date
 import re
 import pytest
+import django
 
 from django.conf import settings
 from django.db.models import Count
@@ -470,8 +471,10 @@ class TenantModelTest(BaseTestCase):
         self.assertEqual(SubTask.objects.count(), 250)
 
         project = Project.objects.first()
+        
+        query_count = 14 if django.VERSION >= (4, 2) else 12
 
-        with self.assertNumQueries(12) as captured_queries:
+        with self.assertNumQueries(query_count) as captured_queries:
             project.delete()
 
             self.assertEqual(Project.objects.count(), 9)
@@ -502,7 +505,9 @@ class TenantModelTest(BaseTestCase):
 
         self.assertEqual(Account.objects.count(), 2)
 
-        with self.assertNumQueries(16) as captured_queries:
+
+        query_count = 16 if django.VERSION >= (4, 2) else 18
+        with self.assertNumQueries(query_count) as captured_queries:
             country.delete()
 
             self.assertEqual(Account.objects.count(), 0)
@@ -543,7 +548,9 @@ class TenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), 30)
 
         set_current_tenant(account)
-        with self.assertNumQueries(28) as captured_queries:
+        
+        query_count = 29 if django.VERSION >= (4, 2) else 28
+        with self.assertNumQueries(query_count) as captured_queries:
             account.delete()
 
             # Once deleted, we don't have a current tenant
@@ -670,7 +677,9 @@ class MultipleTenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), 30)
 
         set_current_tenant(accounts)
-        with self.assertNumQueries(8) as captured_queries:
+        
+        query_count = 10 if django.VERSION >= (4, 2) else 8
+        with self.assertNumQueries(query_count) as captured_queries:
             Project.objects.all().delete()
 
             for query in captured_queries.captured_queries:
