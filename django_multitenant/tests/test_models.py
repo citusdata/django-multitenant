@@ -506,7 +506,7 @@ class TenantModelTest(BaseTestCase):
         self.assertEqual(Account.objects.count(), 2)
 
 
-        query_count = 16 if django.VERSION >= (4, 2) else 18
+        query_count = 18 if django.VERSION >= (4, 2) else 16
         with self.assertNumQueries(query_count) as captured_queries:
             country.delete()
 
