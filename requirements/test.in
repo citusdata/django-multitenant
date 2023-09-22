@@ -1,4 +1,5 @@
 coverage[toml]==7.2.7
+pluggy==1.2.0
 psycopg2-binary
 pytest
 pytest-cov
