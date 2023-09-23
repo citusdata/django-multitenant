@@ -35,3 +35,9 @@ pytest-cov==4.1.0
     # via -r requirements/test.in
 pytest-django==4.5.2
     # via -r requirements/test.in
+tomli==2.0.1
+    # via
+    #   coverage
+    #   pytest
+typing-extensions==4.8.0
+    # via asgiref

@@ -38,16 +38,18 @@ class UtilsTest(BaseTestCase):
         set_current_tenant(account)
 
         with self.settings(TENANT_USE_ASGIREF=True):
-            importlib.reload(sys.modules['django_multitenant.utils'])
+            importlib.reload(sys.modules["django_multitenant.utils"])
             from django_multitenant.utils import get_current_tenant
+
             # Check the tenant within an async task when asgiref enabled
             tenant = async_to_sync(self.async_get_current_tenant)()
             self.assertEqual(get_current_tenant(), tenant)
             unset_current_tenant()
 
         with self.settings(TENANT_USE_ASGIREF=False):
-            importlib.reload(sys.modules['django_multitenant.utils'])
+            importlib.reload(sys.modules["django_multitenant.utils"])
             from django_multitenant.utils import get_current_tenant
+
             # Check the tenant within an async task when asgiref is disabled
             tenant = async_to_sync(self.async_get_current_tenant)()
             self.assertIsNone(get_current_tenant())
@@ -58,21 +60,22 @@ class UtilsTest(BaseTestCase):
         account = projects[0].account
 
         with self.settings(TENANT_USE_ASGIREF=True):
-            importlib.reload(sys.modules['django_multitenant.utils'])
+            importlib.reload(sys.modules["django_multitenant.utils"])
             from django_multitenant.utils import get_current_tenant
+
             # Set the tenant in task
             async_to_sync(self.async_set_current_tenant)(account)
             self.assertEqual(get_current_tenant(), account)
             unset_current_tenant()
 
         with self.settings(TENANT_USE_ASGIREF=False):
-            importlib.reload(sys.modules['django_multitenant.utils'])
+            importlib.reload(sys.modules["django_multitenant.utils"])
             from django_multitenant.utils import get_current_tenant
+
             # Set the tenant in task
             async_to_sync(self.async_set_current_tenant)(account)
             self.assertIsNone(get_current_tenant())
             unset_current_tenant()
-
 
     def test_get_tenant_column(self):
         from .models import Project
