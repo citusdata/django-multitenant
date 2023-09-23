@@ -1,6 +1,6 @@
-import asyncio
-import sys, importlib
-from asgiref.sync import async_to_sync, sync_to_async
+import sys
+import importlib
+from asgiref.sync import async_to_sync
 
 
 from django_multitenant.utils import (
@@ -39,7 +39,6 @@ class UtilsTest(BaseTestCase):
 
         with self.settings(TENANT_USE_ASGIREF=True):
             importlib.reload(sys.modules["django_multitenant.utils"])
-            from django_multitenant.utils import get_current_tenant
 
             # Check the tenant within an async task when asgiref enabled
             tenant = async_to_sync(self.async_get_current_tenant)()
@@ -48,7 +47,6 @@ class UtilsTest(BaseTestCase):
 
         with self.settings(TENANT_USE_ASGIREF=False):
             importlib.reload(sys.modules["django_multitenant.utils"])
-            from django_multitenant.utils import get_current_tenant
 
             # Check the tenant within an async task when asgiref is disabled
             tenant = async_to_sync(self.async_get_current_tenant)()
@@ -61,7 +59,6 @@ class UtilsTest(BaseTestCase):
 
         with self.settings(TENANT_USE_ASGIREF=True):
             importlib.reload(sys.modules["django_multitenant.utils"])
-            from django_multitenant.utils import get_current_tenant
 
             # Set the tenant in task
             async_to_sync(self.async_set_current_tenant)(account)
@@ -70,7 +67,6 @@ class UtilsTest(BaseTestCase):
 
         with self.settings(TENANT_USE_ASGIREF=False):
             importlib.reload(sys.modules["django_multitenant.utils"])
-            from django_multitenant.utils import get_current_tenant
 
             # Set the tenant in task
             async_to_sync(self.async_set_current_tenant)(account)
