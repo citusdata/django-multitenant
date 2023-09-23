@@ -1,8 +1,6 @@
 
 ### Django-Multitenant v4.0.0 (September 26, 2023) ###
 
-* Add m2m with no through_defaults fix (#170)
-
 * Fixes citus 11.3 identity column bigint constraint (#181)
 
 * Adds new python versions for dj3.2 (#188)
