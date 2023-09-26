@@ -78,3 +78,5 @@ CITUS_EXTENSION_INSTALLED = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 USE_TZ = True
+
+TENANT_USE_ASGIREF = False

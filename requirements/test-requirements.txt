@@ -4,6 +4,8 @@
 #
 #    pip-compile --output-file=requirements/test-requirements.txt --resolver=backtracking requirements/test.in
 #
+asgiref==3.7.2
+    # via -r requirements/test.in
 coverage[toml]==7.2.7
     # via
     #   -r requirements/test.in
@@ -37,3 +39,8 @@ tomli==2.0.1
     # via
     #   coverage
     #   pytest
+typing-extensions==4.8.0 ; python_version >= "3.8"
+    # via
+    #   -r requirements/test.in
+    #   asgiref
+typing-extensions==4.7.1 ; python_version < "3.8"
