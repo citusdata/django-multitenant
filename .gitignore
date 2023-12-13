@@ -7,3 +7,5 @@ django_multitenant.egg-info/
 venv/*
 coverage.xml
 .coverage
+build/*
+dist/*
