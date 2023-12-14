@@ -1,7 +1,5 @@
 ### Django-Multitenant v4.1.0 (December 14, 2023) ###
 
-* Adds support for Citus 12 and Django 4.2 (#197)
-
 * Use asgiref when available instead of thread locals (#176) (#198) 
 
 ### Django-Multitenant v4.0.0 (September 26, 2023) ###
