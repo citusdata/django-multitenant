@@ -1,10 +1,10 @@
 import inspect
 
 from django.apps import apps
-from django.conf import settings
+from .settings import TENANT_USE_ASGIREF
 
 
-if settings.TENANT_USE_ASGIREF:
+if TENANT_USE_ASGIREF:
     # asgiref must be installed, its included with Django >= 3.0
     from asgiref.local import Local as local
 else:
