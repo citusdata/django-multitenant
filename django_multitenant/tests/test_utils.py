@@ -58,6 +58,7 @@ class UtilsTest(BaseTestCase):
         account = projects[0].account
 
         with self.settings(TENANT_USE_ASGIREF=True):
+            importlib.reload(sys.modules["django_multitenant.settings"])
             importlib.reload(sys.modules["django_multitenant.utils"])
 
             # Set the tenant in task
@@ -66,6 +67,7 @@ class UtilsTest(BaseTestCase):
             unset_current_tenant()
 
         with self.settings(TENANT_USE_ASGIREF=False):
+            importlib.reload(sys.modules["django_multitenant.settings"])
             importlib.reload(sys.modules["django_multitenant.utils"])
 
             # Set the tenant in task
