@@ -1,3 +1,7 @@
+### Django-Multitenant v4.1.1 (December 18, 2023) ###
+
+* Fix utils to not require TENANT_USE_ASGIREF to be defined in the host django project (#206)
+
 ### Django-Multitenant v4.1.0 (December 14, 2023) ###
 
 * Use asgiref when available instead of thread locals (#176) (#198) 
