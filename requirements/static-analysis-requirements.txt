@@ -20,7 +20,7 @@ backports-zoneinfo==0.2.1
     # via django
 bandit==1.7.5
     # via prospector
-black==23.9.1
+black==24.3.0
     # via -r requirements/static-analysis.in
 build==1.0.3
     # via pyroma
