@@ -183,7 +183,7 @@ pyyaml==6.0.1
     # via
     #   bandit
     #   prospector
-requests==2.31.0
+requests==2.32.0
     # via
     #   pyroma
     #   sphinx
