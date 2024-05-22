@@ -1,4 +1,5 @@
 import inspect
+from functools import lru_cache
 
 from django.apps import apps
 from .settings import TENANT_USE_ASGIREF
@@ -57,18 +58,30 @@ def get_tenant_column(model_class_or_instance):
         ) from not_a_tenant_model
 
 
+@lru_cache(None)
+def get_field_matching_column(model_class, column):
+    """
+    Gets a field object from the model class, matching the column.
+    """
+    all_fields = model_class._meta.fields
+    try:
+        return next(field for field in all_fields if field.column == column)
+    except StopIteration as no_field_found:
+        raise ValueError(
+            f'No field found in {model_class.__name__} with column name "{column}"'
+        ) from no_field_found
+
+
 def get_tenant_field(model_class_or_instance):
     """
     Gets the tenant field object from the model
     """
     tenant_column = get_tenant_column(model_class_or_instance)
-    all_fields = model_class_or_instance._meta.fields
-    try:
-        return next(field for field in all_fields if field.column == tenant_column)
-    except StopIteration as no_field_found:
-        raise ValueError(
-            f'No field found in {type(model_class_or_instance).name} with column name "{tenant_column}"'
-        ) from no_field_found
+
+    if not inspect.isclass(model_class_or_instance):
+        model_class_or_instance = model_class_or_instance.__class__
+
+    return get_field_matching_column(model_class_or_instance, tenant_column)
 
 
 def get_object_tenant(instance):
