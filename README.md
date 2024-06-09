@@ -221,3 +221,8 @@ This library uses similar logic of setting/getting tenant object as in [django-s
 
 Copyright (C) 2023, Citus Data
 Licensed under the MIT license, see LICENSE file for details.
+
+### Infrastructure model
+![Infrastructure main model](.infragenie/infrastructure_main_model.svg)
+
+---
