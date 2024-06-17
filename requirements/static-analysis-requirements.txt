@@ -255,7 +255,7 @@ typing-extensions==4.8.0
     #   mypy
     #   pylint
     #   rich
-urllib3==2.0.5
+urllib3==2.2.2
     # via requests
 vulture==2.9.1
     # via prospector
