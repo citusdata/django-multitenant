@@ -24,7 +24,7 @@ black==23.9.1
     # via -r requirements/static-analysis.in
 build==1.0.3
     # via pyroma
-certifi==2023.7.22
+certifi==2024.7.4
     # via requests
 charset-normalizer==3.2.0
     # via requests
