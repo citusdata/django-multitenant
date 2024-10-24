@@ -1,3 +1,4 @@
+from functools import cached_property
 import logging
 
 from django.db.models.sql import DeleteQuery, UpdateQuery
@@ -125,12 +126,14 @@ class TenantModelMixin:
     def __setattr__(self, attrname, val):
         # Provides failing of the save operation if the tenant_id is changed.
         # try_update_tenant is being checked inside save method and if it is true, it will raise an exception.
-        def is_val_equal_to_tenant(val):
+        super().__setattr__(attrname, val)
+
+        def is_val_equal_to_tenant(value):
             return (
-                val
+                value
                 and self.tenant_value
-                and val != self.tenant_value
-                and val != self.tenant_object
+                and value != self.tenant_value
+                and value != self.tenant_object
             )
 
         if (
@@ -139,8 +142,6 @@ class TenantModelMixin:
             and is_val_equal_to_tenant(val)
         ):
             self._try_update_tenant = True
-
-        return super().__setattr__(attrname, val)
 
     # pylint: disable=too-many-arguments
     def _do_update(self, base_qs, using, pk_val, values, update_fields, forced_update):
@@ -192,7 +193,7 @@ class TenantModelMixin:
 
         return obj
 
-    @property
+    @cached_property
     def tenant_field(self):
         if hasattr(self, "TenantMeta") and "tenant_field_name" in dir(self.TenantMeta):
             return self.TenantMeta.tenant_field_name
