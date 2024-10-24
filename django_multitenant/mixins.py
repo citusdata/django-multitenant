@@ -137,7 +137,7 @@ class TenantModelMixin:
             )
 
         if (
-            attrname in (self.tenant_field, get_tenant_field(self).name)
+            (attrname == self.tenant_field or attrname == get_tenant_field(self).name)
             and not self._state.adding
             and is_val_equal_to_tenant(val)
         ):
@@ -195,10 +195,12 @@ class TenantModelMixin:
 
     @cached_property
     def tenant_field(self):
-        if hasattr(self, "TenantMeta") and "tenant_field_name" in dir(self.TenantMeta):
-            return self.TenantMeta.tenant_field_name
-        if hasattr(self, "TenantMeta") and "tenant_id" in dir(self.TenantMeta):
-            return self.TenantMeta.tenant_id
+        if hasattr(self, "TenantMeta"):
+            dir_ = dir(self.TenantMeta)
+            if "tenant_field_name" in dir_:
+                return self.TenantMeta.tenant_field_name
+            if "tenant_id" in dir_:
+                return self.TenantMeta.tenant_id
         if hasattr(self, "tenant"):
             raise AttributeError(
                 f"Tenant field exists which may cause collision with tenant_id field. Please rename the tenant field in {self.__class__.__name__} "
