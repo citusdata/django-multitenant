@@ -10,6 +10,7 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
     command: -c fsync=off -c full_page_writes=off
   worker1:
+    container_name: "${COMPOSE_PROJECT_NAME:-citus}_worker1_1"
     image: 'citusdata/citus:${CITUS_VERSION:-11.2}'
     ports: [ '5601:5432' ]
     labels: [ 'com.citusdata.role=Worker' ]
@@ -18,6 +19,7 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
     command: -c fsync=off -c full_page_writes=off
   worker2:
+    container_name: "${COMPOSE_PROJECT_NAME:-citus}_worker2_1"
     image: 'citusdata/citus:${CITUS_VERSION:-11.2}'
     ports: [ '5602:5432' ]
     labels: [ 'com.citusdata.role=Worker' ]

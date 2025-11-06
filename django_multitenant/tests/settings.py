@@ -18,8 +18,8 @@ DATABASES = {
         "NAME": "postgres",
         "USER": "postgres",
         "PASSWORD": "",
-        "HOST": "localhost",
-        "PORT": 5600,
+        "HOST": os.environ.get("DATABASE_HOST", "localhost"),
+        "PORT": int(os.environ.get("DATABASE_PORT", "5600")),
         "TEST": test_db,
     }
 }

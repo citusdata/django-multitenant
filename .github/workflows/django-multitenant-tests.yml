@@ -94,6 +94,8 @@ jobs:
         -v $(pwd):/build \
         --network django-multitenant_default \
         -e PYTHON_VERSION -e DJANGO_VERSION \
+        -e DATABASE_HOST=django-multitenant_master \
+        -e DATABASE_PORT=5432 \
         citusdata/python-all-versions
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
@@ -105,6 +107,8 @@ jobs:
         -v $(pwd):/build \
         --network django-multitenant_default \
         -e PYTHON_VERSION -e DJANGO_VERSION \
+        -e DATABASE_HOST=django-multitenant_master \
+        -e DATABASE_PORT=5432 \
         citusdata/python-all-versions
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
@@ -137,6 +141,8 @@ jobs:
         -v $(pwd):/build \
         --network django-multitenant_default \
         -e PYTHON_VERSION -e DJANGO_VERSION \
+        -e DATABASE_HOST=django-multitenant_master \
+        -e DATABASE_PORT=5432 \
         citusdata/python-all-versions
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
@@ -148,6 +154,8 @@ jobs:
         -v $(pwd):/build \
         --network django-multitenant_default \
         -e PYTHON_VERSION -e DJANGO_VERSION \
+        -e DATABASE_HOST=django-multitenant_master \
+        -e DATABASE_PORT=5432 \
         citusdata/python-all-versions
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
