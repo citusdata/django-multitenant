@@ -43,42 +43,17 @@ jobs:
       matrix:
         python_version: ["3.8","3.9","3.10","3.11"]
         django_version: ["3.2","4.0","4.1","4.2"]
-        citus_version: ["10","11","12"]
+        citus_version: ["11","12","13"]
         include:
-          - python_version: "3.7"
-            django_version: "3.2"
-            citus_version: "10"
           - python_version: "3.7"
             django_version: "3.2"
             citus_version: "11"
           - python_version: "3.7"
             django_version: "3.2"
             citus_version: "12"
-        exclude:
-          - python_version: "3.8"
-            django_version: "4.1"
-            citus_version: "10"
-          - python_version: "3.9"
-            django_version: "4.1"
-            citus_version: "10"
-          - python_version: "3.10"
-            django_version: "4.1"
-            citus_version: "10"
-          - python_version: "3.11"
-            django_version: "4.1"
-            citus_version: "10"
-          - python_version: "3.8"
-            django_version: "4.2"
-            citus_version: "10"
-          - python_version: "3.9"
-            django_version: "4.2"
-            citus_version: "10"
-          - python_version: "3.10"
-            django_version: "4.2"
-            citus_version: "10"
-          - python_version: "3.11"
-            django_version: "4.2"
-            citus_version: "10"
+          - python_version: "3.7"
+            django_version: "3.2"
+            citus_version: "13"
     env:
       PYTHON_VERSION: ${{ matrix.python_version }}
       CITUS_VERSION: ${{ matrix.citus_version }}
