@@ -92,7 +92,7 @@ jobs:
         docker run \
         --entrypoint /build/scripts/test-django-mt.sh \
         -v $(pwd):/build \
-        --network=host \
+        --network django-multitenant_default \
         -e PYTHON_VERSION -e DJANGO_VERSION \
         citusdata/python-all-versions
     - name: Upload coverage reports to Codecov
@@ -103,7 +103,7 @@ jobs:
         docker run \
         --entrypoint /build/scripts/test-django-mt-modules.sh \
         -v $(pwd):/build \
-        --network=host \
+        --network django-multitenant_default \
         -e PYTHON_VERSION -e DJANGO_VERSION \
         citusdata/python-all-versions
     - name: Upload coverage reports to Codecov
@@ -135,7 +135,7 @@ jobs:
         docker run \
         --entrypoint /build/scripts/test-django-mt.sh \
         -v $(pwd):/build \
-        --network=host \
+        --network django-multitenant_default \
         -e PYTHON_VERSION -e DJANGO_VERSION \
         citusdata/python-all-versions
     - name: Upload coverage reports to Codecov
@@ -146,7 +146,7 @@ jobs:
         docker run \
         --entrypoint /build/scripts/test-django-mt-modules.sh \
         -v $(pwd):/build \
-        --network=host \
+        --network django-multitenant_default \
         -e PYTHON_VERSION -e DJANGO_VERSION \
         citusdata/python-all-versions
     - name: Upload coverage reports to Codecov
