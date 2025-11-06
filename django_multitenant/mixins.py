@@ -38,9 +38,9 @@ def wrap_many_related_manager_add(many_related_manager_add):
     def add(self, *objs, through_defaults=None):
         if hasattr(self.through, "tenant_field") and get_current_tenant():
             through_defaults = through_defaults or {}
-            through_defaults[
-                get_tenant_column(self.through)
-            ] = get_current_tenant_value()
+            through_defaults[get_tenant_column(self.through)] = (
+                get_current_tenant_value()
+            )
         return many_related_manager_add(self, *objs, through_defaults=through_defaults)
 
     return add
