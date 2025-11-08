@@ -52,7 +52,11 @@ class DatabaseSchemaEditor(PostgresqlDatabaseSchemaEditor):
         # recreated them.
         # Here we test if we are in this case
         if isinstance(new_field, TenantForeignKey) and new_field.db_constraint:
-            from_model = get_model_by_db_table(model._meta.db_table)
+            try:
+                from_model = get_model_by_db_table(model._meta.db_table)
+            except ValueError:
+                # If the model is removed from code.
+                return None
             fk_names = self._constraint_names(
                 model, [new_field.column], foreign_key=True
             ) + self._constraint_names(
