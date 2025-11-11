@@ -2,6 +2,7 @@ import logging
 
 from django.db.models.sql import DeleteQuery, UpdateQuery
 from django.db.models.deletion import Collector
+from django.db.models import Model as DjangoModel
 from django.db.utils import NotSupportedError
 from django.conf import settings
 
@@ -126,12 +127,13 @@ class TenantModelMixin:
         # Provides failing of the save operation if the tenant_id is changed.
         # try_update_tenant is being checked inside save method and if it is true, it will raise an exception.
         def is_val_equal_to_tenant(val):
-            return (
-                val
-                and self.tenant_value
-                and val != self.tenant_value
-                and val != self.tenant_object
-            )
+            is_equal = val and self.tenant_value and val != self.tenant_value
+
+            if is_equal and isinstance(val, DjangoModel):
+                field = get_tenant_field(val)
+                is_equal = getattr(val, field.name) != self.tenant_value
+
+            return is_equal
 
         if (
             attrname in (self.tenant_field, get_tenant_field(self).name)
