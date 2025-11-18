@@ -1,4 +1,4 @@
-Using with Django Rest Framwork
+Using with Django Rest Framework
 =================================
 
 1. Add ``'django_multitenant.middleware.MultitenantMiddleware'`` to the ``MIDDLEWARE`` list in your ``settings.py`` file:
