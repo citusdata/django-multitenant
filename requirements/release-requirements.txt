@@ -75,7 +75,7 @@ twine==4.0.2
     # via -r requirements/release.in
 typing-extensions==4.8.0
     # via rich
-urllib3==2.5.0
+urllib3==2.6.0
     # via
     #   requests
     #   twine
