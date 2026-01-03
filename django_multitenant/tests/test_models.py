@@ -150,6 +150,15 @@ class TenantModelTest(BaseTestCase):
                 in captured_queries.captured_queries[0]["sql"]
             )
 
+    def test_related_manager_query(self):
+        from .models import Project
+
+        account = self.account_fr
+        Project.objects.create(account=account, name=f"test_project")
+
+        with self.assertNumQueries(1):
+            list(account.projects.all())
+
     def test_prefetch_related(self):
         from .models import Project
 
