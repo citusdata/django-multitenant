@@ -143,7 +143,7 @@ class TenantModelMixin:
         return super().__setattr__(attrname, val)
 
     # pylint: disable=too-many-arguments
-    def _do_update(self, base_qs, using, pk_val, values, update_fields, forced_update):
+    def _do_update(self, base_qs, using, pk_val, values, update_fields, forced_update, *args, **kwargs):
         # adding tenant filters for save
         # Citus requires tenant_id filters for update, hence doing this below change.
 
@@ -165,7 +165,7 @@ class TenantModelMixin:
             logger.warning(empty_tenant_message)
 
         return super()._do_update(
-            base_qs, using, pk_val, values, update_fields, forced_update
+            base_qs, using, pk_val, values, update_fields, forced_update, *args, **kwargs
         )
 
     def save(self, *args, **kwargs):
