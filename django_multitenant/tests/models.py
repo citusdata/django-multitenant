@@ -298,3 +298,24 @@ class MigrationUseInMigrationsModel(TenantModel):
 
     class TenantMeta:
         tenant_field_name = "id"
+
+
+def counting_default():
+    """
+    Callable default that counts how many times it is evaluated.
+
+    Django evaluates callable field defaults in Model.__init__, so the counter
+    reveals throwaway model instantiations (see get_tenant_column).
+    """
+    counting_default.calls += 1
+    return "default"
+
+
+counting_default.calls = 0
+
+
+class ModelWithCallableDefault(TenantModel):
+    name = models.CharField(max_length=255, default=counting_default)
+
+    class TenantMeta:
+        tenant_field_name = "id"

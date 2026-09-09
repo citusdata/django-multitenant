@@ -90,6 +90,35 @@ class UtilsTest(BaseTestCase):
         column = get_tenant_column(Project)
         self.assertEqual(column, "account_id")
 
+    def test_get_tenant_column_does_not_instantiate_model_class(self):
+        # Instantiating a model evaluates every callable field default, which
+        # may hit the database. Resolving the tenant column of a class must
+        # therefore not go through a throwaway instance.
+        from .models import ModelWithCallableDefault, counting_default
+
+        counting_default.calls = 0
+
+        self.assertEqual(get_tenant_column(ModelWithCallableDefault), "id")
+
+        self.assertEqual(counting_default.calls, 0)
+
+    def test_tenant_filters_do_not_instantiate_model_class(self):
+        from .models import ModelWithCallableDefault, counting_default
+
+        projects = self.projects
+        account = projects[0].account
+        set_current_tenant(account)
+
+        counting_default.calls = 0
+
+        self.assertEqual(
+            get_tenant_filters(ModelWithCallableDefault), {"id": account.pk}
+        )
+
+        self.assertEqual(counting_default.calls, 0)
+
+        unset_current_tenant()
+
     def test_current_tenant_value_single(self):
         projects = self.projects
         account = projects[0].account
