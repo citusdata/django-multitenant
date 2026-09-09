@@ -30,6 +30,24 @@ class TenantModelTest(BaseTestCase):
         self.assertEqual(Project.objects.count(), account.projects.count())
         unset_current_tenant()
 
+    def test_queryset_does_not_evaluate_callable_defaults(self):
+        # Adding the tenant filter to a queryset must not instantiate the
+        # model: callable defaults (which may query the database) would run
+        # on every get_queryset() call.
+        from .models import ModelWithCallableDefault, counting_default
+
+        account = self.account_fr
+        set_current_tenant(account)
+
+        counting_default.calls = 0
+
+        with self.assertNumQueries(1):
+            ModelWithCallableDefault.objects.count()
+
+        self.assertEqual(counting_default.calls, 0)
+
+        unset_current_tenant()
+
     def test_filter_without_joins_on_tenant_id_not_pk(self):
         from .models import SomeRelatedModel
 

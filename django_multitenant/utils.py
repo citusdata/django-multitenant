@@ -42,14 +42,42 @@ def get_current_tenant():
     return getattr(_context, "tenant", None)
 
 
+def get_tenant_column_from_class(model_class):
+    """
+    Resolves the tenant column name declared on a model class.
+
+    Works on the class itself: instantiating the model would evaluate every
+    callable field default (Model.__init__ does so), which may hit the database.
+    """
+    tenant_meta = getattr(model_class, "TenantMeta", None)
+    if hasattr(tenant_meta, "tenant_field_name"):
+        return tenant_meta.tenant_field_name
+    if hasattr(tenant_meta, "tenant_id"):
+        return tenant_meta.tenant_id
+    if hasattr(model_class, "tenant"):
+        raise AttributeError(
+            f"Tenant field exists which may cause collision with tenant_id field. Please rename the tenant field in {model_class.__name__} "
+        )
+    if hasattr(model_class, "tenant_id"):
+        return model_class.tenant_id
+    if model_class.__module__ == "__fake__":
+        raise AttributeError(
+            f"apps.get_model method should not be used to get the model {model_class.__name__}."
+            "Either import the model directly or use the module apps under the module django.apps."
+        )
+
+    raise AttributeError(
+        f"tenant_id field not found. Please add tenant_id field to the model {model_class.__name__}"
+    )
+
+
 def get_tenant_column(model_class_or_instance):
     """
     Get the tenant field from the model object or class
     """
-    if inspect.isclass(model_class_or_instance):
-        model_class_or_instance = model_class_or_instance()
-
     try:
+        if inspect.isclass(model_class_or_instance):
+            return get_tenant_column_from_class(model_class_or_instance)
         return model_class_or_instance.tenant_field
     except Exception as not_a_tenant_model:
         raise ValueError(

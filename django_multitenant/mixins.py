@@ -23,6 +23,7 @@ from .utils import (
     get_object_tenant,
     set_object_tenant,
     get_tenant_column,
+    get_tenant_column_from_class,
 )
 
 
@@ -194,25 +195,7 @@ class TenantModelMixin:
 
     @property
     def tenant_field(self):
-        if hasattr(self, "TenantMeta") and "tenant_field_name" in dir(self.TenantMeta):
-            return self.TenantMeta.tenant_field_name
-        if hasattr(self, "TenantMeta") and "tenant_id" in dir(self.TenantMeta):
-            return self.TenantMeta.tenant_id
-        if hasattr(self, "tenant"):
-            raise AttributeError(
-                f"Tenant field exists which may cause collision with tenant_id field. Please rename the tenant field in {self.__class__.__name__} "
-            )
-        if hasattr(self, "tenant_id"):
-            return self.tenant_id
-        if self.__module__ == "__fake__":
-            raise AttributeError(
-                f"apps.get_model method should not be used to get the model {self.__class__.__name__}."
-                "Either import the model directly or use the module apps under the module django.apps."
-            )
-
-        raise AttributeError(
-            f"tenant_id field not found. Please add tenant_id field to the model {self.__class__.__name__}"
-        )
+        return get_tenant_column_from_class(type(self))
 
     @property
     def tenant_value(self):
